@@ -1,1 +1,31 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/jqhbANi7)
+## Setting Up the Development Environment
+
+To get started with this project, follow the steps below to create a virtual environment and install the required dependencies.
+
+### 1. Create Virtual environment
+
+  On Linux/Mac:
+  ```bash
+  python3 -m venv venv
+  ```
+  On Windows:
+  ```bash
+  python -m venv venv
+  ```
+
+### 2. Activate the Virtual Environment
+
+  On Linux/Mac:
+  ```bash
+  source venv/bin/activate
+  ```
+  On Windows:
+  ```bash
+  venv\Scripts\activate
+  ```
+
+### 3. Install Dependencies
+
+  ```bash
+  pip install -r requirements.txt
+  ```
