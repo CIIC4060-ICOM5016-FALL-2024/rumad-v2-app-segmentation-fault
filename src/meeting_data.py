@@ -2,7 +2,6 @@ import pandas as pd
 
 def get_meeting_data():
     df = pd.read_csv('data/meeting.csv')
-    print(df)
     return df
   
   
