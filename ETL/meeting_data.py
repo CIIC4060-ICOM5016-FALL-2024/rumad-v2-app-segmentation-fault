@@ -41,7 +41,7 @@ def run_etl():
             df = extract_csv(file_path)
             if df is not None:
                 processed_data = transform_data(df)
-                output_filename = f"transformed_{file_name.replace('.csv', '.csv')}"
+                output_filename = f"processed_{file_name.replace('.csv', '.csv')}"
                 processed_data.to_csv(output_filename, index=False)
 
         elif file_name.endswith(".db"):
@@ -49,7 +49,7 @@ def run_etl():
             if dfs is not None:
                 for table_name, df in dfs.items():
                     processed_data = transform_data(df)
-                    output_filename = f"transformed_{file_name.replace('.db', '')}.csv"
+                    output_filename = f"processed_{file_name.replace('.db', '')}.csv"
                     processed_data.to_csv(output_filename, index=False)
 
 
