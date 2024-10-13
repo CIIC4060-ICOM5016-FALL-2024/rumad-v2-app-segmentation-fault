@@ -54,19 +54,20 @@ def syllabus_downloader(folder_name, data_frame):
 
     SYLLABUS_FOLDER = folder_name
 
-    if os.path.exists(SYLLABUS_FOLDER):
-        return
-    else:
-        os.makedirs(SYLLABUS_FOLDER, exist_ok=True)
+    os.makedirs(SYLLABUS_FOLDER, exist_ok=True)
     
     try:  
         urllist = data_frame["syllabus"].to_list()
-        for url in urllist:
-            if url is not None:
-                file_name = url[62:]
-                urllib.request.urlretrieve(url,os.path.join(SYLLABUS_FOLDER, file_name))
-            else:
+        deplist = data_frame["name"].to_list()
+        codelist = data_frame["code"].to_list()
+        desclist = data_frame["description"].tolist()
+        for i in range (len(urllist)):
+            if urllist[i] == "None":
                 continue
+            url = urllist[i]
+            desclist[i] = desclist[i].replace(" ","-")
+            file_name = deplist[i] + "-" + codelist[i] + "-" + desclist[i] + ".pdf"
+            urllib.request.urlretrieve(url,os.path.join(SYLLABUS_FOLDER, file_name))
 
     except Exception as Excd:
         print("Exception, cant dowload this file", Excd)
