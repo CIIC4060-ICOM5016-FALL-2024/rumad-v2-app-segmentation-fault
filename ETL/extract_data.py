@@ -8,17 +8,15 @@ RAW_DATA_FOLDER = "data/raw"
 # Ensure the output directory exists
 os.makedirs("data/extracted", exist_ok=True)
 
+
 # Function to extract data from SQLite database
 def extract_db(file_path):
     conn = sqlite3.connect(file_path)
-    query = "SELECT name FROM sqlite_master WHERE type='table';"
-    tables = pd.read_sql(query, conn)
-    dfs = {}
-    for table_name in tables["name"]:
-        df = pd.read_sql(f"SELECT * FROM {table_name};", conn)
-        dfs[table_name] = df
+    table_name = "requisites"
+    df = pd.read_sql(f"SELECT * FROM {table_name};", conn)
     conn.close()
-    return dfs
+    return df
+
 
 def run_etl():
     # Iterate over all files in the raw_data folder
@@ -33,14 +31,11 @@ def run_etl():
                 processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
 
         elif file_name.endswith(".db"):
-            dfs = extract_db(file_path)
-            if dfs is not None:
-                for table_name, df in dfs.items():
-                    processed_data = df.dropna()
-                    output_filename = f"extracted_{file_name.replace('.db', '')}.csv"
-                    processed_data.to_csv(
-                        f"data/extracted/{output_filename}", index=False
-                    )
+            df = extract_db(file_path)
+            if df is not None:
+                processed_data = df.dropna()
+                output_filename = f"extracted_{file_name.replace('.db', '')}.csv"
+                processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
 
 
 if __name__ == "__main__":
