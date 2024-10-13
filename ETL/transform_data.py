@@ -1,10 +1,16 @@
-import os
-import pandas as pd
+from extract_data import run_etl
 
-# Paths for raw data (input) and processed data (output)
-EXTRACTED_DATA_FOLDER = "data/extracted"
 
-# data frame for the data
-df_meetings = pd.read_csv(os.path.join(EXTRACTED_DATA_FOLDER, "extracted_meetings.csv"))
-df_sections = pd.read_csv(os.path.join(EXTRACTED_DATA_FOLDER, "extracted_sections.csv"))
-df_requisites = pd.read_csv(os.path.join(EXTRACTED_DATA_FOLDER, "extracted_requisites.csv"))
+def main():
+    # Call the run_etl function
+    dataframes = run_etl()
+
+    # Print each dataframe
+    for i, df in enumerate(dataframes):
+        print(f"DataFrame {i + 1}:")
+        print(df)
+        print("\n" + "=" * 50 + "\n")  # Separator for clarity
+
+
+if __name__ == "__main__":
+    main()

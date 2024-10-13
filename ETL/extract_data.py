@@ -16,6 +16,8 @@ def extract_db(file_path):
 
 
 def run_etl():
+    dataframes = []  # List to store all dataframes
+
     # Iterate over all files in the raw_data folder
     for file_name in os.listdir(RAW_DATA_FOLDER):
         file_path = os.path.join(RAW_DATA_FOLDER, file_name)
@@ -24,13 +26,15 @@ def run_etl():
             df = pd.read_csv(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                return processed_data
+                dataframes.append(processed_data)
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                return processed_data
+                dataframes.append(processed_data)
+
+    return dataframes
 
 
 if __name__ == "__main__":
