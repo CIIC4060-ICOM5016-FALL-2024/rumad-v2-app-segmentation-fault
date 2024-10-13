@@ -1,9 +1,10 @@
 import os
 import pandas as pd
 import sqlite3
+import json
 
 # Paths for raw data (input) and processed data (output)
-RAW_DATA_FOLDER = "data"
+RAW_DATA_FOLDER = "./../data"
 
 
 # Function to extract data from SQLite database
@@ -33,6 +34,13 @@ def run_etl():
             if df is not None:
                 processed_data = df.dropna()
                 dataframes.append(processed_data)
+
+        elif file_name.expandtabs(".json"):
+            json_rooms_data = json.load(file_path)
+            df = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in json_rooms_data.items() for item in values],
+                                columns=['Building', 'Number', 'Capacity'])
+            
+            
 
     return dataframes
 
