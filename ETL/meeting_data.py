@@ -4,7 +4,6 @@ import sqlite3
 
 # Paths for raw data (input) and processed data (output)
 RAW_DATA_FOLDER = "data/raw"
-EXTRACTED_DATA_FOLDER = "data/processed"
 
 
 # Function to extract data from CSV files
@@ -41,7 +40,7 @@ def run_etl():
             df = extract_csv(file_path)
             if df is not None:
                 processed_data = transform_data(df)
-                output_filename = f"processed_{file_name.replace('.csv', '.csv')}"
+                output_filename = f"extracted_{file_name.replace('.csv', '.csv')}"
                 processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
 
         elif file_name.endswith(".db"):
@@ -49,7 +48,7 @@ def run_etl():
             if dfs is not None:
                 for table_name, df in dfs.items():
                     processed_data = transform_data(df)
-                    output_filename = f"processed_{file_name.replace('.db', '')}.csv"
+                    output_filename = f"extracted_{file_name.replace('.db', '')}.csv"
                     processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
 
 
