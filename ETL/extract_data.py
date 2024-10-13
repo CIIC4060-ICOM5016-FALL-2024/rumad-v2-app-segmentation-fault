@@ -5,6 +5,9 @@ import sqlite3
 # Paths for raw data (input) and processed data (output)
 RAW_DATA_FOLDER = "data/raw"
 
+# Ensure the output directory exists
+os.makedirs("data/extracted", exist_ok=True)
+
 
 # Function to extract data from CSV files
 def extract_csv(file_path):
@@ -49,7 +52,9 @@ def run_etl():
                 for table_name, df in dfs.items():
                     processed_data = transform_data(df)
                     output_filename = f"extracted_{file_name.replace('.db', '')}.csv"
-                    processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
+                    processed_data.to_csv(
+                        f"data/extracted/{output_filename}", index=False
+                    )
 
 
 if __name__ == "__main__":
