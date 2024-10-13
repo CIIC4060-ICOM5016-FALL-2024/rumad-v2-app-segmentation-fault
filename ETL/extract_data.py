@@ -3,10 +3,7 @@ import pandas as pd
 import sqlite3
 
 # Paths for raw data (input) and processed data (output)
-RAW_DATA_FOLDER = "data/raw"
-
-# Ensure the output directory exists
-os.makedirs("data/extracted", exist_ok=True)
+RAW_DATA_FOLDER = "data"
 
 
 # Function to extract data from SQLite database
@@ -27,15 +24,13 @@ def run_etl():
             df = pd.read_csv(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                output_filename = f"extracted_{file_name.replace('.csv', '.csv')}"
-                processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
+                return processed_data
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                output_filename = f"extracted_{file_name.replace('.db', '')}.csv"
-                processed_data.to_csv(f"data/extracted/{output_filename}", index=False)
+                return processed_data
 
 
 if __name__ == "__main__":
