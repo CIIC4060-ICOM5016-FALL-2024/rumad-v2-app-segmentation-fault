@@ -7,7 +7,7 @@ import urllib.request
 
 
 # Paths for raw data (input) and processed data (output)
-RAW_DATA_FOLDER = "./../data"
+RAW_DATA_FOLDER = "./data"
 
 
 # Function to extract data from SQLite database
