@@ -35,11 +35,12 @@ def run_etl():
                 processed_data = df.dropna()
                 dataframes.append(processed_data)
 
-        elif file_name.expandtabs(".json"):
-            df = json.load(file_path)
-            if df is not None:
-                processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
-                                columns=['building', 'room_number', 'capacity'])
+        elif file_name.endswith(".json"):
+            with open(file_path, 'r') as f:  
+                df = json.load(f)
+                if df is not None:
+                    processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
+                                    columns=['building', 'room_number', 'capacity'])
 
                 dataframes.append(processed_data)
             
