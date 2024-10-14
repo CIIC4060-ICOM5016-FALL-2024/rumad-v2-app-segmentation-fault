@@ -40,6 +40,7 @@ def run_etl():
             if df is not None:
                 processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
                                 columns=['Building', 'Number', 'Capacity'])
+
                 dataframes.append(processed_data)
             
             
