@@ -1,12 +1,13 @@
 import os
 import pandas as pd
 import sqlite3
+import json
 import xml.etree.ElementTree as ET
 import urllib.request
 
 
 # Paths for raw data (input) and processed data (output)
-RAW_DATA_FOLDER = "data"
+RAW_DATA_FOLDER = "./data"
 
 
 # Function to extract data from SQLite database
@@ -93,6 +94,16 @@ def run_etl():
                 processed_data = df.dropna()
                 dataframes.append(processed_data)
 
+        elif file_name.endswith(".json"):
+            with open(file_path, 'r') as f:  
+                df = json.load(f)
+                if df is not None:
+                    processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
+                                    columns=['building', 'room_number', 'capacity'])
+
+                dataframes.append(processed_data)
+            
+            
         elif file_name.endswith(".xml"):
             df = extract_xml(file_path)
             dataframes.append(df)
