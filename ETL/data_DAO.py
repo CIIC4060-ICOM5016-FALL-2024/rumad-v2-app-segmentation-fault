@@ -20,7 +20,7 @@ class DAO:
             password=db_password,
             port=db_port,
         )
-        with open("src/data/schema.sql", "r") as file:
+        with open("schema.sql", "r") as file:
             sql_query = file.read()
         cursor = self.conn.cursor()
         cursor.execute(sql_query)
