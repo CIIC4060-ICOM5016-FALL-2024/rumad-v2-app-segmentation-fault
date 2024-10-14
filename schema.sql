@@ -1,15 +1,38 @@
+-- REQUISITE TABLE
 CREATE TABLE IF NOT EXISTS "requisite" (
+  "classid" INTEGER,
+  "reqid" INTEGER,
+  "prereq" BOOLEAN,
 
+  PRIMARY KEY ("classid", "reqid"),
+  FOREIGN KEY ("classid") REFERENCES "class"("cid"),
+  FOREIGN KEY ("reqid") REFERENCES "class"("cid")
 );
 
+-- COURSES TABLE
 CREATE TABLE IF NOT EXISTS "class" (
-
+  "cid" SERIAL PRIMARY KEY,
+  "cname" VARCHAR(255),
+  "ccode" VARCHAR(255),
+  "cdesc" VARCHAR(255),
+  "term" VARCHAR(255),
+  "years" VARCHAR(255),
+  "cred" INTEGER NOT NULL,
+  "csyllabus" VARCHAR(255)
 );
 
+-- SYLLABUS TABLE
 CREATE TABLE IF NOT EXISTS "syllabus" (
+  "chunkid" SERIAL PRIMARY KEY,
+  "courseid" INTEGER,
+  -- JEAN CHEQUEA
+  "embedding_text" JSON,
+  "chunk" VARCHAR(255),
 
+  FOREIGN KEY ("courseid") REFERENCES "class"("cid")
 );
 
+-- SECTION TABLE
 CREATE TABLE IF NOT EXISTS "section" (
   "sid" SERIAL PRIMARY KEY,
   "roomid" INTEGER,
@@ -18,6 +41,10 @@ CREATE TABLE IF NOT EXISTS "section" (
   "semester" VARCHAR(255),
   "years" VARCHAR(255),
   "capacity" INTEGER,
+
+  FOREIGN KEY ("roomid") REFERENCES "room"("rid"),
+  FOREIGN KEY ("cid") REFERENCES "class"("cid"),
+  FOREIGN KEY ("mid") REFERENCES "meeting"("mid")
 );
 
 CREATE TABLE IF NOT EXISTS "room" (
