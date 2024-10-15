@@ -101,7 +101,6 @@ def run_etl():
             df = extract_db(file_path)
             if df is not None:
                 table_name = "requisite"
-                print(df.columns)
                 df.columns = ["classid", "reqid", "prereq"]
                 processed_data = df.dropna()
                 dataframes.append((processed_data, table_name))
@@ -116,7 +115,7 @@ def run_etl():
                             for key, values in df.items()
                             for item in values
                         ],
-                        columns=["rid", "Building", "Number", "Capacity"],
+                        columns=["rid", "building", "room_number", "capacity"],
                     )
 
                     table_name = "room"
