@@ -29,17 +29,17 @@ def extract_xml(file_path):
         for courses in xmlFile.getroot():
             temp = []
 
-            for l in courses:
-                if l.tag == "classes":
-                    for m in l:
+            for line in courses:
+                if line.tag == "classes":
+                    for m in line:
                         temp.append(m.text)
-                        if fullcycle == False:
+                        if fullcycle is False:
                             col.append(m.tag)
 
                 else:
-                    temp.append(l.text)
-                    if fullcycle == False:
-                        col.append(l.tag)
+                    temp.append(line.text)
+                    if fullcycle is False:
+                        col.append(line.tag)
 
             fullcycle = True
             rows.append(temp)
