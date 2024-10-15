@@ -110,8 +110,15 @@ def run_etl():
             with open(file_path, 'r') as f:  
                 df = json.load(f)
                 if df is not None:
-                    processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
-                                    columns=['building', 'room_number', 'capacity'])
+                    processed_data = pd.DataFrame(
+                        [
+                            (item["id"], key, item["number"], item["capacity"])
+                            for key, values in df.items()
+                            for item in values
+                        ],
+                        columns=["rid", "Building", "Number", "Capacity"],
+                    )
+
                     table_name = "room"
                     dataframes.append((processed_data, table_name))
             
