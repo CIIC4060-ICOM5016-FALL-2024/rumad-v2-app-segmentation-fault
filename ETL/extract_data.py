@@ -90,6 +90,10 @@ def run_etl():
                     table_name = "meeting"
                 elif file_name == "sections.csv":
                     table_name = "section"
+                    new_order = ["sid", "room_id", "class_id", "meeting_id", "semester", "year", "capacity"]
+                    df = df[new_order]
+                    df.columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
+                    
                 processed_data = df.dropna()
                 dataframes.append((processed_data, table_name))
 
