@@ -1,14 +1,3 @@
--- REQUISITE TABLE
-CREATE TABLE IF NOT EXISTS "requisite" (
-  "classid" INTEGER,
-  "reqid" INTEGER,
-  "prereq" BOOLEAN,
-
-  PRIMARY KEY ("classid", "reqid"),
-  FOREIGN KEY ("classid") REFERENCES "class"("cid"),
-  FOREIGN KEY ("reqid") REFERENCES "class"("cid")
-);
-
 -- COURSES TABLE
 CREATE TABLE IF NOT EXISTS "class" (
   "cid" SERIAL PRIMARY KEY,
@@ -21,15 +10,21 @@ CREATE TABLE IF NOT EXISTS "class" (
   "csyllabus" VARCHAR(255)
 );
 
--- SYLLABUS TABLE
-CREATE TABLE IF NOT EXISTS "syllabus" (
-  "chunkid" SERIAL PRIMARY KEY,
-  "courseid" INTEGER,
-  -- JEAN CHEQUEA
-  "embedding_text" JSON,
-  "chunk" VARCHAR(255),
+-- ROOM TABLE
+CREATE TABLE IF NOT EXISTS "room" (
+    "rid" SERIAL PRIMARY KEY,
+    "building" VARCHAR(255),
+    "room_number" VARCHAR,
+    "capacity" INTEGER
+);
 
-  FOREIGN KEY ("courseid") REFERENCES "class"("cid")
+-- MEETING TABLE
+CREATE TABLE IF NOT EXISTS "meeting" (
+    "mid" SERIAL PRIMARY KEY,
+    "ccode" VARCHAR(10),
+    "starttime" TIMESTAMP,
+    "endtime" TIMESTAMP,
+    "cdays" VARCHAR(5) 
 );
 
 -- SECTION TABLE
@@ -47,17 +42,30 @@ CREATE TABLE IF NOT EXISTS "section" (
   FOREIGN KEY ("mid") REFERENCES "meeting"("mid")
 );
 
-CREATE TABLE IF NOT EXISTS "room" (
-    "rid" SERIAL PRIMARY KEY,
-    "building" VARCHAR(255),
-    "room_number" VARCHAR,
-    "capacity" INTEGER
+-- SYLLABUS TABLE
+CREATE TABLE IF NOT EXISTS "syllabus" (
+  "chunkid" SERIAL PRIMARY KEY,
+  "courseid" INTEGER,
+  -- JEAN CHEQUEA
+  "embedding_text" JSON,
+  "chunk" VARCHAR(255),
+
+  FOREIGN KEY ("courseid") REFERENCES "class"("cid")
 );
 
-CREATE TABLE IF NOT EXISTS "meeting" (
-    "mid" SERIAL PRIMARY KEY,
-    "ccode" VARCHAR(10),
-    "starttime" TIMESTAMP,
-    "endtime" TIMESTAMP,
-    "cdays" VARCHAR(5) 
+-- REQUISITE TABLE
+CREATE TABLE IF NOT EXISTS "requisite" (
+  "classid" INTEGER,
+  "reqid" INTEGER,
+  "prereq" BOOLEAN,
+
+  PRIMARY KEY ("classid", "reqid"),
+  FOREIGN KEY ("classid") REFERENCES "class"("cid"),
+  FOREIGN KEY ("reqid") REFERENCES "class"("cid")
 );
+
+
+
+
+
+

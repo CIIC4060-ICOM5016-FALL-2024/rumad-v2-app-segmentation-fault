@@ -25,3 +25,5 @@ class DAO:
         cursor = self.conn.cursor()
         cursor.execute(sql_query)
         self.conn.commit()
+
+dao = DAO
