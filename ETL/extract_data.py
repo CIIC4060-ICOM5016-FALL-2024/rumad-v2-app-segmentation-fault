@@ -114,6 +114,8 @@ def run_etl():
             df = extract_xml(file_path)
             table_name = "class"
             if df is not None:
+                new_order = ["classid", "name", "code", "description", "term", "years", "cred", "syllabus"]
+                df = df[new_order]
                 df.columns = ["cid", "cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]
                 
             dataframes.append((df, table_name))
