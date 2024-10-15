@@ -115,6 +115,7 @@ def run_etl():
             table_name = "class"
             if df is not None:
                 df.columns = ["cid", "cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]
+                
             dataframes.append((df, table_name))
 
     return dataframes
