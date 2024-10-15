@@ -85,18 +85,20 @@ def run_etl():
         if file_name.endswith(".csv"):
             df = pd.read_csv(file_path)
             if df is not None:
-                processed_data = df.dropna()
                 if file_name == "meeting.csv":
+                    df.columns = ["mid", "ccode", "starttime", "endtime", "cdays"]
                     table_name = "meeting"
                 elif file_name == "sections.csv":
                     table_name = "section"
+                processed_data = df.dropna()
                 dataframes.append((processed_data, table_name))
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
             if df is not None:
-                processed_data = df.dropna()
                 table_name = "requisite"
+                df.columns = ["classid", "reqid", "prereq"]
+                processed_data = df.dropna()
                 dataframes.append((processed_data, table_name))
 
         elif file_name.endswith(".json"):
@@ -111,6 +113,8 @@ def run_etl():
         elif file_name.endswith(".xml"):
             df = extract_xml(file_path)
             table_name = "class"
+            if df is not None:
+                df.columns = ["cid", "cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]
             dataframes.append((df, table_name))
 
     return dataframes
