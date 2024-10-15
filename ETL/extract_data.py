@@ -76,7 +76,7 @@ def syllabus_downloader(folder_name, data_frame):
 
 
 def run_etl():
-    dataframes = []  # List to store all dataframes
+    dataframes = []  # List to store all dataframes and their table names
 
     # Iterate over all files in the raw_data folder
     for file_name in os.listdir(RAW_DATA_FOLDER):
@@ -86,13 +86,18 @@ def run_etl():
             df = pd.read_csv(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                dataframes.append(processed_data)
+                if file_name == "meeting.csv":
+                    table_name = "meeting"
+                elif file_name == "sections.csv":
+                    table_name = "section"
+                dataframes.append((processed_data, table_name))
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
             if df is not None:
                 processed_data = df.dropna()
-                dataframes.append(processed_data)
+                table_name = "requisite"
+                dataframes.append((processed_data, table_name))
 
         elif file_name.endswith(".json"):
             with open(file_path, 'r') as f:  
@@ -100,13 +105,13 @@ def run_etl():
                 if df is not None:
                     processed_data = pd.DataFrame([(key, item['number'], item['capacity']) for key, values in df.items() for item in values],
                                     columns=['building', 'room_number', 'capacity'])
-
-                dataframes.append(processed_data)
-            
+                    table_name = "room"
+                    dataframes.append((processed_data, table_name))
             
         elif file_name.endswith(".xml"):
             df = extract_xml(file_path)
-            dataframes.append(df)
+            table_name = "class"
+            dataframes.append((df, table_name))
 
     return dataframes
 

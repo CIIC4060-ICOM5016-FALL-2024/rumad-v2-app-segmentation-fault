@@ -5,9 +5,9 @@ def main():
     # Call the run_etl function
     dataframes = run_etl()
 
-    # Print each dataframe
-    for i, df in enumerate(dataframes):
-        print(f"DataFrame {i + 1}:")
+    # Print each dataframe with its table name
+    for i, (df, table_name) in enumerate(dataframes):
+        print(f"DataFrame {i + 1} (Table: {table_name}):")
         print(df)
         print("\n" + "=" * 50 + "\n")  # Separator for clarity
 
