@@ -64,6 +64,15 @@ def clean_data():
     df_meeting["starttime"] = pd.to_datetime(df_meeting["starttime"]).dt.time
     df_meeting["endtime"] = pd.to_datetime(df_meeting["endtime"]).dt.time
 
+    # Remove all 'MJ' meetings with start time after 10:15 AM and end time before 12:30 PM
+    df_meeting = df_meeting[
+        ~(
+            (df_meeting["cdays"] == "MJ")
+            & (df_meeting["starttime"] > pd.to_datetime("10:15", format="%H:%M").time())
+            & (df_meeting["endtime"] < pd.to_datetime("12:30", format="%H:%M").time())
+        )
+    ]
+
     # 5. Ensure correct durations for 'LMV' and 'MJ' meetings
     df_meeting.loc[df_meeting["cdays"] == "LWV", "duration"] = 50
     df_meeting.loc[df_meeting["cdays"] == "MJ", "duration"] = 75
@@ -100,10 +109,10 @@ def clean_data():
     # print(df_class)
 
     # print("Cleaned Section DataFrame:")
-    print(df_section)
+    # print(df_section)
 
     # print("Cleaned Meeting DataFrame:")
-    # print(df_meeting)
+    print(df_meeting)
 
     # print("Cleaned Room DataFrame:")
     # print(df_room)
