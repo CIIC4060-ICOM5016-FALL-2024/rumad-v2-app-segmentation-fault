@@ -95,7 +95,7 @@ def run_etl():
                     df.columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
                     
                 processed_data = df.dropna()
-                dataframes.append((processed_data, table_name))
+                dataframes.append((processed_data, table_name)) # type: ignore
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
