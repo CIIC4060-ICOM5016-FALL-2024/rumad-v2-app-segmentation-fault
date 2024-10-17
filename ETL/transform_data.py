@@ -22,7 +22,7 @@ def main():
         # print(df)
         
         if table_name == "class":
-            # insert_classes(df)
+            insert_classes(df)
             print(df)
         # elif table_name == "meeting":
         #     insert_meeting(df)
