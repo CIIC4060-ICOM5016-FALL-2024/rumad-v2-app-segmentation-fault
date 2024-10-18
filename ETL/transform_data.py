@@ -230,13 +230,16 @@ def clean_data():
     Every_Year = df_section_class["years_y"] == "Every Year"
     According_Demand_Year = df_section_class["years_y"] == "According to Demand"
 
-    # Filter the sections based on the boolean conditions
-    df_section_class = df_section_class[
-        ~(
-            (First_semester | Second_semester | According_Demand)
-            & (Even_year | Odd_year | Every_Year | According_Demand_Year)
-        )
-    ]
+    # Combine the boolean conditions into a single series
+    combined_conditions = (First_semester | Second_semester | According_Demand) & (
+        Even_year | Odd_year | Every_Year | According_Demand_Year
+    )
+
+    # Ensure the combined_conditions series has the same index as df_section_class
+    combined_conditions = combined_conditions.reindex(df_section_class.index)
+
+    # Filter the sections based on the combined boolean conditions
+    df_section_class = df_section_class[~combined_conditions]
     # Update the section dataframe
     df_section = df_section[~df_section["sid"].isin(df_section_class["sid"])]
 
@@ -258,31 +261,31 @@ def clean_data():
 
     # Total Tuples
 
-    # ultra_merge = (
-    #     df_section.merge(df_class, on="cid")
-    #     .merge(df_meeting, on="mid")
-    #     .merge(df_requisite, left_on="cid", right_on="classid")
-    #     .merge(df_room, left_on="roomid", right_on="rid")
-    # )
+    ultra_merge = (
+        df_section.merge(df_class, on="cid")
+        .merge(df_meeting, on="mid")
+        .merge(df_requisite, left_on="cid", right_on="classid")
+        .merge(df_room, left_on="roomid", right_on="rid")
+    )
 
-    # df_class = ultra_merge[ultra_merge["cid"].isin(df_class["cid"])].drop_duplicates(
-    #     subset=["cid"]
-    # )
-    # df_meeting = ultra_merge[ultra_merge["mid"].isin(df_class["mid"])].drop_duplicates(
-    #     subset=["mid"]
-    # )
-    # df_requisite = ultra_merge[
-    #     ultra_merge["classid"].isin(df_class["classid"])
-    # ].drop_duplicates(subset=["reqid", "cid"])
-    # df_room = ultra_merge[ultra_merge["rid"].isin(df_class["rid"])].drop_duplicates(
-    #     subset=["rid"]
-    # )
-    # df_section = df_section.drop_duplicates(subset=["sid"])
+    df_class = ultra_merge[ultra_merge["cid"].isin(df_class["cid"])].drop_duplicates(
+        subset=["cid"]
+    )
+    df_meeting = ultra_merge[ultra_merge["mid"].isin(df_class["mid"])].drop_duplicates(
+        subset=["mid"]
+    )
+    df_requisite = ultra_merge[
+        ultra_merge["classid"].isin(df_class["classid"])
+    ].drop_duplicates(subset=["reqid", "cid"])
+    df_room = ultra_merge[ultra_merge["rid"].isin(df_class["rid"])].drop_duplicates(
+        subset=["rid"]
+    )
+    df_section = df_section.drop_duplicates(subset=["sid"])
 
     # Print cuantity the count of tuples in all dataframes
-    # print(
-    #     f"Dataframes Total Tuples: {len(df_class) + len(df_section) + len(df_meeting) + len(df_requisite) + len(df_room) + len(df_section)}"
-    # )
+    print(
+        f"Dataframes Total Tuples: {len(df_class) + len(df_section) + len(df_meeting) + len(df_requisite) + len(df_room) + len(df_section)}"
+    )
 
     # Print dataframes after cleaning (for verification)
     # print(df_class)
