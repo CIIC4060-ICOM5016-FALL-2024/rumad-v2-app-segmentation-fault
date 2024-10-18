@@ -52,10 +52,10 @@ def clean_data():
 
     # Convert 'starttime' and 'endtime' to time objects
     df_section_meeting["starttime"] = pd.to_datetime(
-        df_section_meeting["starttime"]
+        df_section_meeting["starttime"], format="%H:%M:%S"
     ).dt.time
     df_section_meeting["endtime"] = pd.to_datetime(
-        df_section_meeting["endtime"]
+        df_section_meeting["endtime"], format="%H:%M:%S"
     ).dt.time
 
     # Sort the dataframe by room, semester, starttime, and sid
@@ -91,8 +91,12 @@ def clean_data():
     ################################################################################################
     # 4. Adjust 'MJ' meetings and remove overlaps
     ################################################################################################
-    df_meeting["starttime"] = pd.to_datetime(df_meeting["starttime"]).dt.time
-    df_meeting["endtime"] = pd.to_datetime(df_meeting["endtime"]).dt.time
+    df_meeting["starttime"] = pd.to_datetime(
+        df_meeting["starttime"], format="%H:%M:%S"
+    ).dt.time
+    df_meeting["endtime"] = pd.to_datetime(
+        df_meeting["endtime"], format="%H:%M:%S"
+    ).dt.time
 
     # Remove all 'MJ' meetings with start time after 10:15 AM and end time before 12:30 PM
     df_meeting = df_meeting[
@@ -173,10 +177,10 @@ def clean_data():
     # print(df_class)
 
     # print("Cleaned Section DataFrame:")
-    print(df_section)
+    # print(df_section)
 
     # print("Cleaned Meeting DataFrame:")
-    # print(df_meeting)
+    print(df_meeting)
 
     # print("Cleaned Room DataFrame:")
     # print(df_room)
