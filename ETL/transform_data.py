@@ -187,14 +187,13 @@ def clean_data():
     # print(df_section)
 
     # print("Cleaned Meeting DataFrame:")
-    print(df_meeting)
+    # print(df_meeting)
 
     # print("Cleaned Room DataFrame:")
     # print(df_room)
 
     # print("Cleaned Requisite DataFrame:")
     # print(df_requisite)
-
-
-if __name__ == "__main__":
-    clean_data()
+    
+    dataframes = [df_class, df_section, df_meeting, df_room, df_requisite]
+    return dataframes

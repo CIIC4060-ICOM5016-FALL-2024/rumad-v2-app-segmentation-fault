@@ -10,30 +10,30 @@ def insert_to_db(dataframe, table_name):
         conn = pg.connect(url)
         cursor = conn.cursor()
         
-        if table_name == "class":
+        if table_name == "df_class":
             query = """
             INSERT INTO class (cid, cname, ccode, cdesc, term, years, cred, csyllabus) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
-        elif table_name == "meeting":
+        elif table_name == "df_meeting":
             dataframe['starttime'] = pd.to_datetime('1970-01-01 ' + dataframe['starttime'])
             dataframe['endtime'] = pd.to_datetime('1970-01-01 ' + dataframe['endtime'])
             query = """
             INSERT INTO meeting (mid, ccode, starttime, endtime, cdays)
             VALUES (%s, %s, %s, %s, %s)
             """
-        elif table_name == "requisite":
+        elif table_name == "df_requisite":
             dataframe['prereq'] = dataframe['prereq'].map({0: False, 1: True})
             query = """
             INSERT INTO requisite (classid, reqid, prereq)
             VALUES (%s, %s, %s)
             """
-        elif table_name == "room":
+        elif table_name == "df_room":
             query = """
             INSERT INTO room (rid, building, room_number, capacity)
             VALUES (%s, %s, %s, %s)
             """
-        elif table_name == "section":
+        elif table_name == "df_section":
             query = """
             INSERT INTO section (sid, roomid, cid, mid, semester, years, capacity)
             VALUES (%s, %s, %s, %s, %s, %s, %s)

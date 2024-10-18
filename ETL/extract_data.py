@@ -91,25 +91,9 @@ def run_etl():
                     table_name = "meeting"
                 elif file_name == "sections.csv":
                     table_name = "section"
-                    new_order = [
-                        "sid",
-                        "room_id",
-                        "class_id",
-                        "meeting_id",
-                        "semester",
-                        "year",
-                        "capacity",
-                    ]
+                    new_order = ["sid","room_id","class_id","meeting_id","semester","year","capacity"]
                     df = df[new_order]
-                    df.columns = [
-                        "sid",
-                        "roomid",
-                        "cid",
-                        "mid",
-                        "semester",
-                        "years",
-                        "capacity",
-                    ]
+                    df.columns = ["sid","roomid","cid","mid","semester","years","capacity"]
 
                 processed_data = df.dropna()
                 dataframes.append((processed_data, table_name)) # type: ignore
@@ -142,38 +126,10 @@ def run_etl():
             df = extract_xml(file_path)
             table_name = "class"
             if df is not None:
-                new_order = [
-                    "classid",
-                    "name",
-                    "code",
-                    "description",
-                    "term",
-                    "years",
-                    "cred",
-                    "syllabus",
-                ]
+                new_order = ["classid","name","code","description","term","years","cred","syllabus"]
                 df = df[new_order]
-                df.columns = [
-                    "cid",
-                    "cname",
-                    "ccode",
-                    "cdesc",
-                    "term",
-                    "years",
-                    "cred",
-                    "csyllabus",
-                ]
+                df.columns = ["cid","cname","ccode","cdesc","term","years","cred","csyllabus"]
 
             dataframes.append((df, table_name))
 
     return dataframes
-
-
-if __name__ == "__main__":
-    dataframes = run_etl()
-
-    # Print each dataframe with its table name
-    for i, (df, table_name) in enumerate(dataframes):
-        print(f"DataFrame {i + 1} (Table: {table_name}):")
-        print(df)
-        print("\n" + "=" * 50 + "\n")  # Separator for clarity
