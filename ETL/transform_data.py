@@ -92,6 +92,27 @@ def clean_data():
     ################################################################################################
     # 4. Adjust 'MJ' meetings and remove overlaps
     ################################################################################################
+    '''
+    def timeTransfer(mid, dataFrame, timeChange, direction):
+        for index, row in dataFrame.iterrows():
+            if row['mid'] == mid:
+                meeting_index = index
+                dataFrame.at[meeting_index, 'starttime'] = row['starttime'] + timeChange
+                dataFrame.at[meeting_index, 'endtime'] = row['endtime'] + timeChange
+                break
+
+        if direction == 'backwards':
+            sliding_meetings_index = range(meeting_index)
+
+        else:
+            sliding_meetings_index = range(meeting_index + 1, len(dataFrame))
+        
+        for index in sliding_meetings_index:
+            dataFrame.at[index, 'starttime'] = dataFrame.at[index, 'starttime'] + timeChange
+            dataFrame.at[index, 'endtime'] = dataFrame.at[index, 'endtime'] + timeChange
+        
+
+    
     df_meeting["starttime"] = pd.to_datetime(
         df_meeting["starttime"], format="%H:%M:%S"
     ).dt.time
@@ -112,6 +133,25 @@ def clean_data():
     df_meeting = df_meeting[
         df_meeting["starttime"] <= pd.to_datetime("19:45", format="%H:%M").time()
     ]
+    
+        
+    # TODO TIME TRANSFER datetime.time - datetime.time error
+
+    # Manage overlaps
+    for index, row in df_meeting.iterrows():
+        if (row['cdays'] == 'MJ') \
+            & (((row['starttime'] >= pd.to_datetime("7:30", format="%H:%M").time()) & (row['starttime'] <= (pd.to_datetime("10:15", format="%H:%M").time()))) \
+            & ~((row['endtime'] >= pd.to_datetime("7:30", format="%H:%M").time()) & (row['endtime'] <= pd.to_datetime("10:15", format="%H:%M").time()))):
+            
+            timeTransfer(row['mid'], df_meeting,pd.to_datetime("10:15", format="%H:%M") - pd.to_datetime(row['endtime'].strftime('%H:%M'), format="%H:%M"), 'backwards')
+
+        elif (row['cdays'] == 'MJ') \
+            & (~((row['starttime'] >= pd.to_datetime("12:30", format="%H:%M").time()) & (row['starttime'] <= (pd.to_datetime("19:45", format="%H:%M").time()))) \
+            & ((row['endtime'] >= pd.to_datetime("12:30", format="%H:%M").time()) & (row['endtime'] <= pd.to_datetime("19:45", format="%H:%M").time()))):
+
+            timeTransfer(row['mid'], df_meeting, pd.to_datetime("12:30", format="%H:%M") - pd.to_datetime(row['starttime'].strftime('%H:%M'), format="%H:%M"), 'forwards')
+            '''
+
 
     ################################################################################################
     # 5. All ‘LWV’ sections have the correct hours
@@ -156,13 +196,14 @@ def clean_data():
     ################################################################################################
     # 8. Courses must be taught in the correct year and correct semester.
     ################################################################################################
-    '''
+    
     df_section_class = df_section.merge(df_class, on='cid')
+    df_section_class = df_section_class[df_section_class['cid'] != 37]
     years_x =  pd.to_numeric(df_section_class["years_x"], errors="coerce")
     # Boolean Conditions
-    First_semester = (df_section_class["term"] == "First Semester") & (df_section_class["semester"] == "Fall")
-    Second_semester = (df_section_class["term"] == "Second Semester") & (df_section_class["semester"] == "Spring")
-    According_Demand = (df_section_class["term"] == "According to demand") & (
+    First_semester = ((df_section_class["term"] == "First Semester" ) | (df_section_class["term"] == "First Semester, Second Semester")) & (df_section_class["semester"] == "Fall")
+    Second_semester = ((df_section_class["term"] == "Second Semester") | (df_section_class["term"] == "First Semester, Second Semester")) & (df_section_class["semester"] == "Spring")
+    According_Demand = (df_section_class["term"] == "According to Demand") & (
         (df_section_class["semester"] == "Fall")
         | (df_section_class["semester"] == "Spring")
         | (df_section_class["semester"] == "V1")
@@ -177,19 +218,19 @@ def clean_data():
         & ((years_x % 2) != 0)
     )
     Every_Year = (
-        (df_section_class["years_y"] == "Every Years")
-        & ((years_x % 2 != 0) | (years_x % 2 == 0))
+        (df_section_class["years_y"] == "Every Year")
     )
+    According_Demand_Year = (df_section_class["years_y"] == "According to Demand")
 
     # Filter the sections based on the boolean conditions
     df_section_class = df_section_class[
-        (First_semester | Second_semester | According_Demand)
+        ~((First_semester | Second_semester | According_Demand)
         &
-        (Even_year | Odd_year | Every_Year)
+        (Even_year | Odd_year | Every_Year | According_Demand_Year))
     ]
     #Update the section dataframe 
-    df_section = df_section[df_section["sid"].isin(df_section_class["sid"])]
-    '''
+    df_section = df_section[~df_section["sid"].isin(df_section_class["sid"])]
+    
     ################################################################################################
     # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
     ################################################################################################
@@ -240,6 +281,7 @@ def clean_data():
     # Print cuantity the count of tuples in all dataframes
     print(f"Dataframes Total Tuples: {len(df_class) + len(df_section) + len(df_meeting) + len(df_requisite) + len(df_room) + len(df_section)}")
   
+    print(df_requisite)
 
 
 if __name__ == "__main__":
