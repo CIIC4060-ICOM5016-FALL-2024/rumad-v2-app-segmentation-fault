@@ -21,7 +21,13 @@ def extract_db(file_path):
 # Function to extract data from XML File
 def extract_xml(file_path):
     try:
-        xmlFile = ET.parse(file_path)
+        with open(file_path, 'r') as file:
+            xml_content = file.read()
+        
+        # Wrap the content in a single root element
+        wrapped_content = f"<root>{xml_content}</root>"
+
+        xmlFile = ET.ElementTree(ET.fromstring(wrapped_content))
         rows = []
         col = []
         fullcycle = False
