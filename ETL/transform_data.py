@@ -65,8 +65,8 @@ def clean_data():
 
     # Detect overlapping sections (same room, same semester, same time)
     overlaps = []
-    for (roomid, semester, starttime), group in df_section_meeting.groupby(
-        ["roomid", "semester", "starttime"]
+    for (roomid, semester, starttime, cdays), group in df_section_meeting.groupby(
+        ["roomid", "semester", "starttime", "cdays"]
     ):
         for i in range(1, len(group)):
             previous = group.iloc[i - 1]
@@ -78,6 +78,7 @@ def clean_data():
                 and current["roomid"] == previous["roomid"]
                 and current["semester"] == previous["semester"]
                 and current["years"] == previous["years"]
+                and current["cdays"] == previous["cdays"]
             ):
                 # Add the section with the higher sid to the list of overlaps to delete
                 if current["sid"] > previous["sid"]:
@@ -155,13 +156,47 @@ def clean_data():
     ################################################################################################
     # 8. Courses must be taught in the correct year and correct semester.
     ################################################################################################
+    '''
+    df_section_class = df_section.merge(df_class, on='cid')
+    years_x =  pd.to_numeric(df_section_class["years_x"], errors="coerce")
+    # Boolean Conditions
+    First_semester = (df_section_class["term"] == "First Semester") & (df_section_class["semester"] == "Fall")
+    Second_semester = (df_section_class["term"] == "Second Semester") & (df_section_class["semester"] == "Spring")
+    According_Demand = (df_section_class["term"] == "According to demand") & (
+        (df_section_class["semester"] == "Fall")
+        | (df_section_class["semester"] == "Spring")
+        | (df_section_class["semester"] == "V1")
+        | (df_section_class["semester"] == "V2")
+    )  
+    Even_year = (
+        (df_section_class["years_y"] == "Even Years")
+        & ((years_x % 2) == 0)
+    )
+    Odd_year = (
+        (df_section_class["years_y"] == "Odd Years")
+        & ((years_x % 2) != 0)
+    )
+    Every_Year = (
+        (df_section_class["years_y"] == "Every Years")
+        & ((years_x % 2 != 0) | (years_x % 2 == 0))
+    )
 
+    # Filter the sections based on the boolean conditions
+    df_section_class = df_section_class[
+        (First_semester | Second_semester | According_Demand)
+        &
+        (Even_year | Odd_year | Every_Year)
+    ]
+    #Update the section dataframe 
+    df_section = df_section[df_section["sid"].isin(df_section_class["sid"])]
+    '''
     ################################################################################################
     # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
     ################################################################################################
     df_section = df_section[df_section["roomid"].isin(df_room["rid"])]
     df_section = df_section[df_section["mid"].isin(df_meeting["mid"])]
     df_section = df_section[df_section["cid"].isin(df_class["cid"])]
+    
 
     ################################################################################################
     # 10. Delete all section with Dummy class as Foreign Key
@@ -187,6 +222,24 @@ def clean_data():
 
     # print("Cleaned Requisite DataFrame:")
     # print(df_requisite)
+
+    # Total Tuples
+    
+    ultra_merge = df_section.merge(df_class, on='cid') \
+                        .merge(df_meeting, on='mid') \
+                        .merge(df_requisite, left_on = 'cid', right_on = 'classid') \
+                        .merge(df_room, left_on='roomid', right_on='rid')
+    
+    
+    df_class = ultra_merge[ultra_merge['cid'].isin(df_class['cid'])].drop_duplicates(subset=['cid'])
+    df_meeting = ultra_merge[ultra_merge['mid'].isin(df_class['mid'])].drop_duplicates(subset=['mid'])
+    df_requisite = ultra_merge[ultra_merge['classid'].isin(df_class['classid'])].drop_duplicates(subset=['reqid', 'cid'])
+    df_room = ultra_merge[ultra_merge['rid'].isin(df_class['rid'])].drop_duplicates(subset=['rid'])
+    df_section = df_section.drop_duplicates(subset=['sid'])
+
+    # Print cuantity the count of tuples in all dataframes
+    print(f"Dataframes Total Tuples: {len(df_class) + len(df_section) + len(df_meeting) + len(df_requisite) + len(df_room) + len(df_section)}")
+  
 
 
 if __name__ == "__main__":
