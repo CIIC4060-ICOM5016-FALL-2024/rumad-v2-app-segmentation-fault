@@ -6,8 +6,8 @@ def main():
     # Clean the data
     df_list = clean_data()
 
-    # for (df, table_name) in enumerate(df_list):
-    #     insert_to_db(df, table_name)
+    for df, table_name in df_list:
+        insert_to_db(df, table_name)
 
     # Load the data into the database
     # This is where you would write the code to load the data into the database

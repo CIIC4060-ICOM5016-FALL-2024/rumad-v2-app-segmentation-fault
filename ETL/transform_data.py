@@ -190,13 +190,18 @@ def clean_data():
     # print(df_meeting)
 
     # print("Cleaned Room DataFrame:")
-    print(df_room)
+    # print(df_room)
 
     # print("Cleaned Requisite DataFrame:")
     # print(df_requisite)
 
-    dataframes = [df_class, df_section, df_meeting, df_room, df_requisite]
-    return dataframes
+    return [
+        (df_room, "df_room"),
+        (df_meeting, "df_meeting"),
+        (df_class, "df_class"),
+        (df_requisite, "df_requisite"),
+        (df_section, "df_section"),
+    ]
 
 
 # if __name__ == "__main__":

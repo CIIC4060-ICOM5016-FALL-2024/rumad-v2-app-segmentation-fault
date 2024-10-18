@@ -16,6 +16,8 @@ def insert_to_db(dataframe, table_name):
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
         elif table_name == "df_meeting":
+            dataframe['starttime'] = dataframe['starttime'].astype(str)
+            dataframe['endtime'] = dataframe['endtime'].astype(str)
             dataframe['starttime'] = pd.to_datetime('1970-01-01 ' + dataframe['starttime'])
             dataframe['endtime'] = pd.to_datetime('1970-01-01 ' + dataframe['endtime'])
             query = """
