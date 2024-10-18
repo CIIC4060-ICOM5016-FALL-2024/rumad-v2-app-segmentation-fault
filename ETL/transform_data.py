@@ -196,10 +196,12 @@ def clean_data():
     ################################################################################################
     # 8. Courses must be taught in the correct year and correct semester.
     ################################################################################################
-    
     df_section_class = df_section.merge(df_class, on='cid')
-    df_section_class = df_section_class[df_section_class['cid'] != 37]
     years_x =  pd.to_numeric(df_section_class["years_x"], errors="coerce")
+
+    # Delete classes sections with Authorization from the Director of the Department needed
+    df_section_class = df_section_class[df_section_class['cname'] != 'Authorization from the Director of the Department']
+
     # Boolean Conditions
     First_semester = ((df_section_class["term"] == "First Semester" ) | (df_section_class["term"] == "First Semester, Second Semester")) & (df_section_class["semester"] == "Fall")
     Second_semester = ((df_section_class["term"] == "Second Semester") | (df_section_class["term"] == "First Semester, Second Semester")) & (df_section_class["semester"] == "Spring")
