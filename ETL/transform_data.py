@@ -41,6 +41,7 @@ def clean_data():
 
     ################################################################################################
     # 2. Two sections cannot be taught at the same hour in the same classroom.
+    # 3. A class cannot have the same section, they must be taught at different hours.
     ################################################################################################
 
     # Delete sections with duplicate 'sid'
@@ -86,10 +87,6 @@ def clean_data():
 
     # Remove overlapping sections with the higher sid
     df_section = df_section[~df_section["sid"].isin(overlaps)]
-
-    ################################################################################################
-    # 3. A class cannot have the same section, they must be taught at different hours.
-    ################################################################################################
 
     ################################################################################################
     # 4. Adjust 'MJ' meetings and remove overlaps
