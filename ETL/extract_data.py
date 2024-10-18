@@ -18,6 +18,7 @@ def extract_db(file_path):
     conn.close()
     return df
 
+
 # Function to extract data from XML File
 def extract_xml(file_path):
     try:
@@ -25,30 +26,31 @@ def extract_xml(file_path):
         rows = []
         col = []
         fullcycle = False
-        for courses in xmlFile.getroot(): 
+        for courses in xmlFile.getroot():
             temp = []
 
-            for l in courses: 
-                if(l.tag == "classes"): 
-                    for m in l: 
-                        temp.append(m.text) 
-                        if fullcycle == False:
+            for line in courses:
+                if line.tag == "classes":
+                    for m in line:
+                        temp.append(m.text)
+                        if fullcycle is False:
                             col.append(m.tag)
-                
+
                 else:
-                    temp.append(l.text)
-                    if fullcycle == False:
-                        col.append(l.tag) 
+                    temp.append(line.text)
+                    if fullcycle is False:
+                        col.append(line.tag)
 
             fullcycle = True
-            rows.append(temp) 
+            rows.append(temp)
 
-        data_frame = pd.DataFrame(rows,columns=col)
+        data_frame = pd.DataFrame(rows, columns=col)
         # syllabus_downloader("syllabuses",data_frame)
         return data_frame
-        
+
     except Exception as Exc:
         print("Exception opening the file, ", Exc)
+
 
 # Function to Dowlnoad Syllabuses
 def syllabus_downloader(folder_name, data_frame):
@@ -56,23 +58,22 @@ def syllabus_downloader(folder_name, data_frame):
     SYLLABUS_FOLDER = folder_name
 
     os.makedirs(SYLLABUS_FOLDER, exist_ok=True)
-    
-    try:  
+
+    try:
         urllist = data_frame["syllabus"].to_list()
         deplist = data_frame["name"].to_list()
         codelist = data_frame["code"].to_list()
         desclist = data_frame["description"].tolist()
-        for i in range (len(urllist)):
+        for i in range(len(urllist)):
             if urllist[i] == "None":
                 continue
             url = urllist[i]
-            desclist[i] = desclist[i].replace(" ","-")
+            desclist[i] = desclist[i].replace(" ", "-")
             file_name = deplist[i] + "-" + codelist[i] + "-" + desclist[i] + ".pdf"
-            urllib.request.urlretrieve(url,os.path.join(SYLLABUS_FOLDER, file_name))
+            urllib.request.urlretrieve(url, os.path.join(SYLLABUS_FOLDER, file_name))
 
     except Exception as Excd:
         print("Exception, cant dowload this file", Excd)
-
 
 
 def run_etl():
@@ -90,10 +91,26 @@ def run_etl():
                     table_name = "meeting"
                 elif file_name == "sections.csv":
                     table_name = "section"
-                    new_order = ["sid", "room_id", "class_id", "meeting_id", "semester", "year", "capacity"]
+                    new_order = [
+                        "sid",
+                        "room_id",
+                        "class_id",
+                        "meeting_id",
+                        "semester",
+                        "year",
+                        "capacity",
+                    ]
                     df = df[new_order]
-                    df.columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
-                    
+                    df.columns = [
+                        "sid",
+                        "roomid",
+                        "cid",
+                        "mid",
+                        "semester",
+                        "years",
+                        "capacity",
+                    ]
+
                 processed_data = df.dropna()
                 dataframes.append((processed_data, table_name)) # type: ignore
 
@@ -106,7 +123,7 @@ def run_etl():
                 dataframes.append((processed_data, table_name))
 
         elif file_name.endswith(".json"):
-            with open(file_path, 'r') as f:  
+            with open(file_path, "r") as f:
                 df = json.load(f)
                 if df is not None:
                     processed_data = pd.DataFrame(
@@ -120,19 +137,43 @@ def run_etl():
 
                     table_name = "room"
                     dataframes.append((processed_data, table_name))
-            
+
         elif file_name.endswith(".xml"):
             df = extract_xml(file_path)
             table_name = "class"
             if df is not None:
-                new_order = ["classid", "name", "code", "description", "term", "years", "cred", "syllabus"]
+                new_order = [
+                    "classid",
+                    "name",
+                    "code",
+                    "description",
+                    "term",
+                    "years",
+                    "cred",
+                    "syllabus",
+                ]
                 df = df[new_order]
-                df.columns = ["cid", "cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]
-                
+                df.columns = [
+                    "cid",
+                    "cname",
+                    "ccode",
+                    "cdesc",
+                    "term",
+                    "years",
+                    "cred",
+                    "csyllabus",
+                ]
+
             dataframes.append((df, table_name))
 
     return dataframes
 
 
 if __name__ == "__main__":
-    run_etl()
+    dataframes = run_etl()
+
+    # Print each dataframe with its table name
+    for i, (df, table_name) in enumerate(dataframes):
+        print(f"DataFrame {i + 1} (Table: {table_name}):")
+        print(df)
+        print("\n" + "=" * 50 + "\n")  # Separator for clarity
