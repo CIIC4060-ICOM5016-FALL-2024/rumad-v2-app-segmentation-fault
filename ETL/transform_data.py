@@ -159,6 +159,15 @@ def clean_data():
     df_section = df_section[df_section["mid"].isin(df_meeting["mid"])]
     df_section = df_section[df_section["cid"].isin(df_class["cid"])]
 
+    ################################################################################################
+    # 10. Delete all section with Dummy class as Foreign Key
+    ################################################################################################
+    dummy_class_ids = df_class[
+        df_class["cname"] == "Authorization from the Director of the Department"
+    ]["cid"].tolist()
+
+    df_section = df_section[~df_section["cid"].isin(dummy_class_ids)]
+
     # Print dataframes after cleaning (for verification)
     # print("Cleaned Class DataFrame:")
     # print(df_class)
