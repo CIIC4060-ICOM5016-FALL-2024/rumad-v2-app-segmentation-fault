@@ -1,12 +1,10 @@
+from extract_data import run_etl
+import pandas as pd
 import sys
 import os
 
 # Añadir el directorio raíz del proyecto al path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from numpy import insert
-from extract_data import run_etl
-import pandas as pd
 
 
 def update_names():
@@ -99,71 +97,93 @@ def clean_data():
     ################################################################################################
     # 4. Adjust 'MJ' meetings and remove overlaps
     ################################################################################################
-    """
-    def timeTransfer(mid, dataFrame, timeChange, direction):
-        for index, row in dataFrame.iterrows():
-            if row['mid'] == mid:
-                meeting_index = index
-                dataFrame.at[meeting_index, 'starttime'] = row['starttime'] + timeChange
-                dataFrame.at[meeting_index, 'endtime'] = row['endtime'] + timeChange
-                break
+    # Function to convert 'HH:MM:SS' format to minutes
+    def convert_to_minutes(time_str):
+        hours, minutes, _ = map(int, time_str.split(":"))
+        return hours * 60 + minutes
 
-        if direction == 'backwards':
-            sliding_meetings_index = range(meeting_index)
+    # Function to convert minutes back to 'HH:MM' format
+    def convert_to_hhmm(total_minutes):
+        hours = total_minutes // 60
+        minutes = total_minutes % 60
+        return f"{hours}:{minutes:02d}"
 
-        else:
-            sliding_meetings_index = range(meeting_index + 1, len(dataFrame))
-        
-        for index in sliding_meetings_index:
-            dataFrame.at[index, 'starttime'] = dataFrame.at[index, 'starttime'] + timeChange
-            dataFrame.at[index, 'endtime'] = dataFrame.at[index, 'endtime'] + timeChange
-        
+    # Convert 'starttime' and 'endtime' columns to minutes for easier manipulation
+    df_meeting[["starttime", "endtime"]] = df_meeting[
+        ["starttime", "endtime"]
+    ].applymap(convert_to_minutes)
 
-    
-    df_meeting["starttime"] = pd.to_datetime(
-        df_meeting["starttime"], format="%H:%M:%S"
-    ).dt.time
-    df_meeting["endtime"] = pd.to_datetime(
-        df_meeting["endtime"], format="%H:%M:%S"
-    ).dt.time
-
-    # Remove all 'MJ' meetings with start time after 10:15 AM and end time before 12:30 PM
+    # Filter out meetings on 'MJ' days between 10:15 and 12:30
     df_meeting = df_meeting[
         ~(
             (df_meeting["cdays"] == "MJ")
-            & (df_meeting["starttime"] > pd.to_datetime("10:15", format="%H:%M").time())
-            & (df_meeting["endtime"] < pd.to_datetime("12:30", format="%H:%M").time())
+            & (df_meeting["starttime"] > convert_to_minutes("10:15:00"))
+            & (df_meeting["endtime"] < convert_to_minutes("12:30:00"))
         )
     ]
 
+    # Function to find the index of the earliest and latest class based on condition
+    def find_class_index(condition):
+        try:
+            return df_meeting[condition].index[0]
+        except IndexError:
+            return -1
+
+    # Find earliest and latest class times between 10:15 and 12:30 on 'MJ' days
+    index_earliest_class_after_1030 = find_class_index(
+        (df_meeting["cdays"] == "MJ")
+        & (df_meeting["starttime"] > convert_to_minutes("10:15:00"))
+        & (df_meeting["starttime"] < convert_to_minutes("12:30:00"))
+    )
+
+    index_latest_class_before_1230 = find_class_index(
+        (df_meeting["cdays"] == "MJ")
+        & (df_meeting["endtime"] < convert_to_minutes("12:30:00"))
+        & (df_meeting["endtime"] > convert_to_minutes("10:15:00"))
+    )
+
+    # Adjust class timings if valid indices are found
+    if index_earliest_class_after_1030 != -1:
+        delta_time = (
+            convert_to_minutes("12:30:00")
+            - df_meeting.loc[index_earliest_class_after_1030, "starttime"]
+        )
+        df_meeting.loc[
+            (df_meeting["cdays"] == "MJ")
+            & (df_meeting.index >= index_earliest_class_after_1030),
+            ["starttime", "endtime"],
+        ] += delta_time
+
+    if index_latest_class_before_1230 != -1:
+        delta_time = df_meeting.loc[
+            index_earliest_class_after_1030, "endtime"
+        ] - convert_to_minutes("10:15:00")
+        df_meeting.loc[
+            (df_meeting["cdays"] == "MJ")
+            & (df_meeting.index <= index_latest_class_before_1230),
+            ["starttime", "endtime"],
+        ] -= delta_time
+
     # Remove all meetings that start after 19:45
-    df_meeting = df_meeting[
-        df_meeting["starttime"] <= pd.to_datetime("19:45", format="%H:%M").time()
-    ]
-    
-        
-    # TODO TIME TRANSFER datetime.time - datetime.time error
+    df_meeting = df_meeting[df_meeting["starttime"] <= convert_to_minutes("19:45:00")]
 
-    # Manage overlaps
-    for index, row in df_meeting.iterrows():
-        if (row['cdays'] == 'MJ') \
-            & (((row['starttime'] >= pd.to_datetime("7:30", format="%H:%M").time()) & (row['starttime'] <= (pd.to_datetime("10:15", format="%H:%M").time()))) \
-            & ~((row['endtime'] >= pd.to_datetime("7:30", format="%H:%M").time()) & (row['endtime'] <= pd.to_datetime("10:15", format="%H:%M").time()))):
-            
-            timeTransfer(row['mid'], df_meeting,pd.to_datetime("10:15", format="%H:%M") - pd.to_datetime(row['endtime'].strftime('%H:%M'), format="%H:%M"), 'backwards')
+    # Convert 'starttime' and 'endtime' columns back to 'HH:MM' format
+    df_meeting[["starttime", "endtime"]] = df_meeting[
+        ["starttime", "endtime"]
+    ].applymap(convert_to_hhmm)
 
-        elif (row['cdays'] == 'MJ') \
-            & (~((row['starttime'] >= pd.to_datetime("12:30", format="%H:%M").time()) & (row['starttime'] <= (pd.to_datetime("19:45", format="%H:%M").time()))) \
-            & ((row['endtime'] >= pd.to_datetime("12:30", format="%H:%M").time()) & (row['endtime'] <= pd.to_datetime("19:45", format="%H:%M").time()))):
+    # Convert 'starttime' and 'endtime' back to datetime.time format for display purposes
+    df_meeting["starttime"] = pd.to_datetime(
+        df_meeting["starttime"], format="%H:%M"
+    ).dt.time
+    df_meeting["endtime"] = pd.to_datetime(
+        df_meeting["endtime"], format="%H:%M"
+    ).dt.time
 
-            timeTransfer(row['mid'], df_meeting, pd.to_datetime("12:30", format="%H:%M") - pd.to_datetime(row['starttime'].strftime('%H:%M'), format="%H:%M"), 'forwards')
-            """
+    print(f"Length of df_section: {len(df_section)}")
 
     ################################################################################################
     # 5. All ‘LWV’ sections have the correct hours
-    ################################################################################################
-
-    ################################################################################################
     # 6. ‘LWV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
     ################################################################################################
     df_meeting.loc[df_meeting["cdays"] == "LWV", "duration"] = 50
@@ -230,15 +250,18 @@ def clean_data():
     Every_Year = df_section_class["years_y"] == "Every Year"
     According_Demand_Year = df_section_class["years_y"] == "According to Demand"
 
-    # Filter the sections based on the boolean conditions
-    df_section_class = df_section_class[
-        ~(
-            (First_semester | Second_semester | According_Demand)
-            & (Even_year | Odd_year | Every_Year | According_Demand_Year)
-        )
-    ]
+    # Combine the boolean conditions into a single series
+    combined_conditions = (First_semester | Second_semester | According_Demand) & (
+        Even_year | Odd_year | Every_Year | According_Demand_Year
+    )
+
+    # Ensure the combined_conditions series has the same index as df_section_class
+    combined_conditions = combined_conditions.reindex(df_section_class.index)
+
+    # Filter the sections based on the combined boolean conditions
+    df_section_class = df_section_class[combined_conditions]
     # Update the section dataframe
-    df_section = df_section[~df_section["sid"].isin(df_section_class["sid"])]
+    df_section = df_section[df_section["sid"].isin(df_section_class["sid"])]
 
     ################################################################################################
     # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
@@ -255,34 +278,6 @@ def clean_data():
     ]["cid"].tolist()
 
     df_section = df_section[~df_section["cid"].isin(dummy_class_ids)]
-
-    # Total Tuples
-
-    # ultra_merge = (
-    #     df_section.merge(df_class, on="cid")
-    #     .merge(df_meeting, on="mid")
-    #     .merge(df_requisite, left_on="cid", right_on="classid")
-    #     .merge(df_room, left_on="roomid", right_on="rid")
-    # )
-
-    # df_class = ultra_merge[ultra_merge["cid"].isin(df_class["cid"])].drop_duplicates(
-    #     subset=["cid"]
-    # )
-    # df_meeting = ultra_merge[ultra_merge["mid"].isin(df_class["mid"])].drop_duplicates(
-    #     subset=["mid"]
-    # )
-    # df_requisite = ultra_merge[
-    #     ultra_merge["classid"].isin(df_class["classid"])
-    # ].drop_duplicates(subset=["reqid", "cid"])
-    # df_room = ultra_merge[ultra_merge["rid"].isin(df_class["rid"])].drop_duplicates(
-    #     subset=["rid"]
-    # )
-    # df_section = df_section.drop_duplicates(subset=["sid"])
-
-    # Print cuantity the count of tuples in all dataframes
-    # print(
-    #     f"Dataframes Total Tuples: {len(df_class) + len(df_section) + len(df_meeting) + len(df_requisite) + len(df_room) + len(df_section)}"
-    # )
 
     # Print dataframes after cleaning (for verification)
     # print(df_class)
