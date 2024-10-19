@@ -10,12 +10,12 @@ def insert_to_db(dataframe, table_name):
         conn = pg.connect(url)
         cursor = conn.cursor()
         
-        if table_name == "df_class":
+        if table_name == "class":
             query = """
             INSERT INTO class (cid, cname, ccode, cdesc, term, years, cred, csyllabus) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
-        elif table_name == "df_meeting":
+        elif table_name == "meeting":
             dataframe['starttime'] = dataframe['starttime'].astype(str)
             dataframe['endtime'] = dataframe['endtime'].astype(str)
             dataframe['starttime'] = pd.to_datetime('1970-01-01 ' + dataframe['starttime'])
@@ -24,22 +24,30 @@ def insert_to_db(dataframe, table_name):
             INSERT INTO meeting (mid, ccode, starttime, endtime, cdays)
             VALUES (%s, %s, %s, %s, %s)
             """
-        elif table_name == "df_requisite":
+        elif table_name == "requisite":
             dataframe['prereq'] = dataframe['prereq'].map({0: False, 1: True})
             query = """
             INSERT INTO requisite (classid, reqid, prereq)
             VALUES (%s, %s, %s)
             """
-        elif table_name == "df_room":
+        elif table_name == "room":
             query = """
             INSERT INTO room (rid, building, room_number, capacity)
             VALUES (%s, %s, %s, %s)
             """
-        elif table_name == "df_section":
+        elif table_name == "section":
             query = """
             INSERT INTO section (sid, roomid, cid, mid, semester, years, capacity)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             """
+        elif table_name == "syllabus":
+            query = """
+            INSERT INTO syllabus (chunkid, courseid, embedding_text, chunk)
+            VALUES (%s, %s, %s, %s)
+            """
+        else:
+            print("Table name not recognized")
+            return
         
         # Ejecutar la inserción de los datos
         cursor.executemany(query, dataframe.values) # type: ignore

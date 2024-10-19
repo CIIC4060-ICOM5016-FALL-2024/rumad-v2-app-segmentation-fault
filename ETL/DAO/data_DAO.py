@@ -1,5 +1,5 @@
 import psycopg2
-from db_config import pg_config
+from DAO.db_config import pg_config
 
 class DAO:
     def __init__(self):

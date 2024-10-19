@@ -292,11 +292,11 @@ def clean_data():
     # print(df_requisite)
 
     return [
-        (df_room, "df_room"),
-        (df_meeting, "df_meeting"),
-        (df_class, "df_class"),
-        (df_requisite, "df_requisite"),
-        (df_section, "df_section"),
+        (df_room, "room"),
+        (df_meeting, "meeting"),
+        (df_class, "class"),
+        (df_requisite, "requisite"),
+        (df_section, "section"),
     ]
 
 
