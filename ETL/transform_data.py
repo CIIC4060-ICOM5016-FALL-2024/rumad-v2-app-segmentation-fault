@@ -3,7 +3,7 @@ import pandas as pd
 import sys
 import os
 
-# Añadir el directorio raíz del proyecto al path
+# Add the parent directory to the sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def update_names():

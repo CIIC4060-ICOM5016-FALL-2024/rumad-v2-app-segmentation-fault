@@ -10,7 +10,7 @@ class DAO:
         db_port = pg_config['port']
         
         try:
-            # Conexión a la base de datos usando psycopg2
+            # Conection to the database
             self.conn = psycopg2.connect(
                 host=db_host,
                 database=db_name,
@@ -18,7 +18,8 @@ class DAO:
                 password=db_password,
                 port=db_port
             )
-            self.cursor = self.conn.cursor()  # Crear un cursor para ejecutar consultas
+            # Create a cursor
+            self.cursor = self.conn.cursor() 
             print("Database connection established successfully.")
         
         except psycopg2.DatabaseError as error:
@@ -27,7 +28,7 @@ class DAO:
     
     def initialize_schema(self):
         try:
-            # Leer y ejecutar el schema.sql
+            # Read the schema SQL file
             with open("schema.sql", "r") as file:
                 sql_query = file.read()
 
@@ -37,10 +38,10 @@ class DAO:
         
         except Exception as e:
             print(f"Error executing schema SQL: {e}")
-            self.conn.rollback()  # Hacer rollback en caso de error
+            self.conn.rollback()  # Rollback the transaction in case of an error
 
     def close(self):
-        # Cerrar el cursor y la conexión
+        # Close the cursor and connection
         if self.cursor:
             self.cursor.close()
         if self.conn:

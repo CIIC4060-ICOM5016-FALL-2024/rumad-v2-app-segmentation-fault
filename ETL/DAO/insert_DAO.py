@@ -3,13 +3,16 @@ import psycopg2 as pg
 import pandas as pd
 
 def insert_to_db(dataframe, table_name):
+    # Create the connection string
     url = "dbname=%s password=%s user=%s host=%s port=%s" % \
           (pg_config['dbname'], pg_config['password'], pg_config['user'], pg_config['host'], pg_config['port'])
     
+    # Connect to the database and insert the data
     try:
         conn = pg.connect(url)
         cursor = conn.cursor()
         
+        # Create the query based on the table name
         if table_name == "class":
             query = """
             INSERT INTO class (cid, cname, ccode, cdesc, term, years, cred, csyllabus) 
@@ -49,20 +52,20 @@ def insert_to_db(dataframe, table_name):
             print("Table name not recognized")
             return
         
-        # Ejecutar la inserción de los datos
+        # Execute the query
         cursor.executemany(query, dataframe.values) # type: ignore
         
-        # Confirmar la transacción
+        # Commit the transaction
         conn.commit()
         print(f"{cursor.rowcount} records inserted successfully into {table_name} table")
 
     except Exception as e:
-        # Si ocurre un error, imprimir el mensaje y hacer rollback
+        # Rollback the transaction in case of an error
         print(f"Error inserting data into {table_name} table: {e}")
         conn.rollback() # type: ignore
     
     finally:
-        # Asegurarse de cerrar el cursor y la conexión
+        # Close the cursor and connection
         if cursor: # type: ignore
             cursor.close()
         if conn: # type: ignore
