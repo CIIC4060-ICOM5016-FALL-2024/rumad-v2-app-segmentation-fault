@@ -41,13 +41,14 @@ CREATE TABLE IF NOT EXISTS "section" (
   FOREIGN KEY ("cid") REFERENCES "class"("cid"),
   FOREIGN KEY ("mid") REFERENCES "meeting"("mid")
 );
+-- VECTOR EXTENSION
+CREATE EXTENSION IF NOT EXISTS vector;
 
 -- SYLLABUS TABLE
 CREATE TABLE IF NOT EXISTS "syllabus" (
   "chunkid" SERIAL PRIMARY KEY,
   "courseid" INTEGER,
-  -- JEAN CHEQUEA
-  "embedding_text" JSON,
+  "embedding_text" vector(500),
   "chunk" VARCHAR(255),
 
   FOREIGN KEY ("courseid") REFERENCES "class"("cid")
