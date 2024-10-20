@@ -283,9 +283,9 @@ def clean_data():
     df_section = df_section[~df_section["cid"].isin(dummy_class_ids)]
     
     return [
-        (df_section, "section"),
         (df_class, "class"),
         (df_meeting, "meeting"),
         (df_room, "room"),
         (df_requisite, "requisite"),
+        (df_section, "section"),
     ]
