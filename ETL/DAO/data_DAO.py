@@ -46,7 +46,6 @@ class DAO:
             self.cursor.close()
         if self.conn:
             self.conn.close()
-        print("Database connection closed.")
 
 if __name__ == "__main__":
     dao = DAO()

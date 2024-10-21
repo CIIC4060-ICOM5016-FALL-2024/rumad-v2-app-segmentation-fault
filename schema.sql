@@ -1,11 +1,11 @@
 -- COURSES TABLE
 CREATE TABLE IF NOT EXISTS "class" (
   "cid" SERIAL PRIMARY KEY,
-  "cname" VARCHAR(255),
-  "ccode" VARCHAR(255),
-  "cdesc" VARCHAR(255),
-  "term" VARCHAR(255),
-  "years" VARCHAR(255),
+  "cname" VARCHAR(50),
+  "ccode" VARCHAR(4),
+  "cdesc" VARCHAR(100),
+  "term" VARCHAR(35),
+  "years" VARCHAR(20),
   "cred" INTEGER NOT NULL,
   "csyllabus" VARCHAR(255)
 );
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "class" (
 -- ROOM TABLE
 CREATE TABLE IF NOT EXISTS "room" (
     "rid" SERIAL PRIMARY KEY,
-    "building" VARCHAR(255),
+    "building" VARCHAR(10),
     "room_number" VARCHAR,
     "capacity" INTEGER
 );
@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS "room" (
 -- MEETING TABLE
 CREATE TABLE IF NOT EXISTS "meeting" (
     "mid" SERIAL PRIMARY KEY,
-    "ccode" VARCHAR(10),
-    "starttime" TIMESTAMP,
-    "endtime" TIMESTAMP,
+    "ccode" VARCHAR(4),
+    "starttime" TIME,
+    "endtime" TIME,
     "cdays" VARCHAR(5) 
 );
 
@@ -33,14 +33,15 @@ CREATE TABLE IF NOT EXISTS "section" (
   "roomid" INTEGER,
   "cid" INTEGER,
   "mid" INTEGER,
-  "semester" VARCHAR(255),
-  "years" VARCHAR(255),
+  "semester" VARCHAR(10),
+  "years" VARCHAR(4),
   "capacity" INTEGER,
 
   FOREIGN KEY ("roomid") REFERENCES "room"("rid"),
   FOREIGN KEY ("cid") REFERENCES "class"("cid"),
   FOREIGN KEY ("mid") REFERENCES "meeting"("mid")
 );
+
 -- VECTOR EXTENSION
 CREATE EXTENSION IF NOT EXISTS vector;
 
