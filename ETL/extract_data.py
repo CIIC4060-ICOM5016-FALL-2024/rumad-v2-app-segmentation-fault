@@ -22,9 +22,9 @@ def extract_db(file_path):
 # Function to extract data from XML File
 def extract_xml(file_path):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, "r") as file:
             xml_content = file.read()
-        
+
         # Wrap the content in a single root element
         wrapped_content = f"<root>{xml_content}</root>"
 
@@ -51,7 +51,7 @@ def extract_xml(file_path):
             rows.append(temp)
 
         data_frame = pd.DataFrame(rows, columns=col)
-        # syllabus_downloader("syllabuses",data_frame)
+        syllabus_downloader("syllabuses", data_frame)
         return data_frame
 
     except Exception as Exc:
@@ -97,12 +97,28 @@ def run_etl():
                     table_name = "meeting"
                 elif file_name == "sections.csv":
                     table_name = "section"
-                    new_order = ["sid","room_id","class_id","meeting_id","semester","year","capacity"]
+                    new_order = [
+                        "sid",
+                        "room_id",
+                        "class_id",
+                        "meeting_id",
+                        "semester",
+                        "year",
+                        "capacity",
+                    ]
                     df = df[new_order]
-                    df.columns = ["sid","roomid","cid","mid","semester","years","capacity"]
+                    df.columns = [
+                        "sid",
+                        "roomid",
+                        "cid",
+                        "mid",
+                        "semester",
+                        "years",
+                        "capacity",
+                    ]
 
                 processed_data = df.dropna()
-                dataframes.append((processed_data, table_name)) # type: ignore
+                dataframes.append((processed_data, table_name))  # type: ignore
 
         elif file_name.endswith(".db"):
             df = extract_db(file_path)
@@ -132,9 +148,27 @@ def run_etl():
             df = extract_xml(file_path)
             table_name = "class"
             if df is not None:
-                new_order = ["classid","name","code","description","term","years","cred","syllabus"]
+                new_order = [
+                    "classid",
+                    "name",
+                    "code",
+                    "description",
+                    "term",
+                    "years",
+                    "cred",
+                    "syllabus",
+                ]
                 df = df[new_order]
-                df.columns = ["cid","cname","ccode","cdesc","term","years","cred","csyllabus"]
+                df.columns = [
+                    "cid",
+                    "cname",
+                    "ccode",
+                    "cdesc",
+                    "term",
+                    "years",
+                    "cred",
+                    "csyllabus",
+                ]
 
             dataframes.append((df, table_name))
 
