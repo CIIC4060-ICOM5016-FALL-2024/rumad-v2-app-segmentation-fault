@@ -17,7 +17,7 @@ class SectionDAO:
 
     def getAllSection(self):
         cursor = self.conn.cursor()
-        query = "SELECT sid, roomid, cid, mid, semester, years, capacity FROM section LIMIT 5;"
+        query = "SELECT sid, roomid, cid, mid, semester, years, capacity FROM section;"
         cursor.execute(query)
         result = []
         for row in cursor:
