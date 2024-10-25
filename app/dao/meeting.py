@@ -14,3 +14,12 @@ class MeetingDAO:
         )
 
         self.conn = pg.connect(url)
+        
+    def getAllMeeting(self):
+        cursor = self.conn.cursor()
+        query = "SELECT mid, ccode, starttime, endtime, cdays FROM meeting;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
