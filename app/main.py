@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from handler.section import SectionHandler
+from handler.course import ClassHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -29,7 +30,7 @@ def room():
 
 @app.route("/segmentation_fault/class")
 def courses():
-    pass
+    return ClassHandler.getAllClass()
 
 
 @app.route("/segmentation_fault/requisite")
