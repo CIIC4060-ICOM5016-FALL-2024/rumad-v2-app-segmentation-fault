@@ -27,7 +27,7 @@ class ClassDAO:
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
-        cursor.execute(query, (cname, ccode, cdesc, term, years, cred, csyllabus), [cname, ccode, cdesc, term, years, cred, csyllabus])
+        cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus])
         cid = cursor.fetchone()[0]
         self.conn.commit()
         return cid
