@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+from handler.room import RoomHandler
 from handler.section import SectionHandler
 
 app = Flask(__name__)
@@ -24,7 +25,7 @@ def meeting():
 
 @app.route("/segmentation_fault/room")
 def room():
-    pass
+    return RoomHandler().getAllRoom()
 
 
 @app.route("/segmentation_fault/class")
