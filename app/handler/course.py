@@ -23,3 +23,17 @@ class ClassHandler:
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
+    
+    def insertClass(self, class_json):
+        dao = ClassDAO()
+        cname = class_json['cname']
+        ccode = class_json['ccode']
+        cdesc = class_json['cdesc']
+        term = class_json['term']
+        years = class_json['years']
+        cred = class_json['cred']
+        csyllabus = class_json['csyllabus']
+        cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
+        temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+        return jsonify(self.mapToDict(temp)), 201
+        

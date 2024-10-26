@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
 from handler.section import SectionHandler
 from handler.course import ClassHandler
 
@@ -34,6 +33,7 @@ def courses():
         return ClassHandler().getAllClass()
     elif request.method == "POST":
         pass
+        #return ClassHandler().insertClass(request.json)
     elif request.method == "PUT":
         pass
     elif request.method == "DELETE":
