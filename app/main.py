@@ -27,6 +27,9 @@ def meeting():
 def room():
     return RoomHandler().getAllRoom()
 
+@app.route("/segmentation_fault/room/<int:rid>")
+def getRoomByRID(rid):
+    return RoomHandler().getRoomByRid(rid)
 
 @app.route("/segmentation_fault/class")
 def courses():

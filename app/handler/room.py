@@ -20,3 +20,13 @@ class RoomHandler:
             result.append(self.mapToDict(item))
         return jsonify(result)
 
+    def getRoomByRid(self, rid):
+        dao = RoomDAO()
+        result = dao.getRoomByRid(rid)
+        if result:
+            return jsonify(self.mapToDict(result))
+        else:
+            return "Not Found", 404
+
+
+

@@ -17,8 +17,14 @@ class RoomDAO:
     def getAllRoom(self):
         result = []
         cursor = self.conn.cursor()
-        query = "SELECT rid, building, room_number, capacity FROM room;"
+        query = "SELECT * FROM room;"
         cursor.execute(query)
         for row in cursor:
             result.append(row)
         return result
+
+    def  getRoomByRid(self, rid):
+        cursor = self.conn.cursor()
+        query = "SELECT * FROM room WHERE rid=%s"
+        cursor.execute(query, (rid,))
+        return cursor.fetchone()
