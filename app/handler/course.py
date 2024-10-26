@@ -1,4 +1,4 @@
-from Flask import jsonify
+from flask import jsonify
 from dao.course import ClassDAO
 
 
@@ -18,7 +18,7 @@ class ClassHandler:
     def getAllClass(self):
         result = []
         dao = ClassDAO()
-        temp = dao.getAllClass
+        temp = dao.getAllClass()
 
         for row in temp:
             result.append(self.mapToDict(row))

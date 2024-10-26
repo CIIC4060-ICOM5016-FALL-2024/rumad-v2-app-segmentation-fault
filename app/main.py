@@ -30,7 +30,7 @@ def room():
 
 @app.route("/segmentation_fault/class")
 def courses():
-    return ClassHandler.getAllClass()
+    return ClassHandler().getAllClass()
 
 
 @app.route("/segmentation_fault/requisite")
