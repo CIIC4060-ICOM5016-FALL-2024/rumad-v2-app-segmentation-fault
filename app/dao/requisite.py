@@ -14,3 +14,12 @@ class RequisiteDAO:
         )
 
         self.conn = pg.connect(url)
+        
+    def getAllRequisite(self):
+        cursor = self.conn.cursor()
+        query = "SELECT classid, reqid, prereq FROM requisite;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result   

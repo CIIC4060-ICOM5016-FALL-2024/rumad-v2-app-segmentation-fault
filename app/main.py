@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
+from handler.requisite import RequisiteHandler
 from handler.section import SectionHandler
 
 app = Flask(__name__)
@@ -34,7 +35,7 @@ def courses():
 
 @app.route("/segmentation_fault/requisite")
 def requisite():
-    pass
+    return RequisiteHandler().getAllRequisite()
 
 
 if __name__ == "__main__":
