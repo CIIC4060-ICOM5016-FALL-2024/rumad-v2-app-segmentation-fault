@@ -14,3 +14,12 @@ class ClassDAO:
         )
 
         self.conn = pg.connect(url)
+
+    def getAllClass(self):
+            cursor = self.conn.cursor()
+            query = "SELECT cid, cname, ccode, cdesc, term, years, cred, csyllabus FROM class;"
+            cursor.execute(query)
+            result = []
+            for row in cursor:
+                result.append(row)
+            return result
