@@ -24,6 +24,13 @@ class ClassDAO:
             result.append(row)
         return result
     
+    def getClassById(self, cid):
+        cursor = self.conn.cursor()
+        query = "SELECT cid, cname, ccode, cdesc, term, years, cred, csyllabus FROM class WHERE cid = %s;"
+        cursor.execute(query, [cid])
+        result = cursor.fetchone()
+        return result
+    
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"

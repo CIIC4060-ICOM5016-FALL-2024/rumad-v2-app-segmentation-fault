@@ -24,6 +24,15 @@ class ClassHandler:
             result.append(self.mapToDict(row))
         return jsonify(result)
     
+    def getclassById(self, cid):
+        dao = ClassDAO()
+        temp = dao.getClassById(cid)
+        if not temp:
+            return jsonify(Error="Class Not Found"), 404
+        else:
+            result = self.mapToDict(temp)
+            return jsonify(result)
+    
     def insertClass(self, class_json):
         dao = ClassDAO()
         cname = class_json['cname']

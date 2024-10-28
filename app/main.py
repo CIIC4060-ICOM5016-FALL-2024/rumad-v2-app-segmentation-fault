@@ -27,17 +27,17 @@ def room():
     pass
 
 
-@app.route("/segmentation_fault/class", methods=["GET", "POST", "PUT", "DELETE"])
+@app.route("/segmentation_fault/class", methods=["GET", "POST"])
 def courses():
     if request.method == "GET":
         return ClassHandler().getAllClass()
     elif request.method == "POST":
-        pass
-        #return ClassHandler().insertClass(request.json)
-    elif request.method == "PUT":
-        pass
-    elif request.method == "DELETE":
-        pass
+        return ClassHandler().insertClass(request.json)
+    
+@app.route("/segmentation_fault/class/<int:sid>")
+def courses(cid):
+    return ClassHandler().getClassById(cid)
+
     
 @app.route("/segmentation_fault/requisite")
 def requisite():
