@@ -36,7 +36,7 @@ def courses():
     
 @app.route("/segmentation_fault/class/<int:sid>")
 def courses(cid):
-    return ClassHandler().getClassById(cid)
+    return ClassHandler().getclassById(cid)
 
     
 @app.route("/segmentation_fault/requisite")
