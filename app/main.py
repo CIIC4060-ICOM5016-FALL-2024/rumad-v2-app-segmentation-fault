@@ -34,9 +34,12 @@ def courses():
     elif request.method == "POST":
         return ClassHandler().insertClass(request.json)
     
-@app.route("/segmentation_fault/class/<int:sid>")
-def courses(cid):
-    return ClassHandler().getclassById(cid)
+@app.route("/segmentation_fault/class/<int:cid>", methods=["GET", "PUT"])
+def courses2(cid):
+    if request.method == "GET":
+        return ClassHandler().getclassById(cid)
+    elif request.method == "PUT":
+        return ClassHandler().updateClass(cid, request.json)
 
     
 @app.route("/segmentation_fault/requisite")

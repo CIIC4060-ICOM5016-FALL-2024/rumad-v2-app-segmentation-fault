@@ -45,4 +45,21 @@ class ClassHandler:
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
         temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
         return jsonify(self.mapToDict(temp)), 201
+    
+    def updateClass(self, cid, class_json):
+        #Verify what atributtes are going to be updated
+        dao = ClassDAO()
+        cname = class_json['cname']
+        ccode = class_json['ccode']
+        cdesc = class_json['cdesc']
+        term = class_json['term']
+        years = class_json['years']
+        cred = class_json['cred']
+        csyllabus = class_json['csyllabus']
+        dao.updateClass(cid, cname,ccode, cdesc, term, years, cred, csyllabus)
+        temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+        return jsonify(self.mapToDict(temp)), 200
+    
+                               
+                           
         
