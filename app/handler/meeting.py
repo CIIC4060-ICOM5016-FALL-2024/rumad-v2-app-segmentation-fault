@@ -21,3 +21,12 @@ class MeetingHandler:
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
+
+    def getMeetingByMid(self, mid):
+        dao = MeetingDAO()
+        result = dao.getMeetingByMid(mid)
+        
+        if result is not None:
+            return jsonify(self.mapToDict(result))
+        else:
+            return "Not Found", 404

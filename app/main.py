@@ -23,17 +23,21 @@ def meeting():
     return MeetingHandler().getAllMeeting()
 
 
-@app.route("/segmentation_fault/room")
+@app.route("/segmentation_fault/meeting/<int:mid>")
+def getMeetingByMid(mid):
+    return MeetingHandler().getMeetingByMid(mid)
+
+@app.route("/segmentation_fault/room") # type: ignore
 def room():
     pass
 
 
-@app.route("/segmentation_fault/class")
+@app.route("/segmentation_fault/class") # type: ignore
 def courses():
     pass
 
 
-@app.route("/segmentation_fault/requisite")
+@app.route("/segmentation_fault/requisite") # type: ignore
 def requisite():
     pass
 

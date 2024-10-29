@@ -1,3 +1,4 @@
+from calendar import c
 from config.db_config import pg_config
 import psycopg2 as pg
 
@@ -22,4 +23,11 @@ class MeetingDAO:
         result = []
         for row in cursor:
             result.append(row)
+        return result
+    
+    def getMeetingByMid(self, mid):
+        cursor = self.conn.cursor()
+        query = "SELECT mid, ccode, starttime, endtime, cdays FROM meeting WHERE mid = %s;"
+        cursor.execute(query, (mid,))
+        result = cursor.fetchone()
         return result
