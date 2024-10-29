@@ -2,3 +2,4 @@ venv/
 DB_PROJECT_FALL24/
 *.pyc
 .vscode
+.idea
