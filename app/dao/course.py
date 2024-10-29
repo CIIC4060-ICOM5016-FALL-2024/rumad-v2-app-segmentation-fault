@@ -42,6 +42,7 @@ class ClassDAO:
         return cid
     
     def updateClass(self, cid, cname, ccode, cdesc, term, years, cred, csyllabus):
+        #TODO Verify if class with cid exists if not return a message
         cursor = self.conn.cursor()
         query = "UPDATE class SET cname = %s, ccode = %s, cdesc = %s, term = %s, years = %s, cred = %s, csyllabus = %s WHERE cid = %s;"
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus, cid])
