@@ -1,5 +1,5 @@
 ## Hosted REST API address
-`https://rumad-db-5dd7ab118ab8.herokuapp.com/`
+https://rumad-db-5dd7ab118ab8.herokuapp.com/
 
 ## Heroku Credentials
 
