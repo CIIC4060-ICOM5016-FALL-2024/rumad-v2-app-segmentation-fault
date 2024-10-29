@@ -33,7 +33,9 @@ class ClassDAO:
     
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
+        reserial_query = "SELECT setval('class_cid_seq', (SELECT MAX(cid) FROM class));"
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
+        cursor.execute(reserial_query)
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus])
         cid = cursor.fetchone()[0]
         self.conn.commit()
