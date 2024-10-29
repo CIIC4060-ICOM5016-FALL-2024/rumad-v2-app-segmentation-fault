@@ -44,7 +44,6 @@ def courses2(cid):
     elif request.method == "PUT":
         return ClassHandler().updateClass(cid, request.json)
 
-    
 @app.route("/segmentation_fault/requisite")
 def requisite():
     pass
@@ -52,3 +51,5 @@ def requisite():
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+
