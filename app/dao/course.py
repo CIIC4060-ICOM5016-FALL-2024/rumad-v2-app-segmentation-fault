@@ -47,6 +47,6 @@ class ClassDAO:
         query = "UPDATE class SET cname = %s, ccode = %s, cdesc = %s, term = %s, years = %s, cred = %s, csyllabus = %s WHERE cid = %s;"
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus, cid])
         self.conn.commit()
-        return cid
+        return None
 
          
