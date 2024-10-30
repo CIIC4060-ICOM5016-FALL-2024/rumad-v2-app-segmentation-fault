@@ -39,9 +39,12 @@ def courses():
     pass
 
 
-@app.route("/segmentation_fault/requisite")
+@app.route("/segmentation_fault/requisite", methods = ['GET', 'POST'])
 def requisite():
-    return RequisiteHandler().getAllRequisite()
+    if request.method == 'GET':
+        return RequisiteHandler().getAllRequisite()
+    else:
+        return RequisiteHandler().insertRequisite(request.json)
 
 
 @app.route("/segmentation_fault/requisite/<int:classid>/<int:reqid>")
