@@ -23,3 +23,10 @@ class RequisiteDAO:
         for row in cursor:
             result.append(row)
         return result   
+
+    def getRequisiteByClassIdReqId(self, classid, reqid):
+        cursor = self.conn.cursor()
+        query = "SELECT classid, reqid, prereq FROM requisite WHERE classid = %s AND reqid = %s;"
+        cursor.execute(query, (classid, reqid))
+        result = cursor.fetchone()
+        return result

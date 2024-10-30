@@ -19,3 +19,12 @@ class RequisiteHandler:
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
+    
+    def getRequisiteByClassIdReqId(self, classid, reqid):
+        dao = RequisiteDAO()
+        result = dao.getRequisiteByClassIdReqId(classid, reqid)
+        
+        if result is not None:
+            return jsonify(self.mapToDict(result))
+        else:
+            return "Not Found", 404
