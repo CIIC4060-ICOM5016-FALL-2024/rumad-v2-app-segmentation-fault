@@ -23,9 +23,12 @@ def meeting():
     pass
 
 
-@app.route("/segmentation_fault/room")
+@app.route("/segmentation_fault/room", methods=['GET', 'POST'])
 def room():
-    return RoomHandler().getAllRoom()
+    if request.method == "GET":
+        return RoomHandler().getAllRoom()
+    else:
+        return RoomHandler().insertRoom(request.json)
 
 @app.route("/segmentation_fault/room/<int:rid>")
 def getRoomByRID(rid):

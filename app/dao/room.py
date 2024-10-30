@@ -28,3 +28,11 @@ class RoomDAO:
         query = "SELECT * FROM room WHERE rid=%s"
         cursor.execute(query, (rid,))
         return cursor.fetchone()
+
+    def insertRoom(self, building, room_number, capacity):
+        cursor = self.conn.cursor()
+        query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s) RETURNING rid;"
+        cursor.execute(query, (building, room_number, capacity))
+        rid = cursor.fetchone()[0]
+        self.conn.commit()
+        return rid

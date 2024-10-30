@@ -28,5 +28,15 @@ class RoomHandler:
         else:
             return "Not Found", 404
 
+    def insertRoom(self, room_json):
+        building = room_json["building"]
+        room_number = room_json["room_number"]
+        capacity = room_json["capacity"]
+        dao = RoomDAO()
+        rid = dao.insertRoom(building, room_number, capacity)
+        temp = (rid, building, room_number, capacity)
+        return jsonify(self.mapToDict(temp)), 201
+
+
 
 
