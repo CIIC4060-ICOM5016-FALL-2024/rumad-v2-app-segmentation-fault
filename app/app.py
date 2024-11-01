@@ -12,7 +12,7 @@ CORS(app)
 
 @app.route("/")
 def hello_world():
-    return "Hello, World!"
+    return "This is the RestAPI of Segmentation Fault team."
 
 
 @app.route("/segmentation_fault/section")
