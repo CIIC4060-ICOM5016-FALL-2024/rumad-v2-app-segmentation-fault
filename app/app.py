@@ -10,21 +10,32 @@ app = Flask(__name__)
 CORS(app)
 
 
+# ROOT ROUTE
 @app.route("/")
 def hello_world():
     return "This is the RestAPI of Segmentation Fault team."
 
 
-@app.route("/segmentation_fault/section")
+# SECTION ROUTES
+@app.route("/segmentation_fault/section", methods=["GET", "POST"])
 def section():
-    return SectionHandler().getAllSection()
+    if request.method == "GET":
+        return SectionHandler().getAllSection()
+    else:
+        return "POST"
 
 
-@app.route("/segmentation_fault/section/<int:sid>")
+@app.route("/segmentation_fault/section/<int:sid>", methods=["GET", "PUT", "DELETE"])
 def getSectionBySid(sid):
-    return SectionHandler().getSectionBySid(sid)
+    if request.method == "GET":
+        return SectionHandler().getSectionBySid(sid)
+    elif request.method == "PUT":
+        return "PUT"
+    else:
+        return "DELETE"
 
 
+# MEETING ROUTES
 @app.route("/segmentation_fault/meeting")
 def meeting():
     return MeetingHandler().getAllMeeting()
@@ -35,16 +46,19 @@ def getMeetingByMid(mid):
     return MeetingHandler().getMeetingByMid(mid)
 
 
+# ROOM ROUTES
 @app.route("/segmentation_fault/room")  # type: ignore
 def room():
     pass
 
 
+# CLASS ROUTES
 @app.route("/segmentation_fault/class")  # type: ignore
 def courses():
     pass
 
 
+# REQUISITE ROUTES
 @app.route("/segmentation_fault/requisite")
 def requisite():
     return RequisiteHandler().getAllRequisite()
