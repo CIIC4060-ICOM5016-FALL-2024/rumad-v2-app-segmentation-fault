@@ -1,4 +1,3 @@
-import re
 from flask import jsonify
 from dao.meeting import MeetingDAO
 
@@ -12,12 +11,12 @@ class MeetingHandler:
         result["endtime"] = tuple[3].strftime("%H:%M:%S")
         result["cdays"] = tuple[4]
         return result
-    
+
     def getAllMeeting(self):
         result = []
         dao = MeetingDAO()
         temp = dao.getAllMeeting()
-        
+
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
@@ -25,7 +24,7 @@ class MeetingHandler:
     def getMeetingByMid(self, mid):
         dao = MeetingDAO()
         result = dao.getMeetingByMid(mid)
-        
+
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:
