@@ -40,7 +40,7 @@ class RequisiteHandler:
         
         dao = RequisiteDAO()
         ids = dao.insertRequisite(classid, reqid, prereq)
-        temp = (ids[0], ids[1], prereq)
+        temp = (ids[0], ids[1], prereq)  # type: ignore
         
         return self.mapToDict(temp), 201
         
