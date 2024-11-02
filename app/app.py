@@ -4,6 +4,7 @@ from flask_cors import CORS
 from handler.section import SectionHandler
 from handler.meeting import MeetingHandler
 from handler.requisite import RequisiteHandler
+from handler.course import ClassHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -86,3 +87,6 @@ def requisiteByClassIdReqId(classid, reqid):
         return "PUT"
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
+
+if __name__ == "__main__":
+    app.run(debug=True, port=8080)
