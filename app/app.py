@@ -19,6 +19,11 @@ def section():
     return SectionHandler().getAllSection()
 
 
+@app.route("/segmentation_fault/section/<int:sid>")
+def getSectionBySid(sid):
+    return SectionHandler().getSectionBySid(sid)
+
+
 @app.route("/segmentation_fault/meeting", methods = ['GET', 'POST'])
 def meeting():
     if request.method == 'GET':
@@ -31,12 +36,13 @@ def meeting():
 def getMeetingByMid(mid):
     return MeetingHandler().getMeetingByMid(mid)
 
-@app.route("/segmentation_fault/room") # type: ignore
+
+@app.route("/segmentation_fault/room")  # type: ignore
 def room():
     pass
 
 
-@app.route("/segmentation_fault/class") # type: ignore
+@app.route("/segmentation_fault/class")  # type: ignore
 def courses():
     pass
 

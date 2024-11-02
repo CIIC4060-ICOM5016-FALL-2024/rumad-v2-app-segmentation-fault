@@ -26,7 +26,7 @@ class MeetingHandler:
         result = []
         dao = MeetingDAO()
         temp = dao.getAllMeeting()
-        
+
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
@@ -34,7 +34,7 @@ class MeetingHandler:
     def getMeetingByMid(self, mid):
         dao = MeetingDAO()
         result = dao.getMeetingByMid(mid)
-        
+
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:

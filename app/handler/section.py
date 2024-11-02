@@ -22,3 +22,12 @@ class SectionHandler:
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
+
+    def getSectionBySid(self, sid):
+        dao = SectionDAO()
+        result = dao.getSectionBySid(sid)
+
+        if result is not None:
+            return jsonify(self.mapToDict(result))
+        else:
+            return "Not Found", 404

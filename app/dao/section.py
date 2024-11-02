@@ -23,3 +23,10 @@ class SectionDAO:
         for row in cursor:
             result.append(row)
         return result
+
+    def getSectionBySid(self, sid):
+        cursor = self.conn.cursor()
+        query = "SELECT sid, roomid, cid, mid, semester, years, capacity FROM section WHERE sid = %s;"
+        cursor.execute(query, (sid,))
+        result = cursor.fetchone()
+        return result
