@@ -16,12 +16,21 @@ class MeetingHandler:
         return result
     
     def confirmDataInDF(self, df_to_verify, df_meeting):
-        if df_to_verify["mid"].values[0] in df_meeting["mid"].values:
+        # Check for duplicates in df_meeting based on columns except 'mid'
+        columns_to_check = [col for col in df_to_verify.columns if col != "mid"]
+        values_to_check = df_to_verify[columns_to_check].iloc[0]
+        duplicates = df_meeting[columns_to_check].eq(values_to_check).all(axis=1).any()
+        
+        if duplicates:
+            return False
+        
+        # If no duplicates, check if 'mid' in df_to_verify exists in df_meeting
+        mid_value = df_to_verify["mid"].values[0]
+        if mid_value in df_meeting["mid"].values:
             return True
         else:
             return False
 
-    
     def getAllMeeting(self):
         result = []
         dao = MeetingDAO()
