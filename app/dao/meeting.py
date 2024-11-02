@@ -1,4 +1,3 @@
-from calendar import c
 from config.db_config import pg_config
 import psycopg2 as pg
 
