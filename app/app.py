@@ -4,6 +4,7 @@ from flask_cors import CORS
 from handler.section import SectionHandler
 from handler.meeting import MeetingHandler
 from handler.requisite import RequisiteHandler
+from handler.course import ClassHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -54,10 +55,21 @@ def room():
 
 
 # CLASS ROUTES
-@app.route("/segmentation_fault/class")  # type: ignore
+@app.route("/segmentation_fault/class", methods=["GET", "POST"])
 def courses():
-    pass
-
+    if request.method == "GET":
+        return ClassHandler().getAllClass()
+    elif request.method == "POST":
+        return ClassHandler().insertClass(request.json)
+    
+@app.route("/segmentation_fault/class/<int:cid>", methods=["GET", "PUT", "DELETE"])
+def courses2(cid):
+    if request.method == "GET":
+        return ClassHandler().getclassById(cid)
+    elif request.method == "PUT":
+        return ClassHandler().updateClassById(cid, request.json)
+    elif request.method == "DELETE":
+        return ClassHandler().deleteClassById(cid)
 
 @app.route("/segmentation_fault/requisite", methods = ['GET', 'POST'])
 def requisite():
@@ -75,7 +87,6 @@ def requisiteByClassIdReqId(classid, reqid):
         return "PUT"
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
-
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)
