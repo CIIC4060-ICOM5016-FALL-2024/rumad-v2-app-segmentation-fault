@@ -30,9 +30,14 @@ def room():
     else:
         return RoomHandler().insertRoom(request.json)
 
-@app.route("/segmentation_fault/room/<int:rid>")
+@app.route("/segmentation_fault/room/<int:rid>", methods=['GET', 'PUT', 'DELETE'])
 def getRoomByRID(rid):
-    return RoomHandler().getRoomByRid(rid)
+    if request.method == "GET":
+        return RoomHandler().getRoomByRid(rid)
+    elif request.method == "PUT":
+        return RoomHandler().updateRoomByRid(rid, request.json)
+    else:
+        return RoomHandler().deleteRoomByRid(rid)
 
 @app.route("/segmentation_fault/class")
 def courses():

@@ -37,6 +37,28 @@ class RoomHandler:
         temp = (rid, building, room_number, capacity)
         return jsonify(self.mapToDict(temp)), 201
 
+    def deleteRoomByRid(self, rid):
+        dao = RoomDAO()
+        result = dao.deleteRoomByRid(rid)
+        if result:
+            return jsonify(DeleteStatus="OK"), 200
+        else:
+            return jsonify(DeleteStatus="Not Found"), 404
+
+    def updateRoomByRid(self, rid, room_json):
+        building = room_json["building"]
+        room_number = room_json["room_number"]
+        capacity = room_json["capacity"]
+        dao = RoomDAO()
+        temp = dao.updateRoomByRid(rid, building, room_number, capacity)
+        if temp:
+            tup = (rid, building, room_number, capacity)
+            return jsonify(self.mapToDict(tup)), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+
+
+
 
 
 

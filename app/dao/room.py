@@ -36,3 +36,20 @@ class RoomDAO:
         rid = cursor.fetchone()[0]
         self.conn.commit()
         return rid
+
+    def deleteRoomByRid(self, rid):
+        cursor = self.conn.cursor()
+        query = "DELETE FROM room WHERE rid=%s"
+        cursor.execute(query, (rid,))
+        rowcount = cursor.rowcount
+        self.conn.commit()
+        return rowcount == 1
+
+    def updateRoomByRid(self, rid, building, room_number, capacity):
+        cursor = self.conn.cursor()
+        query = "UPDATE room SET building=%s, room_number=%s, capacity=%s WHERE rid=%s"
+        cursor.execute(query, (building, room_number, capacity, rid))
+        rowcount = cursor.rowcount
+        self.conn.commit()
+        return rowcount == 1
+
