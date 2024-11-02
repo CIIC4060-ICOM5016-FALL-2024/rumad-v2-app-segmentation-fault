@@ -68,7 +68,7 @@ def requisite():
     "/segmentation_fault/requisite/<int:classid>/<int:reqid>",
     methods=["GET", "PUT", "DELETE"],
 )
-def getRequisiteByClassIdReqId(classid, reqid):
+def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
     elif request.method == "PUT":
