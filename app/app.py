@@ -66,6 +66,10 @@ def getRoomByRID(rid):
     else:
         return RoomHandler().deleteRoomByRid(rid)
 
+@app.route("/segmentation_fault/<string:building>/capacity", methods=['GET'])
+def getMaxCapacity(building):
+    return RoomHandler().getMaxCapacity(building)
+
 
 # CLASS ROUTES
 @app.route("/segmentation_fault/class", methods=["GET", "POST"])

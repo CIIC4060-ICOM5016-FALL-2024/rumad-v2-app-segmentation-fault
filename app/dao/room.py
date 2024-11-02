@@ -53,3 +53,15 @@ class RoomDAO:
         self.conn.commit()
         return rowcount == 1
 
+    def getMaxCapacity(self, building):
+        result = []
+        cursor = self.conn.cursor()
+        query = "SELECT * FROM room WHERE building=%s ORDER BY capacity DESC LIMIT 3;"
+        cursor.execute(query, (building,))
+        for row in cursor:
+            result.append(row)
+        return result
+
+
+
+

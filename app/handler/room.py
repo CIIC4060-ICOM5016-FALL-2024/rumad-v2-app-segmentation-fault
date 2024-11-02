@@ -57,6 +57,18 @@ class RoomHandler:
         else:
             return jsonify(UpdateStatus="Not Found"), 404
 
+    def getMaxCapacity(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getMaxCapacity(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+
+
 
 
 
