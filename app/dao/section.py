@@ -30,6 +30,14 @@ class SectionDAO:
         cursor.execute(query, (sid,))
         result = cursor.fetchone()
         return result
+    
+    def insertSection(self, roomid, cid, mid, semester, years, capacity):
+        cursor = self.conn.cursor()
+        query = "INSERT INTO section(roomid, cid, mid, semester, years, capacity) VALUES (%s, %s, %s, %s, %s, %s) RETURNING sid;"
+        cursor.execute(query, (roomid, cid, mid, semester, years, capacity))
+        sid = cursor.fetchone()
+        self.conn.commit()
+        return sid
 
     def deleteSectionBySid(self, sid):
         cursor = self.conn.cursor()
