@@ -1,6 +1,12 @@
+CREATE SEQUENCE IF NOT EXISTS class_seq;
+CREATE SEQUENCE IF NOT EXISTS room_seq;
+CREATE SEQUENCE IF NOT EXISTS meeting_seq;
+CREATE SEQUENCE IF NOT EXISTS section_seq;
+CREATE SEQUENCE IF NOT EXISTS syllabus_seq;
+
 -- COURSES TABLE
 CREATE TABLE IF NOT EXISTS "class" (
-  "cid" SERIAL PRIMARY KEY,
+  "cid" INTEGER PRIMARY KEY DEFAULT nextval('class_seq'),
   "cname" VARCHAR(50),
   "ccode" VARCHAR(4),
   "cdesc" VARCHAR(100),
@@ -12,7 +18,7 @@ CREATE TABLE IF NOT EXISTS "class" (
 
 -- ROOM TABLE
 CREATE TABLE IF NOT EXISTS "room" (
-    "rid" SERIAL PRIMARY KEY,
+    "rid" INTEGER PRIMARY KEY DEFAULT nextval('room_seq'),
     "building" VARCHAR(10),
     "room_number" VARCHAR,
     "capacity" INTEGER
@@ -20,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "room" (
 
 -- MEETING TABLE
 CREATE TABLE IF NOT EXISTS "meeting" (
-    "mid" SERIAL PRIMARY KEY,
+    "mid" INTEGER PRIMARY KEY DEFAULT nextval('meeting_seq'),
     "ccode" VARCHAR(4),
     "starttime" TIME,
     "endtime" TIME,
@@ -29,7 +35,7 @@ CREATE TABLE IF NOT EXISTS "meeting" (
 
 -- SECTION TABLE
 CREATE TABLE IF NOT EXISTS "section" (
-  "sid" SERIAL PRIMARY KEY,
+  "sid" INTEGER PRIMARY KEY DEFAULT nextval('section_seq'),
   "roomid" INTEGER,
   "cid" INTEGER,
   "mid" INTEGER,
@@ -47,7 +53,7 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 -- SYLLABUS TABLE
 CREATE TABLE IF NOT EXISTS "syllabus" (
-  "chunkid" SERIAL PRIMARY KEY,
+  "chunkid" INTEGER PRIMARY KEY DEFAULT nextval('syllabus_seq'),
   "courseid" INTEGER,
   "embedding_text" vector(500),
   "chunk" VARCHAR(255),
