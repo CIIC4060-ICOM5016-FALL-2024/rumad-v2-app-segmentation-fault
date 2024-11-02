@@ -30,6 +30,14 @@ class RequisiteDAO:
         cursor.execute(query, (classid, reqid))
         result = cursor.fetchone()
         return result
+    
+    def insertRequisite(self, classid, reqid, prereq):
+        cursor = self.conn.cursor()
+        query = "INSERT INTO requisite(classid, reqid, prereq) VALUES (%s, %s, %s) RETURNING classid, reqid;"
+        cursor.execute(query, (classid, reqid, prereq))
+        ids = cursor.fetchone()
+        self.conn.commit()
+        return ids
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
         cursor = self.conn.cursor()

@@ -1,4 +1,5 @@
 from flask import jsonify
+from numpy import insert
 from dao.requisite import RequisiteDAO
 
 
@@ -27,6 +28,22 @@ class RequisiteHandler:
             return jsonify(self.mapToDict(result))
         else:
             return "Not Found", 404
+        
+    def insertRequisite(self, requisite_json):
+        if "classid" not in requisite_json or "reqid" not in requisite_json or "prereq" not in requisite_json:
+            return "Missing required fields", 400
+    
+        classid = requisite_json["classid"]
+        reqid = requisite_json["reqid"]
+        prereq = requisite_json["prereq"]
+        
+        dao = RequisiteDAO()
+        ids = dao.insertRequisite(classid, reqid, prereq)
+        temp = (ids[0], ids[1], prereq)  # type: ignore
+        
+        return self.mapToDict(temp), 201
+        
+        
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
         dao = RequisiteDAO()

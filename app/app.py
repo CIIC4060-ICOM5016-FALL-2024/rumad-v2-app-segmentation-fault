@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-
 from handler.section import SectionHandler
 from handler.meeting import MeetingHandler
 from handler.requisite import RequisiteHandler
@@ -35,10 +34,12 @@ def sectionByID(sid):
         return SectionHandler().getSectionBySid(sid)
 
 
-# MEETING ROUTES
-@app.route("/segmentation_fault/meeting")
+@app.route("/segmentation_fault/meeting", methods = ['GET', 'POST'])
 def meeting():
-    return MeetingHandler().getAllMeeting()
+    if request.method == 'GET':
+        return MeetingHandler().getAllMeeting()
+    else:
+        return MeetingHandler().insertMeeting(request.json)
 
 
 @app.route("/segmentation_fault/meeting/<int:mid>")
@@ -58,10 +59,12 @@ def courses():
     pass
 
 
-# REQUISITE ROUTES
-@app.route("/segmentation_fault/requisite")
+@app.route("/segmentation_fault/requisite", methods = ['GET', 'POST'])
 def requisite():
-    return RequisiteHandler().getAllRequisite()
+    if request.method == 'GET':
+        return RequisiteHandler().getAllRequisite()
+    else:
+        return RequisiteHandler().insertRequisite(request.json)
 
 
 @app.route(
