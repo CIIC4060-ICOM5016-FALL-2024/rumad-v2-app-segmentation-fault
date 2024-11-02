@@ -21,7 +21,7 @@ def section():
     if request.method == "GET":
         return SectionHandler().getAllSection()
     else:
-        return "POST"
+        return SectionHandler().insertSection(request.json)
 
 
 @app.route("/segmentation_fault/section/<int:sid>", methods=["GET", "PUT", "DELETE"])
