@@ -67,10 +67,7 @@ def requisite():
         return RequisiteHandler().insertRequisite(request.json)
 
 
-@app.route(
-    "/segmentation_fault/requisite/<int:classid>/<int:reqid>",
-    methods=["GET", "PUT", "DELETE"],
-)
+@app.route("/segmentation_fault/requisite/<int:classid>/<int:reqid>", methods=["GET", "PUT", "DELETE"])
 def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
