@@ -30,3 +30,11 @@ class SectionDAO:
         cursor.execute(query, (sid,))
         result = cursor.fetchone()
         return result
+
+    def deleteSectionBySid(self, sid):
+        cursor = self.conn.cursor()
+        query = "DELETE FROM section WHERE sid = %s;"
+        cursor.execute(query, (sid,))
+        rowcount = cursor.rowcount
+        self.conn.commit()
+        return rowcount > 0

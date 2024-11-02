@@ -26,13 +26,13 @@ def section():
 
 
 @app.route("/segmentation_fault/section/<int:sid>", methods=["GET", "PUT", "DELETE"])
-def getSectionBySid(sid):
-    if request.method == "GET":
-        return SectionHandler().getSectionBySid(sid)
+def sectionByID(sid):
+    if request.method == "DELETE":
+        return SectionHandler().deleteSectionBySid(sid)
     elif request.method == "PUT":
         return "PUT"
     else:
-        return "DELETE"
+        return SectionHandler().getSectionBySid(sid)
 
 
 # MEETING ROUTES

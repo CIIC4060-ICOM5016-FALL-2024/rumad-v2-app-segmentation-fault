@@ -31,3 +31,10 @@ class SectionHandler:
             return jsonify(self.mapToDict(result))
         else:
             return "Not Found", 404
+
+    def deleteSectionBySid(self, sid):
+        dao = SectionDAO()
+        if dao.deleteSectionBySid(sid):
+            return jsonify(DeleteStatus="OK"), 200
+        else:
+            return jsonify(DeleteStatus="NOT FOUND"), 404
