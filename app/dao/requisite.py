@@ -14,7 +14,7 @@ class RequisiteDAO:
         )
 
         self.conn = pg.connect(url)
-        
+
     def getAllRequisite(self):
         cursor = self.conn.cursor()
         query = "SELECT classid, reqid, prereq FROM requisite;"
@@ -22,7 +22,7 @@ class RequisiteDAO:
         result = []
         for row in cursor:
             result.append(row)
-        return result   
+        return result
 
     def getRequisiteByClassIdReqId(self, classid, reqid):
         cursor = self.conn.cursor()
@@ -30,3 +30,11 @@ class RequisiteDAO:
         cursor.execute(query, (classid, reqid))
         result = cursor.fetchone()
         return result
+
+    def deleteRequisiteByClassIdReqId(self, classid, reqid):
+        cursor = self.conn.cursor()
+        query = "DELETE FROM requisite WHERE classid = %s AND reqid = %s;"
+        cursor.execute(query, (classid, reqid))
+        rowcount = cursor.rowcount
+        self.conn.commit()
+        return rowcount > 0

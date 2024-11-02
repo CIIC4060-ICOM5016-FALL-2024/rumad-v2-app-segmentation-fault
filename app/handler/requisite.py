@@ -27,3 +27,10 @@ class RequisiteHandler:
             return jsonify(self.mapToDict(result))
         else:
             return "Not Found", 404
+
+    def deleteRequisiteByClassIdReqId(self, classid, reqid):
+        dao = RequisiteDAO()
+        if dao.deleteRequisiteByClassIdReqId(classid, reqid):
+            return jsonify(DeleteStatus="OK"), 200
+        else:
+            return jsonify(DeleteStatus="NOT FOUND"), 404

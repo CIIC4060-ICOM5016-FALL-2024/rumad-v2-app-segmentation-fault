@@ -64,9 +64,17 @@ def requisite():
     return RequisiteHandler().getAllRequisite()
 
 
-@app.route("/segmentation_fault/requisite/<int:classid>/<int:reqid>")
+@app.route(
+    "/segmentation_fault/requisite/<int:classid>/<int:reqid>",
+    methods=["GET", "PUT", "DELETE"],
+)
 def getRequisiteByClassIdReqId(classid, reqid):
-    return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
+    if request.method == "DELETE":
+        return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
+    elif request.method == "PUT":
+        return "PUT"
+    else:
+        return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
 
 
 if __name__ == "__main__":
