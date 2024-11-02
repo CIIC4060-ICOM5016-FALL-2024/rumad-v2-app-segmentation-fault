@@ -5,6 +5,7 @@ from handler.section import SectionHandler
 from handler.meeting import MeetingHandler
 from handler.requisite import RequisiteHandler
 from handler.course import ClassHandler
+from handler.room import RoomHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -49,9 +50,21 @@ def getMeetingByMid(mid):
 
 
 # ROOM ROUTES
-@app.route("/segmentation_fault/room")  # type: ignore
+@app.route("/segmentation_fault/room", methods=['GET', 'POST'])
 def room():
-    pass
+    if request.method == "GET":
+        return RoomHandler().getAllRoom()
+    else:
+        return RoomHandler().insertRoom(request.json)
+
+@app.route("/segmentation_fault/room/<int:rid>", methods=['GET', 'PUT', 'DELETE'])
+def getRoomByRID(rid):
+    if request.method == "GET":
+        return RoomHandler().getRoomByRid(rid)
+    elif request.method == "PUT":
+        return RoomHandler().updateRoomByRid(rid, request.json)
+    else:
+        return RoomHandler().deleteRoomByRid(rid)
 
 
 # CLASS ROUTES
