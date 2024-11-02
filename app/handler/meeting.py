@@ -16,20 +16,15 @@ class MeetingHandler:
         return result
     
     def confirmDataInDF(self, df_to_verify, df_meeting):
-        # Check for duplicates in df_meeting based on columns except 'mid'
-        columns_to_check = [col for col in df_to_verify.columns if col != "mid"]
+        columns_to_check = ["ccode", "starttime", "endtime", "cdays"]
+        df_meeting = df_meeting.astype({col: str for col in columns_to_check})
+        df_to_verify = df_to_verify.astype({col: str for col in columns_to_check})
+        
+        # Check if the data to insert is already in the database
         values_to_check = df_to_verify[columns_to_check].iloc[0]
-        duplicates = df_meeting[columns_to_check].eq(values_to_check).all(axis=1).any()
+        duplicate_count = df_meeting[columns_to_check].eq(values_to_check).all(axis=1).sum()
         
-        if duplicates:
-            return False
-        
-        # If no duplicates, check if 'mid' in df_to_verify exists in df_meeting
-        mid_value = df_to_verify["mid"].values[0]
-        if mid_value in df_meeting["mid"].values:
-            return True
-        else:
-            return False
+        return duplicate_count == 1
 
     def getAllMeeting(self):
         result = []
@@ -72,7 +67,7 @@ class MeetingHandler:
         for df, df_name in df_list:
             if df_name == "meeting":
                 df_meeting = df
-                print(df_meeting)
+
                 
         is_data_confirmed = self.confirmDataInDF(df_to_insert, df_meeting)
         
@@ -84,4 +79,4 @@ class MeetingHandler:
             return self.mapToDict(temp), 201
         
         else:
-            return "Data cant be inserted", 400
+            return "Data can't be inserted due to duplicates or record already exists", 400
