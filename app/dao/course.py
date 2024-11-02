@@ -33,20 +33,29 @@ class ClassDAO:
     
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
-        reserial_query = "SELECT setval('class_cid_seq', (SELECT MAX(cid) FROM class));"
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
-        cursor.execute(reserial_query)
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus])
         cid = cursor.fetchone()[0]
         self.conn.commit()
         return cid
     
-    def updateClass(self, cid, cname, ccode, cdesc, term, years, cred, csyllabus):
+    def updateClassById(self, cid, cname, ccode, cdesc, term, years, cred, csyllabus):
         #TODO Verify if class with cid exists if not return a message
         cursor = self.conn.cursor()
         query = "UPDATE class SET cname = %s, ccode = %s, cdesc = %s, term = %s, years = %s, cred = %s, csyllabus = %s WHERE cid = %s;"
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus, cid])
         self.conn.commit()
-        return None
+        #return boolean if the update was successful
+        rowcount = cursor.rowcount
+        return rowcount == 1
+    
+    def deleteClassById(self, cid):
+        #TODO Verify if class with cid exists if not return a message
+        cursor = self.conn.cursor()
+        query = "DELETE FROM class WHERE cid = %s;"
+        cursor.execute(query, [cid])
+        self.conn.commit()
+        rowcount = cursor.rowcount
+        return rowcount == 1
 
          

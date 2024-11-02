@@ -46,7 +46,7 @@ class ClassHandler:
         temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
         return jsonify(self.mapToDict(temp)), 201
     
-    def updateClass(self, cid, class_json):
+    def updateClassById(self, cid, class_json):
         #Verify what atributtes are going to be updated
         dao = ClassDAO()
         cname = class_json['cname']
@@ -56,9 +56,22 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
-        dao.updateClass(cid, cname,ccode, cdesc, term, years, cred, csyllabus)
-        temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
-        return jsonify(self.mapToDict(temp)), 200
+        if not "cname" or not "ccode" or not "cdesc" or not "term" or not "years" or not "cred" or not "csyllabus" in class_json:
+            return jsonify(UpdateStatus = "Malformed post request"), 400
+        temp = dao.updateClassById(cid, cname,ccode, cdesc, term, years, cred, csyllabus)
+        if temp:
+            tup = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+            return jsonify(self.mapToDict(tup)), 200
+        else:
+            return jsonify(UpdateStatus = "Class Not Found"), 404
+    
+    def deleteClassById(self, cid):
+        dao = ClassDAO()
+        temp = dao.deleteClassById(cid)
+        if not temp:
+            return jsonify(Error="Class Not Found"), 404
+        else:
+            return jsonify(DeleteStatus="OK"), 200
     
                                
                            
