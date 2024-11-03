@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from flask_cors import CORS
 
 from handler.section import SectionHandler
@@ -36,6 +36,7 @@ def sectionByID(sid):
         return SectionHandler().getSectionBySid(sid)
 
 
+# MEETING ROUTES
 @app.route("/segmentation_fault/meeting", methods=["GET", "POST"])
 def meeting():
     if request.method == "GET":
@@ -44,9 +45,14 @@ def meeting():
         return MeetingHandler().insertMeeting(request.json)
 
 
-@app.route("/segmentation_fault/meeting/<int:mid>")
-def getMeetingByMid(mid):
-    return MeetingHandler().getMeetingByMid(mid)
+@app.route("/segmentation_fault/meeting/<int:mid>", methods=["GET", "PUT", "DELETE"])
+def meetingByMID(mid):
+    if request.method == "GET":
+        return MeetingHandler().getMeetingByMid(mid)
+    elif request.method == "PUT":
+        return MeetingHandler().updateMeetingByMid(mid, request.json)
+    else:
+        return MeetingHandler().deleteMeetingByMid(mid)
 
 
 # ROOM ROUTES
@@ -59,7 +65,7 @@ def room():
 
 
 @app.route("/segmentation_fault/room/<int:rid>", methods=["GET", "PUT", "DELETE"])
-def getRoomByRID(rid):
+def roomByRID(rid):
     if request.method == "GET":
         return RoomHandler().getRoomByRid(rid)
     elif request.method == "PUT":
@@ -78,7 +84,7 @@ def courses():
 
 
 @app.route("/segmentation_fault/class/<int:cid>", methods=["GET", "PUT", "DELETE"])
-def courses2(cid):
+def courseByID(cid):
     if request.method == "GET":
         return ClassHandler().getclassById(cid)
     elif request.method == "PUT":
@@ -87,6 +93,7 @@ def courses2(cid):
         return ClassHandler().deleteClassById(cid)
 
 
+# REQUISITE ROUTES
 @app.route("/segmentation_fault/requisite", methods=["GET", "POST"])
 def requisite():
     if request.method == "GET":
@@ -100,7 +107,9 @@ def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
     elif request.method == "PUT":
-        return "PUT"
+        return RequisiteHandler().updateRequisiteByClassIdReqId(
+            classid, reqid, request.json
+        )
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
     

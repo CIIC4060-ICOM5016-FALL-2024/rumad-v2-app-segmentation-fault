@@ -30,7 +30,7 @@ class RequisiteDAO:
         cursor.execute(query, (classid, reqid))
         result = cursor.fetchone()
         return result
-    
+
     def insertRequisite(self, classid, reqid, prereq):
         cursor = self.conn.cursor()
         query = "INSERT INTO requisite(classid, reqid, prereq) VALUES (%s, %s, %s) RETURNING classid, reqid;"
@@ -46,4 +46,11 @@ class RequisiteDAO:
         rowcount = cursor.rowcount
         self.conn.commit()
         return rowcount > 0
-    
+
+    def updateRequisiteByClassIdReqId(self, classid, reqid, requisite):
+        cursor = self.conn.cursor()
+        query = "UPDATE requisite SET prereq = %s WHERE classid = %s AND reqid = %s RETURNING classid, reqid, prereq;"
+        cursor.execute(query, (requisite, classid, reqid))
+        result = cursor.fetchone()
+        self.conn.commit()
+        return result
