@@ -30,6 +30,12 @@ class ClassDAO:
         cursor.execute(query, [cid])
         result = cursor.fetchone()
         return result
+
+    def exactDuplicate(self, insertVal):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND years = %s AND cred = %s AND csyllabus = %s;"
+        cursor.execute(find_duplicate_query, (insertVal["cname"], insertVal["ccode"], insertVal["cdesc"], insertVal["term"], insertVal["years"], insertVal["cred"], insertVal["csyllabus"]))
+        return cursor.rowcount == 1
     
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
@@ -52,6 +58,15 @@ class ClassDAO:
     def deleteClassById(self, cid):
         #TODO Verify if class with cid exists if not return a message
         cursor = self.conn.cursor()
+        find_sec = "SELECT * FROM section WHERE cid = %s;"
+        cursor.execute(find_sec, [cid])
+        result = cursor.fetchone()
+        
+        if result is not None:
+            section_q = "DELETE FROM class WHERE cid = %s;"
+            cursor.execute(section_q, [cid])
+            self.conn.commit()
+
         query = "DELETE FROM class WHERE cid = %s;"
         cursor.execute(query, [cid])
         self.conn.commit()

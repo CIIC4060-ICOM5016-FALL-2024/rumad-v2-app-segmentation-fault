@@ -33,6 +33,8 @@ class ClassHandler:
         else:
             result = self.mapToDict(temp)
             return jsonify(result)
+
+        
     
     def insertClass(self, class_json):
         dao = ClassDAO()
@@ -43,9 +45,18 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
+        temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
+
+        if not "cname" or not "ccode" or not "cdesc" or not "term" or not "years" or not "cred" or not "csyllabus" in class_json:
+            return jsonify(InsertStatus = "Malformed post request"), 400
+        
+        #Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
+        elif dao.exactDuplicate(temp):
+            return jsonify(InsertStatus = "Duplicate Entry"), 400
+        
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
-        temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
-        return jsonify(self.mapToDict(temp)), 201
+        result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+        return jsonify(self.mapToDict(result)), 201
     
     def updateClassById(self, cid, class_json):
         #Verify what atributtes are going to be updated
