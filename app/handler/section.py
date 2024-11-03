@@ -141,3 +141,12 @@ class SectionHandler:
             return jsonify(UpdateStatus="OK"), 200
         else:
             return jsonify(UpdateStatus="NOT FOUND"), 404
+
+    def getSectionPerYear(self):
+        dao = SectionDAO()
+        result = dao.getSectionPerYear()
+
+        if result is not None:
+            return jsonify(result)
+        else:
+            return "Not Found", 404

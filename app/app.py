@@ -121,14 +121,22 @@ def requisiteByClassIdReqId(classid, reqid):
 
 
 # GLOBAL STATICS (2/4)
+# Top 5 meetings with the most sections
 @app.route("/segmentation_fault/most/meeting", methods=["GET"])
 def mostMeeting():
     return MeetingHandler().getMostMeeting()
 
 
+# Top 3 classes that appears the most as prerequisite to other classes
 @app.route("/segmentation_fault/most/prerequisite", methods=["GET"])
 def mostPrerequisite():
     return ClassHandler().getMostPrerequisite()
+
+
+# Total number of sections per year
+@app.route("/segmentation_fault/section/year", methods=["GET"])
+def sectionYear():
+    return SectionHandler().getSectionPerYear()
 
 
 if __name__ == "__main__":

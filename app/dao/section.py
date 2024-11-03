@@ -54,3 +54,10 @@ class SectionDAO:
         sid = cursor.fetchone()
         self.conn.commit()
         return sid
+
+    def getSectionPerYear(self):
+        cursor = self.conn.cursor()
+        query = "SELECT years, count(sid) FROM section GROUP BY years ORDER BY years;"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result
