@@ -1,6 +1,6 @@
 from flask import jsonify
 from dao.requisite import RequisiteDAO
-from handler.insert_update_handler import clean_data
+from handler.data_validation import clean_data
 import pandas as pd
 
 
