@@ -32,11 +32,27 @@ class MeetingDAO:
         cursor.execute(query, (mid,))
         result = cursor.fetchone()
         return result
-    
+
     def insertMeeting(self, ccode, starttime, endtime, cdays):
         cursor = self.conn.cursor()
         query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s, %s, %s) RETURNING mid;"
         cursor.execute(query, (ccode, starttime, endtime, cdays))
+        mid = cursor.fetchone()
+        self.conn.commit()
+        return mid
+
+    def updateMeetingByMid(self, mid, ccode, starttime, endtime, cdays):
+        cursor = self.conn.cursor()
+        query = "UPDATE meeting SET ccode = %s, starttime = %s, endtime = %s, cdays = %s WHERE mid = %s RETURNING mid;"
+        cursor.execute(query, (ccode, starttime, endtime, cdays, mid))
+        mid = cursor.fetchone()
+        self.conn.commit()
+        return mid
+
+    def deleteMeetingByMid(self, mid):
+        cursor = self.conn.cursor()
+        query = "DELETE FROM meeting WHERE mid = %s RETURNING mid;"
+        cursor.execute(query, (mid,))
         mid = cursor.fetchone()
         self.conn.commit()
         return mid

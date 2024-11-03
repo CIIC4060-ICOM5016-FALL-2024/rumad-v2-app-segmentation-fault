@@ -97,3 +97,37 @@ class MeetingHandler:
                 "Data can't be inserted due to duplicates or record already exists",
                 400,
             )
+
+    def updateMeetingByMid(self, mid, meeting_json):
+        dao = MeetingDAO()
+        if not dao.getMeetingByMid(mid):
+            return "Not Found", 404
+
+        if (
+            "ccode" not in meeting_json
+            or "starttime" not in meeting_json
+            or "endtime" not in meeting_json
+            or "cdays" not in meeting_json
+        ):
+            return "Missing required fields", 400
+
+        ccode = meeting_json["ccode"]
+        starttime = datetime.strptime(meeting_json["starttime"], "%H:%M:%S").strftime(
+            "%H:%M:%S"
+        )
+        endtime = datetime.strptime(meeting_json["endtime"], "%H:%M:%S").strftime(
+            "%H:%M:%S"
+        )
+        cdays = meeting_json["cdays"]
+
+        dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays)
+        temp = (mid, ccode, starttime, endtime, cdays)
+
+        return self.mapToDict(temp), 200
+
+    def deleteMeetingByMid(self, mid):
+        dao = MeetingDAO()
+        if dao.getMeetingByMid(mid):
+            return jsonify(DeleteStatus="OK"), 200
+        else:
+            return jsonify(DeleteStatus="NOT FOUND"), 404
