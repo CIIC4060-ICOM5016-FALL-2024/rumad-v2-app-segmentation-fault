@@ -46,3 +46,4 @@ class RequisiteDAO:
         rowcount = cursor.rowcount
         self.conn.commit()
         return rowcount > 0
+    

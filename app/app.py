@@ -109,6 +109,10 @@ def requisiteByClassIdReqId(classid, reqid):
 def mostMeeting():
     return MeetingHandler().getMostMeeting()
 
+@app.route("/segmentation_fault/most/prerequisite", methods=["GET"])
+def mostPrerequisite():
+    return ClassHandler().getMostPrerequisite()
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)

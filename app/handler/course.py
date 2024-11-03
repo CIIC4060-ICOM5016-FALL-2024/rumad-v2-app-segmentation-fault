@@ -1,3 +1,4 @@
+from calendar import c
 from flask import jsonify
 from dao.course import ClassDAO
 
@@ -72,6 +73,15 @@ class ClassHandler:
             return jsonify(Error="Class Not Found"), 404
         else:
             return jsonify(DeleteStatus="OK"), 200
+        
+    def getMostPrerequisite(self):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getMostPrerequisite()
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
     
                                
                            

@@ -35,7 +35,7 @@ class ClassDAO:
         cursor = self.conn.cursor()
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus])
-        cid = cursor.fetchone()[0]
+        cid = cursor.fetchone()[0] #type: ignore
         self.conn.commit()
         return cid
     
@@ -57,5 +57,14 @@ class ClassDAO:
         self.conn.commit()
         rowcount = cursor.rowcount
         return rowcount == 1
+    
+    def getMostPrerequisite(self):
+        cursor = self.conn.cursor()
+        query = "SELECT c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus, COUNT(r.classid) AS most_prerequisite_class FROM requisite AS r INNER JOIN class AS c ON r.reqid = c.cid WHERE r.prereq = TRUE AND cid != 37 GROUP BY c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus ORDER BY most_prerequisite_class DESC LIMIT 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
 
          
