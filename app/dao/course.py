@@ -102,3 +102,23 @@ class ClassDAO:
         return result
 
          
+    def getMostPerRoom(self, cid):
+        cursor = self.conn.cursor()
+        query = "WITH temp AS ( \
+        SELECT cid, COUNT(*) as class_count \
+        FROM section \
+        WHERE roomid = %s \
+        GROUP BY cid \
+        ORDER BY class_count DESC \
+        LIMIT 3 \
+        ) \
+        SELECT class.* \
+        FROM class \
+        inner JOIN temp ON class.cid = temp.cid \
+        ORDER BY temp.class_count DESC;"
+        cursor.execute(query, [cid])
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+

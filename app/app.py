@@ -113,6 +113,11 @@ def requisiteByClassIdReqId(classid, reqid):
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
     
+# LOCAL STATICS
+@app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
+def mostPerRoom(cid):
+    return ClassHandler().getMostPerRoom(cid)
+    
 # GLOBAL STATICS
 @app.route("/segmentation_fault/most/meeting", methods=["GET"])
 def mostMeeting():
