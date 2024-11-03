@@ -51,11 +51,12 @@ class MeetingDAO:
 
     def deleteMeetingByMid(self, mid):
         cursor = self.conn.cursor()
-        query = "DELETE FROM meeting WHERE mid = %s RETURNING mid;"
+        query = "DELETE FROM meeting WHERE mid = %s;"
         cursor.execute(query, (mid,))
-        mid = cursor.fetchone()
+        rowcount = cursor.rowcount
         self.conn.commit()
-        return mid
+        print(f"Deleted {rowcount} record(s) with mid={mid}")  # Add logging
+        return rowcount > 0
 
     def getMostMeeting(self):
         cursor = self.conn.cursor()
