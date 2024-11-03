@@ -102,10 +102,7 @@ def requisite():
         return RequisiteHandler().insertRequisite(request.json)
 
 
-@app.route(
-    "/segmentation_fault/requisite/<int:classid>/<int:reqid>",
-    methods=["GET", "PUT", "DELETE"],
-)
+@app.route("/segmentation_fault/requisite/<int:classid>/<int:reqid>",methods=["GET", "PUT", "DELETE"],)
 def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
@@ -115,6 +112,11 @@ def requisiteByClassIdReqId(classid, reqid):
         )
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
+    
+# GLOBAL STATICS
+@app.route("/segmentation_fault/most/meeting", methods=["GET"])
+def mostMeeting():
+    return MeetingHandler().getMostMeeting()
 
 
 if __name__ == "__main__":

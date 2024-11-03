@@ -56,3 +56,12 @@ class MeetingDAO:
         mid = cursor.fetchone()
         self.conn.commit()
         return mid
+
+    def getMostMeeting(self):
+        cursor = self.conn.cursor()
+        query = "SELECT m.mid, m.ccode, m.starttime, m.endtime, m.cdays, COUNT(s.sid) AS section_count FROM meeting m JOIN section s ON m.mid = s.mid GROUP BY m.mid, m.ccode, m.starttime, m.endtime, m.cdays ORDER BY section_count DESC LIMIT 5;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
