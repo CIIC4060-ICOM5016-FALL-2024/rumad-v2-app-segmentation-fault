@@ -57,16 +57,35 @@ class ClassDAO:
     
     def deleteClassById(self, cid):
         #TODO Verify if class with cid exists if not return a message
+
+        #Verify in the tables that have a foreign key to class first to avoid reference errors
+        #-------------------------------------------------------------------------------------
         cursor = self.conn.cursor()
         find_sec = "SELECT * FROM section WHERE cid = %s;"
+        find_req = "SELECT * FROM requisite WHERE classid = %s;"
+        find_syllabus = "SELECT * FROM syllabus WHERE courseid = %s;"
         cursor.execute(find_sec, [cid])
-        result = cursor.fetchone()
         
-        if result is not None:
-            section_q = "DELETE FROM class WHERE cid = %s;"
+        if cursor.rowcount > 0:
+            section_q = "DELETE FROM section WHERE cid = %s;"
             cursor.execute(section_q, [cid])
             self.conn.commit()
 
+        cursor.execute(find_req, [cid])
+
+        if cursor.rowcount > 0:
+            req_q = "DELETE FROM requisite WHERE classid = %s;"
+            cursor.execute(req_q, [cid])
+            self.conn.commit()
+
+        cursor.execute(find_syllabus, [cid])
+
+        if cursor.rowcount > 0:
+            syllabus_q = "DELETE FROM syllabus WHERE courseid = %s;"
+            cursor.execute(syllabus_q, [cid])
+            self.conn.commit()
+        #-------------------------------------------------------------------------------------
+        #Then delete the class
         query = "DELETE FROM class WHERE cid = %s;"
         cursor.execute(query, [cid])
         self.conn.commit()
