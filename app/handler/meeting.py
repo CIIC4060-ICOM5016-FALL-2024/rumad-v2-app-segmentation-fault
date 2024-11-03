@@ -80,3 +80,12 @@ class MeetingHandler:
         
         else:
             return "Data can't be inserted due to duplicates or record already exists", 400
+        
+    def getMostMeeting(self):
+        result = []
+        dao = MeetingDAO()
+        temp = dao.getMostMeeting()
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
