@@ -103,7 +103,9 @@ def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
     elif request.method == "PUT":
-        return "PUT"
+        return RequisiteHandler().updateRequisiteByClassIdReqId(
+            classid, reqid, request.json
+        )
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
 
