@@ -118,6 +118,10 @@ def requisiteByClassIdReqId(classid, reqid):
 
 
 # LOCAL STATICS (0/4)
+# Top 3 classes that were taught the most per room
+@app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
+def mostPerRoom(cid):
+    return ClassHandler().getMostPerRoom(cid)
 
 
 # GLOBAL STATICS (2/4)

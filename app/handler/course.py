@@ -103,6 +103,14 @@ class ClassHandler:
             result.append(self.mapToDict(row))
         return jsonify(result)
     
+    def getMostPerRoom(self, cid):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getMostPerRoom(cid)
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
                                
                            
         
