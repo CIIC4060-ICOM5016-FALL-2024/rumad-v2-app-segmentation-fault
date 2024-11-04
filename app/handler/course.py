@@ -83,8 +83,13 @@ class ClassHandler:
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
 
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [cname, ccode, cdesc, term, years, csyllabus]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+
+
         # Verify if cred value are of the correct length
-        if cred > 9:
+        if cred > 9 or cred <= 0:
             return jsonify(UpdateStatus = "Incorrect Credits Value"), 400
         
         # Verify if all values are of the correct type
