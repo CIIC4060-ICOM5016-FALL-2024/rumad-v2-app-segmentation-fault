@@ -122,17 +122,16 @@ class MeetingHandler:
 
     def deleteMeetingByMid(self, mid):
         dao = MeetingDAO()
-        if dao.getMeetingByMid(mid):
+        if dao.deleteMeetingByMid(mid):
             return jsonify(DeleteStatus="OK"), 200
         else:
             return jsonify(DeleteStatus="NOT FOUND"), 404
 
-        
     def getMostMeeting(self):
         result = []
         dao = MeetingDAO()
         temp = dao.getMostMeeting()
-        
+
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)

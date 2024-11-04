@@ -1,8 +1,7 @@
 import pandas as pd
 from flask import jsonify
 from dao.room import RoomDAO
-from handler.data_validation import clean_data
-
+from handler.course import ClassHandler
 
 
 class RoomHandler:
@@ -49,30 +48,23 @@ class RoomHandler:
         building = room_json["building"]
         room_number = room_json["room_number"]
         capacity = room_json["capacity"]
+
+        if not building or not room_number or not capacity:
+            return jsonify(InsertStatus="Missing required fields"), 404
+        if not isinstance(capacity, int)  or capacity <= 0:
+            return jsonify(InsertStatus="Invalid capacity"), 404
+        if not isinstance(room_number, str) or len(room_number) == 0:
+            return jsonify(InsertStatus="Invalid room_number"), 404
+        if not isinstance(building, str) or len(building) == 0:
+            return jsonify(InsertStatus="Invalid building"), 404
         
-        data = {
-            "rid": 1000,
-            "building": [building],
-            "room_number": [room_number],
-            "capacity": [capacity]
-        }
-        df_to_insert = pd.DataFrame(data)
-        df_list = clean_data(df_to_insert, "room")
-        
-        df_room = []
-        for df, df_name in df_list:
-            if df_name == "room":
-                df_room = df
-                
-        is_data_confirmed = self.confirmDataInDF(df_to_insert, df_room)
-        
-        if is_data_confirmed:
-            dao = RoomDAO()
-            rid = dao.insertRoom(building, room_number, capacity)
+        dao = RoomDAO()
+        rid = dao.insertRoom(building, room_number, capacity)
+        if rid:
             temp = (rid, building, room_number, capacity)
             return jsonify(self.mapToDict(temp)), 201
         else:
-            return jsonify(InsertStatus = "Data can't be inserted due to duplicates or invalid data"), 400
+            return jsonify(InsertStatus="Duplicate Room"), 404
 
     def deleteRoomByRid(self, rid):
         dao = RoomDAO()
@@ -93,32 +85,49 @@ class RoomHandler:
         building = room_json["building"]
         room_number = room_json["room_number"]
         capacity = room_json["capacity"]
+
+        if not building or not room_number or not capacity:
+            return jsonify(UpdateStatus="Missing required fields"), 404
+        if not isinstance(capacity, int)  or capacity <= 0:
+            return jsonify(UpdateStatus="Invalid capacity"), 404
+        if not isinstance(room_number, str) or len(room_number) == 0:
+            return jsonify(UpdateStatus="Invalid room_number"), 404
+        if not isinstance(building, str) or len(building) == 0:
+            return jsonify(UpdateStatus="Invalid building"), 404
         
-        data = {
-            "rid": 1000,
-            "building": [building],
-            "room_number": [room_number],
-            "capacity": [capacity]
-        }
-        df_to_update = pd.DataFrame(data)
-        df_list = clean_data(df_to_update, "room")
-        
-        df_room = []
-        for df, df_name in df_list:
-            if df_name == "room":
-                df_room = df
-                
-        is_data_confirmed = self.confirmDataInDF(df_to_update, df_room)
-        
-        if is_data_confirmed:
-            temp = dao.updateRoomByRid(rid, building, room_number, capacity)
-            if temp:
-                tup = (rid, building, room_number, capacity)
-                return jsonify(self.mapToDict(tup)), 200
-            else:
-                return jsonify(UpdateStatus="NOT FOUND"), 404
+        dao = RoomDAO()
+        temp = dao.updateRoomByRid(rid, building, room_number, capacity)
+        if temp:
+            tup = (rid, building, room_number, capacity)
+            return jsonify(self.mapToDict(tup)), 200
         else:
-            return jsonify(UpdateStatus = "Data can't be updated due to duplicates or invalid data"), 400
+            return jsonify(UpdateStatus="Not Found"), 404
+
+    def getMaxCapacity(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getMaxCapacity(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+        
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+        
+    
+
+
 
 
 
