@@ -102,21 +102,56 @@ class ClassDAO:
         return result
 
          
-    def getMostPerRoom(self, cid):
+    def getMostPerRoom(self, id):
         cursor = self.conn.cursor()
         query = "WITH temp AS ( \
-        SELECT cid, COUNT(*) as class_count \
-        FROM section \
-        WHERE roomid = %s \
-        GROUP BY cid \
-        ORDER BY class_count DESC \
-        LIMIT 3 \
-        ) \
-        SELECT class.* \
-        FROM class \
-        inner JOIN temp ON class.cid = temp.cid \
-        ORDER BY temp.class_count DESC;"
-        cursor.execute(query, [cid])
+                    SELECT cid, COUNT(cid) as class_count \
+                    FROM section \
+                    WHERE roomid = %s \
+                    GROUP BY cid \
+                    ORDER BY class_count DESC \
+                    LIMIT 3 \
+                ) \
+                SELECT class.* \
+                FROM class \
+                inner JOIN temp ON class.cid = temp.cid \
+                ORDER BY temp.class_count DESC;"
+        cursor.execute(query, [id])
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+    
+
+    def getLeastClass(self): #Verify Natural vs inner
+        cursor = self.conn.cursor()
+        query = "select class.*, coalesce(tp.cnt,0) from class natural left join \
+                (select cid, count(*) as cnt from section inner join class using (cid) \
+                group by cid) as tp \
+                order by coalesce(tp.cnt,0) \
+                limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+    
+    def getMostPerSemester(self, year, semester):
+        cursor = self.conn.cursor()
+        query =  "WITH temp AS ( \
+                        SELECT cid, COUNT(cid) AS count \
+                        FROM section AS s \
+                        INNER JOIN class USING (cid) \
+                        WHERE s.years = %s AND s.semester = %s \
+                        GROUP BY cid \
+                        ORDER BY count DESC \
+                        LIMIT 3 \
+                    ) \
+                    SELECT class.*, temp.count \
+                    FROM class \
+                    INNER JOIN temp USING (cid) \
+                    ORDER BY temp.count DESC;"
+        cursor.execute(query, [year, semester])
         result = []
         for row in cursor:
             result.append(row)

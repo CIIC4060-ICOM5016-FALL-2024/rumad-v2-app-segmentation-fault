@@ -117,25 +117,33 @@ def requisiteByClassIdReqId(classid, reqid):
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
 
 
-# LOCAL STATICS (0/4)
+# LOCAL STATICS (2/4)
 # Top 3 classes that were taught the most per room
-@app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
-def mostPerRoom(cid):
-    return ClassHandler().getMostPerRoom(cid)
+@app.route("/segmentation_fault/room/<id>/classes", methods=["GET"])
+def mostPerRoom(id):
+    return ClassHandler().getMostPerRoom(id)
+
+# Top 3 most taught classes per semester per year
+@app.route("/segmentation_fault/classes/<year>/<semester>", methods=["GET"])
+def mostPerSemester(year, semester):
+    return ClassHandler().getMostPerSemester(year, semester)
 
 
-# GLOBAL STATICS (2/4)
+# GLOBAL STATICS (4/4)
 # Top 5 meetings with the most sections
 @app.route("/segmentation_fault/most/meeting", methods=["GET"])
 def mostMeeting():
     return MeetingHandler().getMostMeeting()
-
 
 # Top 3 classes that appears the most as prerequisite to other classes
 @app.route("/segmentation_fault/most/prerequisite", methods=["GET"])
 def mostPrerequisite():
     return ClassHandler().getMostPrerequisite()
 
+# Top 3 classes that were offered the least
+@app.route("/segmentation_fault/least/classes", methods=["GET"])
+def leastClass():
+    return ClassHandler().getLeastClass()
 
 # Total number of sections per year
 @app.route("/segmentation_fault/section/year", methods=["GET"])
