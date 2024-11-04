@@ -43,7 +43,7 @@ class SectionHandler:
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:
-            return "Not Found", 404
+            return jsonify(GetStatus = "NOT FOUND"), 404
 
     def insertSection(self, section_json):
         if (
@@ -54,7 +54,7 @@ class SectionHandler:
             or "years" not in section_json
             or "capacity" not in section_json
         ):
-            return "Missing required fields", 400
+            return jsonify(InsertStatus = "Missing required fields"), 400
 
         roomid = section_json["roomid"]
         cid = section_json["cid"]
@@ -82,7 +82,7 @@ class SectionHandler:
         not_duplicate = self.confirmDataInDF(df_to_insert, df_section)
 
         if not not_duplicate:
-            return ("Data can't be inserted due to duplicates or record already exists",400,)
+            return jsonify(InsertStatus = "Duplicate Entry"), 400
 
         df_list = clean_data(df_to_insert, "section")
 
@@ -100,7 +100,7 @@ class SectionHandler:
 
             return self.mapToDict(temp), 201
         else:
-            return "Data can't be inserted", 400
+            return jsonify(InsertStatus = "Invalid data"), 400
 
     def deleteSectionBySid(self, sid):
         dao = SectionDAO()
@@ -118,7 +118,7 @@ class SectionHandler:
             or "years" not in section_json
             or "capacity" not in section_json
         ):
-            return "Missing required fields", 400
+            return jsonify(UpdateStatus = "Missing required fields"), 400
 
         roomid = section_json["roomid"]
         cid = section_json["cid"]
@@ -146,7 +146,7 @@ class SectionHandler:
         not_duplicate = self.confirmDataInDF(df_to_update, df_section)
         
         if not not_duplicate:
-            return ("Data can't be updated due to duplicates or record already exists",400,)
+            return jsonify(UpdateStatus = "Duplicate Entry"), 400
         
         df_list = clean_data(df_to_update, "section")
         
@@ -164,7 +164,7 @@ class SectionHandler:
                 return jsonify(UpdateStatus="NOT FOUND"), 404
             
         else:
-            return "Data can't be updated", 400
+            return jsonify(UpdateStatus = "Invalid data"), 400
 
     def getSectionPerYear(self):
         dao = SectionDAO()
@@ -173,4 +173,4 @@ class SectionHandler:
         if result is not None:
             return jsonify(result)
         else:
-            return "Not Found", 404
+            return jsonify(GetStatus = "NOT FOUND"), 404

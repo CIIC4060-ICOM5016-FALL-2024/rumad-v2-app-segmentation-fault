@@ -39,7 +39,7 @@ class RequisiteHandler:
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:
-            return "Not Found", 404
+            return jsonify(GetStatus="NOT FOUND"), 404
 
     def insertRequisite(self, requisite_json):
         if (
@@ -47,7 +47,7 @@ class RequisiteHandler:
             or "reqid" not in requisite_json
             or "prereq" not in requisite_json
         ):
-            return "Missing required fields", 400
+            return jsonify(InsertStatus="Missing required fields"), 400
 
         classid = requisite_json["classid"]
         reqid = requisite_json["reqid"]
@@ -71,7 +71,7 @@ class RequisiteHandler:
 
             return self.mapToDict(temp), 201
         else:
-            return ("Data can't be inserted due to duplicates or invalid data",400,)
+            return jsonify(InsertStatus="Duplicate Entry"), 400
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
         dao = RequisiteDAO()
@@ -82,13 +82,13 @@ class RequisiteHandler:
 
     def updateRequisiteByClassIdReqId(self, classid, reqid, requisite_json):
         if "prereq" not in requisite_json:
-            return "Missing required fields", 400
+            return jsonify(InsertStatus="Missing required fields"), 400
 
         prereq = requisite_json["prereq"]
 
         dao = RequisiteDAO()
         if dao.getRequisiteByClassIdReqId(classid, reqid) is None:
-            return "Not Found", 404
+            return jsonify(UpdateStatus="NOT FOUND"), 404
         else:
             dao.updateRequisiteByClassIdReqId(classid, reqid, prereq)
             temp = (classid, reqid, prereq)

@@ -42,12 +42,12 @@ class MeetingHandler:
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:
-            return "Not Found", 404
+            return jsonify(GetStatus = "NOT FOUND"), 404
 
     def insertMeeting(self, meeting_json):
         if ("ccode" not in meeting_json or "starttime" not in meeting_json 
             or "endtime" not in meeting_json or "cdays" not in meeting_json):
-            return "Missing required fields", 400
+            return jsonify(InsertStatus = "Missing required fields"), 400
 
         ccode = meeting_json["ccode"]
         starttime = datetime.strptime(meeting_json["starttime"], "%H:%M:%S").strftime("%H:%M:%S")
@@ -79,16 +79,16 @@ class MeetingHandler:
             return self.mapToDict(temp), 201
 
         else:
-            return ("Data can't be inserted due to duplicates or invalid data", 400,)
+            return jsonify(InsertStatus = "Data can't be inserted due to duplicates or invalid data"), 400
 
     def updateMeetingByMid(self, mid, meeting_json):
         dao = MeetingDAO()
         if not dao.getMeetingByMid(mid):
-            return "Not Found", 404
+            return jsonify(UpdateStatus="NOT FOUND"), 404
 
         if ("ccode" not in meeting_json or "starttime" not in meeting_json 
             or "endtime" not in meeting_json or "cdays" not in meeting_json):
-            return "Missing required fields", 400
+            return jsonify(UpdateStatus="Missing required fields"), 400
 
         ccode = meeting_json["ccode"]
         starttime = datetime.strptime(meeting_json["starttime"], "%H:%M:%S").strftime("%H:%M:%S")
@@ -118,7 +118,7 @@ class MeetingHandler:
 
             return self.mapToDict(temp), 200
         else:
-            return ("Data can't be update due to duplicates or invalid data", 400,)
+            return jsonify(UpdateStatus = "Data can't be updated due to duplicates or invalid data"), 400
 
     def deleteMeetingByMid(self, mid):
         dao = MeetingDAO()
