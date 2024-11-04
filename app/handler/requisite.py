@@ -93,6 +93,9 @@ class RequisiteHandler:
             return jsonify(InsertStatus="Missing required fields"), 400
 
         prereq = requisite_json["prereq"]
+        
+        if not isinstance(prereq, bool):
+            return jsonify(UpdateStatus="Invalid datatype for prereq"), 400
 
         dao = RequisiteDAO()
         if dao.getRequisiteByClassIdReqId(classid, reqid) is None:
