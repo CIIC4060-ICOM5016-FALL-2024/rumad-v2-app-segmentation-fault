@@ -23,9 +23,7 @@ class SectionHandler:
 
         # Check if the data to insert is already in the database
         values_to_check = df_to_verify[columns_to_check].iloc[0]
-        duplicate_count = (
-            df_section[columns_to_check].eq(values_to_check).all(axis=1).sum()
-        )
+        duplicate_count = (df_section[columns_to_check].eq(values_to_check).all(axis=1).sum())
 
         return duplicate_count == 1
 
@@ -88,10 +86,7 @@ class SectionHandler:
         print(not_duplicate)
 
         if not not_duplicate:
-            return (
-                "Data can't be inserted due to duplicates or record already exists",
-                400,
-            )
+            return ("Data can't be inserted due to duplicates or record already exists",400,)
 
         df_list = clean_data(df_to_insert, "section")
 

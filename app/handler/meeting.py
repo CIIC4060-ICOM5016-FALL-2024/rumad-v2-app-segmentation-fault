@@ -86,8 +86,8 @@ class MeetingHandler:
         if not dao.getMeetingByMid(mid):
             return "Not Found", 404
 
-        if ( "ccode" not in meeting_json or "starttime" not in meeting_json or 
-            "endtime" not in meeting_json or "cdays" not in meeting_json):
+        if ("ccode" not in meeting_json or "starttime" not in meeting_json 
+            or "endtime" not in meeting_json or "cdays" not in meeting_json):
             return "Missing required fields", 400
 
         ccode = meeting_json["ccode"]

@@ -19,9 +19,7 @@ class RequisiteHandler:
 
         # Check if the data to insert is already in the database
         values_to_check = df_to_verify[columns_to_check].iloc[0]
-        duplicate_count = (
-            df_requisite[columns_to_check].eq(values_to_check).all(axis=1).sum()
-        )
+        duplicate_count = (df_requisite[columns_to_check].eq(values_to_check).all(axis=1).sum())
 
         return duplicate_count == 1
 
@@ -73,10 +71,7 @@ class RequisiteHandler:
 
             return self.mapToDict(temp), 201
         else:
-            return (
-                "Data can't be inserted due to duplicates or record already exists",
-                400,
-            )
+            return ("Data can't be inserted due to duplicates or invalid data",400,)
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
         dao = RequisiteDAO()
