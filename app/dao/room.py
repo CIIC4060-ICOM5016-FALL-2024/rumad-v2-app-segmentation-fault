@@ -31,11 +31,21 @@ class RoomDAO:
 
     def insertRoom(self, building, room_number, capacity):
         cursor = self.conn.cursor()
+
+        conflict_check_query = "SELECT 1 FROM room WHERE building = %s AND room_number = %s"
+        cursor.execute(conflict_check_query, (building, room_number))
+        if cursor.fetchone():
+            return None 
+        
         query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s) RETURNING rid;"
         cursor.execute(query, (building, room_number, capacity))
-        rid = cursor.fetchone()[0]
+        result = cursor.fetchone()
         self.conn.commit()
-        return rid
+        if result:
+            return result[0]
+        else:
+            return None 
+
 
     def deleteRoomByRid(self, rid):
         cursor = self.conn.cursor()
@@ -47,6 +57,12 @@ class RoomDAO:
 
     def updateRoomByRid(self, rid, building, room_number, capacity):
         cursor = self.conn.cursor()
+
+        conflict_check_query = "SELECT 1 FROM room WHERE building = %s AND room_number = %s AND rid != %s"
+        cursor.execute(conflict_check_query, (building, room_number, rid))
+        if cursor.fetchone():
+            return False 
+        
         query = "UPDATE room SET building=%s, room_number=%s, capacity=%s WHERE rid=%s"
         cursor.execute(query, (building, room_number, capacity, rid))
         rowcount = cursor.rowcount

@@ -73,11 +73,6 @@ def roomByRID(rid):
     else:
         return RoomHandler().deleteRoomByRid(rid)
 
-@app.route("/segmentation_fault/<string:building>/capacity", methods=['GET'])
-def getMaxCapacity(building):
-    return RoomHandler().getMaxCapacity(building)
-
-
 # CLASS ROUTES
 @app.route("/segmentation_fault/class", methods=["GET", "POST"])
 def courses():
@@ -122,6 +117,11 @@ def requisiteByClassIdReqId(classid, reqid):
 
 
 # LOCAL STATICS (0/4)
+# Top 3 rooms per building with the most capacity
+@app.route("/segmentation_fault/<string:building>/capacity", methods=['GET'])
+def getMaxCapacity(building):
+    return RoomHandler().getMaxCapacity(building)
+
 # Top 3 classes that were taught the most per room
 @app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
 def mostPerRoom(cid):
