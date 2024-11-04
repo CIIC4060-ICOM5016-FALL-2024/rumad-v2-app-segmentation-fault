@@ -1,3 +1,4 @@
+from calendar import c
 from flask import jsonify
 from dao.course import ClassDAO
 
@@ -32,9 +33,15 @@ class ClassHandler:
         else:
             result = self.mapToDict(temp)
             return jsonify(result)
+
+        
     
     def insertClass(self, class_json):
         dao = ClassDAO()
+
+        if not all(key in class_json for key in ["cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]):
+            return jsonify(InsertStatus="Malformed post request"), 400
+        
         cname = class_json['cname']
         ccode = class_json['ccode']
         cdesc = class_json['cdesc']
@@ -42,13 +49,23 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
+        temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
+
+        
+        #Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
+        if dao.exactDuplicate(temp):
+            return jsonify(InsertStatus = "Duplicate Entry"), 400
+        
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
-        temp = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
-        return jsonify(self.mapToDict(temp)), 201
+        result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+        return jsonify(self.mapToDict(result)), 201
     
     def updateClassById(self, cid, class_json):
-        #Verify what atributtes are going to be updated
         dao = ClassDAO()
+
+        if not all(key in class_json for key in ["cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]):
+            return jsonify(InsertStatus="Malformed post request"), 400
+            
         cname = class_json['cname']
         ccode = class_json['ccode']
         cdesc = class_json['cdesc']
@@ -56,8 +73,12 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
-        if not "cname" or not "ccode" or not "cdesc" or not "term" or not "years" or not "cred" or not "csyllabus" in class_json:
-            return jsonify(UpdateStatus = "Malformed post request"), 400
+        tempV = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
+
+         #Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
+        if dao.exactDuplicate(tempV):
+            return jsonify(InsertStatus = "Duplicate Entry"), 400
+        
         temp = dao.updateClassById(cid, cname,ccode, cdesc, term, years, cred, csyllabus)
         if temp:
             tup = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
@@ -72,7 +93,24 @@ class ClassHandler:
             return jsonify(Error="Class Not Found"), 404
         else:
             return jsonify(DeleteStatus="OK"), 200
+        
+    def getMostPrerequisite(self):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getMostPrerequisite()
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
     
+    def getMostPerRoom(self, cid):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getMostPerRoom(cid)
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
                                
                            
         

@@ -30,7 +30,7 @@ class SectionDAO:
         cursor.execute(query, (sid,))
         result = cursor.fetchone()
         return result
-    
+
     def insertSection(self, roomid, cid, mid, semester, years, capacity):
         cursor = self.conn.cursor()
         query = "INSERT INTO section(roomid, cid, mid, semester, years, capacity) VALUES (%s, %s, %s, %s, %s, %s) RETURNING sid;"
@@ -46,3 +46,18 @@ class SectionDAO:
         rowcount = cursor.rowcount
         self.conn.commit()
         return rowcount > 0
+
+    def updateSectionBySid(self, sid, roomid, cid, mid, semester, years, capacity):
+        cursor = self.conn.cursor()
+        query = "UPDATE section SET roomid = %s, cid = %s, mid = %s, semester = %s, years = %s, capacity = %s WHERE sid = %s RETURNING sid;"
+        cursor.execute(query, (roomid, cid, mid, semester, years, capacity, sid))
+        sid = cursor.fetchone()
+        self.conn.commit()
+        return sid
+
+    def getSectionPerYear(self):
+        cursor = self.conn.cursor()
+        query = "SELECT years, count(sid) FROM section GROUP BY years ORDER BY years;"
+        cursor.execute(query)
+        result = cursor.fetchall()
+        return result

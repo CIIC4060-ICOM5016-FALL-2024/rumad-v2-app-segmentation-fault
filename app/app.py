@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, request
 from flask_cors import CORS
 
 from handler.section import SectionHandler
@@ -31,34 +31,41 @@ def sectionByID(sid):
     if request.method == "DELETE":
         return SectionHandler().deleteSectionBySid(sid)
     elif request.method == "PUT":
-        return "PUT"
+        return SectionHandler().updateSectionBySid(sid, request.json)
     else:
         return SectionHandler().getSectionBySid(sid)
 
 
-@app.route("/segmentation_fault/meeting", methods = ['GET', 'POST'])
+# MEETING ROUTES
+@app.route("/segmentation_fault/meeting", methods=["GET", "POST"])
 def meeting():
-    if request.method == 'GET':
+    if request.method == "GET":
         return MeetingHandler().getAllMeeting()
     else:
         return MeetingHandler().insertMeeting(request.json)
 
 
-@app.route("/segmentation_fault/meeting/<int:mid>")
-def getMeetingByMid(mid):
-    return MeetingHandler().getMeetingByMid(mid)
+@app.route("/segmentation_fault/meeting/<int:mid>", methods=["GET", "PUT", "DELETE"])
+def meetingByMID(mid):
+    if request.method == "GET":
+        return MeetingHandler().getMeetingByMid(mid)
+    elif request.method == "PUT":
+        return MeetingHandler().updateMeetingByMid(mid, request.json)
+    else:
+        return MeetingHandler().deleteMeetingByMid(mid)
 
 
 # ROOM ROUTES
-@app.route("/segmentation_fault/room", methods=['GET', 'POST'])
+@app.route("/segmentation_fault/room", methods=["GET", "POST"])
 def room():
     if request.method == "GET":
         return RoomHandler().getAllRoom()
     else:
         return RoomHandler().insertRoom(request.json)
 
-@app.route("/segmentation_fault/room/<int:rid>", methods=['GET', 'PUT', 'DELETE'])
-def getRoomByRID(rid):
+
+@app.route("/segmentation_fault/room/<int:rid>", methods=["GET", "PUT", "DELETE"])
+def roomByRID(rid):
     if request.method == "GET":
         return RoomHandler().getRoomByRid(rid)
     elif request.method == "PUT":
@@ -78,9 +85,10 @@ def courses():
         return ClassHandler().getAllClass()
     elif request.method == "POST":
         return ClassHandler().insertClass(request.json)
-    
+
+
 @app.route("/segmentation_fault/class/<int:cid>", methods=["GET", "PUT", "DELETE"])
-def courses2(cid):
+def courseByID(cid):
     if request.method == "GET":
         return ClassHandler().getclassById(cid)
     elif request.method == "PUT":
@@ -88,22 +96,56 @@ def courses2(cid):
     elif request.method == "DELETE":
         return ClassHandler().deleteClassById(cid)
 
-@app.route("/segmentation_fault/requisite", methods = ['GET', 'POST'])
+
+# REQUISITE ROUTES
+@app.route("/segmentation_fault/requisite", methods=["GET", "POST"])
 def requisite():
-    if request.method == 'GET':
+    if request.method == "GET":
         return RequisiteHandler().getAllRequisite()
     else:
         return RequisiteHandler().insertRequisite(request.json)
 
 
-@app.route("/segmentation_fault/requisite/<int:classid>/<int:reqid>", methods=["GET", "PUT", "DELETE"])
+@app.route(
+    "/segmentation_fault/requisite/<int:classid>/<int:reqid>",
+    methods=["GET", "PUT", "DELETE"],
+)
 def requisiteByClassIdReqId(classid, reqid):
     if request.method == "DELETE":
         return RequisiteHandler().deleteRequisiteByClassIdReqId(classid, reqid)
     elif request.method == "PUT":
-        return "PUT"
+        return RequisiteHandler().updateRequisiteByClassIdReqId(
+            classid, reqid, request.json
+        )
     else:
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
+
+
+# LOCAL STATICS (0/4)
+# Top 3 classes that were taught the most per room
+@app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
+def mostPerRoom(cid):
+    return ClassHandler().getMostPerRoom(cid)
+
+
+# GLOBAL STATICS (2/4)
+# Top 5 meetings with the most sections
+@app.route("/segmentation_fault/most/meeting", methods=["GET"])
+def mostMeeting():
+    return MeetingHandler().getMostMeeting()
+
+
+# Top 3 classes that appears the most as prerequisite to other classes
+@app.route("/segmentation_fault/most/prerequisite", methods=["GET"])
+def mostPrerequisite():
+    return ClassHandler().getMostPrerequisite()
+
+
+# Total number of sections per year
+@app.route("/segmentation_fault/section/year", methods=["GET"])
+def sectionYear():
+    return SectionHandler().getSectionPerYear()
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=8080)
