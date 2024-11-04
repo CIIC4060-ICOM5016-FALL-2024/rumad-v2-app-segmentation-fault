@@ -96,7 +96,7 @@ class MeetingHandler:
         cdays = meeting_json["cdays"]
         
         data = {
-            "mid": [mid],
+            "mid": 1000,
             "ccode": [ccode],
             "starttime": [starttime],
             "endtime": [endtime],
@@ -118,7 +118,7 @@ class MeetingHandler:
 
             return self.mapToDict(temp), 200
         else:
-            return ("Data can't be inserted due to duplicates or invalid data", 400,)
+            return ("Data can't be update due to duplicates or invalid data", 400,)
 
     def deleteMeetingByMid(self, mid):
         dao = MeetingDAO()
