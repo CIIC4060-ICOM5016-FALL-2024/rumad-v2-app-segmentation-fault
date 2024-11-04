@@ -80,17 +80,6 @@ class RoomHandler:
         else:
             return jsonify(UpdateStatus="Not Found"), 404
         
-    def getMostClassesByRid(self, rid):
-        result = []
-        dao = RoomDAO()
-        class_handler = ClassHandler()
-        temp = dao.getMostClassesByRid(rid)
-        if temp:
-            for item in temp:
-                result.append(class_handler.mapToDict(item))
-            return jsonify(result), 200
-        else:
-            return jsonify(UpdateStatus="Not Found"), 404
     
 
 

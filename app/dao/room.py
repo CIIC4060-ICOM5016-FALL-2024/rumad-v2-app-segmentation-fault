@@ -78,22 +78,5 @@ class RoomDAO:
             result.append(row)
         return result
     
-    def getMostClassesByRid(self, rid):
-        result = []
-        cursor = self.conn.cursor()
-        query = """
-            SELECT class.* 
-            FROM class
-            JOIN section ON class.cid = section.cid
-            JOIN room ON room.rid = section.roomid
-            WHERE room.rid = %s
-            GROUP BY class.cid
-            ORDER BY COUNT(section.cid) DESC
-            LIMIT 3;
-        """        
-        cursor.execute(query, (rid,))
-        for row in cursor:
-            result.append(row)
-        return result
 
 

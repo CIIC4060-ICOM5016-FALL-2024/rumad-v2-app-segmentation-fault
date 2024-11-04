@@ -75,9 +75,6 @@ def getRatioByBuilding(building):
     #TODO: Ask what supposed to be the input
     return RoomHandler().getRatioByBuilding(building)
 
-@app.route("/segmentation_fault/room/<int:rid>/classes", methods=['GET'])
-def getMostClassesByRid(rid):
-    return RoomHandler().getMostClassesByRid(rid)
 
 
 # CLASS ROUTES
