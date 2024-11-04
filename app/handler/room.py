@@ -80,19 +80,45 @@ class RoomHandler:
         if result:
             return jsonify(DeleteStatus="OK"), 200
         else:
-            return jsonify(DeleteStatus="Not Found"), 404
+            return jsonify(DeleteStatus="NOT FOUND"), 404
 
     def updateRoomByRid(self, rid, room_json):
+        dao = RoomDAO()
+        if not dao.getRoomByRid(rid):
+            return jsonify(UpdateStatus="NOT FOUND"), 404
+        
+        if ("building" not in room_json or "room_number" not in room_json or "capacity" not in room_json):
+            return jsonify(UpdateStatus="Missing required fields"), 400
+        
         building = room_json["building"]
         room_number = room_json["room_number"]
         capacity = room_json["capacity"]
-        dao = RoomDAO()
-        temp = dao.updateRoomByRid(rid, building, room_number, capacity)
-        if temp:
-            tup = (rid, building, room_number, capacity)
-            return jsonify(self.mapToDict(tup)), 200
+        
+        data = {
+            "rid": 1000,
+            "building": [building],
+            "room_number": [room_number],
+            "capacity": [capacity]
+        }
+        df_to_update = pd.DataFrame(data)
+        df_list = clean_data(df_to_update, "room")
+        
+        df_room = []
+        for df, df_name in df_list:
+            if df_name == "room":
+                df_room = df
+                
+        is_data_confirmed = self.confirmDataInDF(df_to_update, df_room)
+        
+        if is_data_confirmed:
+            temp = dao.updateRoomByRid(rid, building, room_number, capacity)
+            if temp:
+                tup = (rid, building, room_number, capacity)
+                return jsonify(self.mapToDict(tup)), 200
+            else:
+                return jsonify(UpdateStatus="NOT FOUND"), 404
         else:
-            return jsonify(UpdateStatus="Not Found"), 404
+            return jsonify(UpdateStatus = "Data can't be updated due to duplicates or invalid data"), 400
 
 
 
