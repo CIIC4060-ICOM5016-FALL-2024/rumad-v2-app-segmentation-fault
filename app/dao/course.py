@@ -37,6 +37,12 @@ class ClassDAO:
         cursor.execute(find_duplicate_query, (insertVal["cname"], insertVal["ccode"], insertVal["cdesc"], insertVal["term"], insertVal["years"], insertVal["cred"], insertVal["csyllabus"]))
         return cursor.rowcount == 1
     
+    def credDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND years = %s AND csyllabus = %s;"
+        cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["term"], tempV["years"], tempV["csyllabus"]))
+        return cursor.rowcount == 1
+    
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
