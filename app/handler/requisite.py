@@ -1,3 +1,4 @@
+import re
 from flask import jsonify
 from dao.requisite import RequisiteDAO
 from handler.data_validation import clean_data
@@ -52,6 +53,13 @@ class RequisiteHandler:
         classid = requisite_json["classid"]
         reqid = requisite_json["reqid"]
         prereq = requisite_json["prereq"]
+        
+        if not isinstance(classid, int):
+            return jsonify(UpdateStatus="Invalid datatype for classid"), 400
+        if not isinstance(reqid, int):
+            return jsonify(UpdateStatus="Invalid datatype for reqid"), 400
+        if not isinstance(prereq, bool):
+            return jsonify(UpdateStatus="Invalid datatype for prereq"), 400
 
         data = {"classid": [classid], "reqid": [reqid], "prereq": [prereq]}
         df_to_insert = pd.DataFrame(data)
