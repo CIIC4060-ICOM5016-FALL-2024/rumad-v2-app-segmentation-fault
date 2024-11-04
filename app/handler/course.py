@@ -103,14 +103,33 @@ class ClassHandler:
             result.append(self.mapToDict(row))
         return jsonify(result)
     
-    def getMostPerRoom(self, cid):
+    def getMostPerRoom(self, id):
         result = []
         dao = ClassDAO()
-        temp = dao.getMostPerRoom(cid)
+        temp = dao.getMostPerRoom(id)
         
         for row in temp:
             result.append(self.mapToDict(row))
         return jsonify(result)
-                               
+    
+    def getLeastClass(self):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getLeastClass()
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
+
+
+    def getMostPerSemester(self, year, semester):
+        result = []
+        dao = ClassDAO()
+        temp = dao.getMostPerSemester(year, semester)
+        
+        for row in temp:
+            result.append(self.mapToDict(row))
+        return jsonify(result)
+
                            
         
