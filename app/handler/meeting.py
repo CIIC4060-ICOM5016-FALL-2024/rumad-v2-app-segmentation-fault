@@ -91,22 +91,23 @@ class MeetingHandler:
             return jsonify(UpdateStatus="Missing required fields"), 400
 
         ccode = meeting_json["ccode"]
-        starttime = meeting_json["starttime"]
-        endtime = meeting_json["endtime"]
+        starttime_str = meeting_json["starttime"]
+        endtime_str = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
-        
-        if not isinstance(ccode, str) or len(ccode) == 0:   
-            return jsonify(UpdateStatus="Invalid ccode"), 400
-        if not isinstance(starttime, datetime):
-            return jsonify(UpdateStatus="starttime must be a datetime object"), 400
-        if not isinstance(endtime, datetime):
-            return jsonify(UpdateStatus="endtime must be a datetime object"), 400
-        if not isinstance(cdays, str) or len(cdays) == 0:
-            return jsonify(UpdateStatus="Invalid cdays"), 400
-        
-        starttime = datetime.strptime(meeting_json["starttime"], "%H:%M:%S").strftime("%H:%M:%S")
-        endtime = datetime.strptime(meeting_json["endtime"], "%H:%M:%S").strftime("%H:%M:%S")
-        
+    
+        if not isinstance(ccode, str) and len(ccode) == 0:
+            return jsonify(UpdateStatus="Invalid datatype for ccode"), 400
+        if not isinstance(cdays, str) and len(ccode) == 0:
+            return jsonify(UpdateStatus="Invalid datatype for cdays"), 400
+
+        try:
+            starttime = datetime.strptime(str(starttime_str), "%H:%M:%S").strftime("%H:%M:%S")
+            endtime = datetime.strptime(str(endtime_str), "%H:%M:%S").strftime("%H:%M:%S")
+        except ValueError:
+            return jsonify(UpdateStatus="Invalid time format for starttime or endtime"), 400
+
+
+
         data = {
             "mid": 1000,
             "ccode": [ccode],
