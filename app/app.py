@@ -70,6 +70,15 @@ def getRoomByRID(rid):
 def getMaxCapacity(building):
     return RoomHandler().getMaxCapacity(building)
 
+@app.route("/segmentation_fault/room/<string:building>/ratio", methods=['GET'])
+def getRatioByBuilding(building):
+    #TODO: Ask what supposed to be the input
+    return RoomHandler().getRatioByBuilding(building)
+
+@app.route("/segmentation_fault/room/<int:rid>/classes", methods=['GET'])
+def getMostClassesByRid(rid):
+    return RoomHandler().getMostClassesByRid(rid)
+
 
 # CLASS ROUTES
 @app.route("/segmentation_fault/class", methods=["GET", "POST"])

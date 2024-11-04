@@ -1,5 +1,6 @@
 from flask import jsonify
 from dao.room import RoomDAO
+from handler.course import ClassHandler
 
 
 class RoomHandler:
@@ -67,6 +68,31 @@ class RoomHandler:
             return jsonify(result), 200
         else:
             return jsonify(UpdateStatus="Not Found"), 404
+        
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+        
+    def getMostClassesByRid(self, rid):
+        result = []
+        dao = RoomDAO()
+        class_handler = ClassHandler()
+        temp = dao.getMostClassesByRid(rid)
+        if temp:
+            for item in temp:
+                result.append(class_handler.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+    
+
 
 
 
