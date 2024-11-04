@@ -39,6 +39,7 @@ class ClassHandler:
     def insertClass(self, class_json):
         dao = ClassDAO()
 
+        # Verify if all keys are present
         if not all(key in class_json for key in ["cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]):
             return jsonify(InsertStatus="Malformed post request"), 400
         
@@ -49,10 +50,14 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
-        temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
 
+        # Verify if all values are of the correct type
+        if not all(isinstance(class_json[key], str) for key in ["cname", "ccode", "cdesc", "term", "years", "csyllabus"] or isinstance(class_json['cred'], int)):
+            return jsonify(InsertStatus = "Incorrect Datatype, verify entries"), 400
         
-        #Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
+        temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
+        
+        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
         if dao.exactDuplicate(temp):
             return jsonify(InsertStatus = "Duplicate Entry"), 400
         
@@ -75,7 +80,7 @@ class ClassHandler:
         csyllabus = class_json['csyllabus']
         tempV = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
 
-         #Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
+        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
         if dao.exactDuplicate(tempV):
             return jsonify(InsertStatus = "Duplicate Entry"), 400
         
