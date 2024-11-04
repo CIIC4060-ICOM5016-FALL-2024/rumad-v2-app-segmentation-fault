@@ -53,13 +53,13 @@ class ClassHandler:
 
         # Verify if all values are of the correct type
         if not all(isinstance(class_json[key], str) for key in ["cname", "ccode", "cdesc", "term", "years", "csyllabus"] or isinstance(class_json['cred'], int)):
-            return jsonify(InsertStatus = "Incorrect Datatype, verify entries"), 400
+            return jsonify(UpdateStatus = "Incorrect Datatype, verify entries"), 400
         
         temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
         
         # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
         if dao.exactDuplicate(temp):
-            return jsonify(InsertStatus = "Duplicate Entry"), 400
+            return jsonify(UpdatetStatus = "Duplicate Entry"), 400
         
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
         result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
@@ -78,6 +78,11 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
+
+        # Verify if all values are of the correct type
+        if not all(isinstance(class_json[key], str) for key in ["cname", "ccode", "cdesc", "term", "years", "csyllabus"] or isinstance(class_json['cred'], int)):
+            return jsonify(UpdateStatus = "Incorrect Datatype, verify entries"), 400
+
         tempV = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
 
         # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
