@@ -105,7 +105,7 @@ class ClassDAO:
     def getMostPerRoom(self, id):
         cursor = self.conn.cursor()
         query = "WITH temp AS ( \
-                    SELECT cid, COUNT(*) as class_count \
+                    SELECT cid, COUNT(cid) as class_count \
                     FROM section \
                     WHERE roomid = %s \
                     GROUP BY cid \
@@ -139,7 +139,7 @@ class ClassDAO:
     def getMostPerSemester(self, year, semester):
         cursor = self.conn.cursor()
         query =  "WITH temp AS ( \
-                        SELECT cid, COUNT(*) AS count \
+                        SELECT cid, COUNT(cid) AS count \
                         FROM section AS s \
                         INNER JOIN class USING (cid) \
                         WHERE s.years = %s AND s.semester = %s \
