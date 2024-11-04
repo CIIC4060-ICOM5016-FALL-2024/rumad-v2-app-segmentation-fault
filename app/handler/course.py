@@ -100,9 +100,9 @@ class ClassHandler:
         dao = ClassDAO()
         temp = dao.deleteClassById(cid)
         if not temp:
-            return jsonify(Error="Class Not Found"), 404
+            return jsonify(DeleteStatus = "Class Not Found"), 404
         else:
-            return jsonify(DeleteStatus="OK"), 200
+            return jsonify(DeleteStatus = "OK"), 200
         
     def getMostPrerequisite(self):
         result = []
