@@ -122,6 +122,11 @@ def requisiteByClassIdReqId(classid, reqid):
 def getMaxCapacity(building):
     return RoomHandler().getMaxCapacity(building)
 
+@app.route("/segmentation_fault/room/<string:building>/ratio", methods=['GET'])
+def getRatioByBuilding(building):
+    #TODO: Ask what supposed to be the input
+    return RoomHandler().getRatioByBuilding(building)
+
 # Top 3 classes that were taught the most per room
 @app.route("/segmentation_fault/room/<cid>/classes", methods=["GET"])
 def mostPerRoom(cid):
