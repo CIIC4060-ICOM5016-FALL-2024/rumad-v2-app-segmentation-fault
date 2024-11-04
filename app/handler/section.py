@@ -79,11 +79,7 @@ class SectionHandler:
         df_section = pd.DataFrame(dao.getAllSection(), columns=columns)
         df_section = pd.concat([df_section, df_to_insert], ignore_index=True)
 
-        print(df_section.tail(10))
-
         not_duplicate = self.confirmDataInDF(df_to_insert, df_section)
-
-        print(not_duplicate)
 
         if not not_duplicate:
             return ("Data can't be inserted due to duplicates or record already exists",400,)
@@ -130,12 +126,45 @@ class SectionHandler:
         semester = section_json["semester"]
         years = section_json["years"]
         capacity = section_json["capacity"]
-
+        
+        data = {
+            "sid": 1000,
+            "roomid": [roomid],
+            "cid": [cid],
+            "mid": [mid],
+            "semester": [semester],
+            "years": [years],
+            "capacity": [capacity],
+        }
+        df_to_update = pd.DataFrame(data)
+        
         dao = SectionDAO()
-        if dao.updateSectionBySid(sid, roomid, cid, mid, semester, years, capacity):
-            return jsonify(UpdateStatus="OK"), 200
+        columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
+        df_section = pd.DataFrame(dao.getAllSection(), columns=columns)
+        df_section = pd.concat([df_section, df_to_update], ignore_index=True)
+        
+        not_duplicate = self.confirmDataInDF(df_to_update, df_section)
+        
+        if not not_duplicate:
+            return ("Data can't be updated due to duplicates or record already exists",400,)
+        
+        df_list = clean_data(df_to_update, "section")
+        
+        df_section = []
+        for df, df_name in df_list:
+            if df_name == "section":
+                df_section = df
+                
+        is_data_confirmed = self.confirmDataInDF(df_to_update, df_section)
+        
+        if is_data_confirmed:
+            if dao.updateSectionBySid(sid, roomid, cid, mid, semester, years, capacity):
+                return jsonify(UpdateStatus="OK"), 200
+            else:
+                return jsonify(UpdateStatus="NOT FOUND"), 404
+            
         else:
-            return jsonify(UpdateStatus="NOT FOUND"), 404
+            return "Data can't be updated", 400
 
     def getSectionPerYear(self):
         dao = SectionDAO()
