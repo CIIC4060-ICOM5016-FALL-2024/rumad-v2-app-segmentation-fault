@@ -63,6 +63,10 @@ class SectionHandler:
         years = section_json["years"]
         capacity = section_json["capacity"]
         
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+        
         if not isinstance(roomid, int):
             return jsonify(InsertStatus = "Invalid datatype roomid"), 400
         if not isinstance(cid, int):
@@ -139,6 +143,10 @@ class SectionHandler:
         semester = section_json["semester"]
         years = section_json["years"]
         capacity = section_json["capacity"]
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
         
         if not isinstance(roomid, int):
             return jsonify(InsertStatus = "Invalid datatype roomid"), 400
