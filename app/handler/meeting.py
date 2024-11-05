@@ -53,6 +53,10 @@ class MeetingHandler:
         starttime_str = meeting_json["starttime"]
         endtime_str = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime_str, endtime_str, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
     
         if not isinstance(ccode, str):
             return jsonify(UpdateStatus="Invalid datatype for ccode"), 400
@@ -105,6 +109,10 @@ class MeetingHandler:
         starttime_str = meeting_json["starttime"]
         endtime_str = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime_str, endtime_str, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
     
         if not isinstance(ccode, str):
             return jsonify(UpdateStatus="Invalid datatype for ccode"), 400
