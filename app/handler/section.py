@@ -62,6 +62,19 @@ class SectionHandler:
         semester = section_json["semester"]
         years = section_json["years"]
         capacity = section_json["capacity"]
+        
+        if not isinstance(roomid, int):
+            return jsonify(InsertStatus = "Invalid datatype roomid"), 400
+        if not isinstance(cid, int):
+            return jsonify(InsertStatus = "Invalid datatype cid"), 400
+        if not isinstance(mid, int):
+            return jsonify(InsertStatus = "Invalid datatype mid"), 400
+        if not isinstance(semester, str):
+            return jsonify(InsertStatus = "Invalid datatype semester"), 400
+        if not isinstance(years, str):
+            return jsonify(InsertStatus = "Invalid datatype years"), 400
+        if not isinstance(capacity, int):
+            return jsonify(InsertStatus = "Invalid datatype capacity"), 400
 
         data = {
             "sid": 1000,
