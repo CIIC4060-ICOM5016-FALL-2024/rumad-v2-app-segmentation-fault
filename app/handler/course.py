@@ -1,6 +1,8 @@
 from calendar import c
 from flask import jsonify
 from dao.course import ClassDAO
+import pandas as pd
+from handler.data_validation import rem_courses_with_invalid_timeframe
 
 
 class ClassHandler:
@@ -91,7 +93,6 @@ class ClassHandler:
         if any(len(value.strip()) == 0 for value in [cname, ccode, cdesc, term, years, csyllabus]):
             return jsonify(UpdateStatus="A entry is empty"), 400
 
-
         # Verify if cred value are of the correct length
         if cred > 9 or cred <= 0:
             return jsonify(UpdateStatus = "Incorrect Credits Value"), 400
@@ -104,10 +105,23 @@ class ClassHandler:
 
         # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
         if dao.exactDuplicate(tempV):
-            return jsonify(InsertStatus = "Duplicate Entry"), 400
+            return jsonify(UpdateStatus = "Duplicate Entry"), 400
         
         elif dao.credDuplicate(tempV):
             return jsonify(UpdateStatus = "Duplicate Entry"), 400
+        
+        # Verify Phase 1 Constrains
+        #------------------------------------------------------------------------
+
+        # Verify if class to update have a asociate section
+        tempClass = {"cid": cid, "cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
+        class_df = pd.DataFrame([tempClass])
+        sections_df = dao.verifySectionsAs(cid)
+        result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
+
+        if result_class_df[0].empty:
+            return jsonify(UpdateStatus = "It is not possible to modify the term or year for classes that have associated sections, First modify the sections"), 400
+        #------------------------------------------------------------------------
         
         temp = dao.updateClassById(cid, cname,ccode, cdesc, term, years, cred, csyllabus)
         if temp:
