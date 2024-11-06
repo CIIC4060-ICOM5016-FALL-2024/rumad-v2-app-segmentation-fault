@@ -17,13 +17,15 @@ class SectionHandler:
         return result
 
     def confirmDataInDF(self, df_to_verify, df_section):
-        columns_to_check = ["roomid", "cid", "mid", "semester", "years", "capacity"]
+        columns_to_check = ["roomid", "cid", "mid", "semester", "years"]
         df_section = df_section.astype({col: str for col in columns_to_check})
         df_to_verify = df_to_verify.astype({col: str for col in columns_to_check})
 
         # Check if the data to insert is already in the database
         values_to_check = df_to_verify[columns_to_check].iloc[0]
-        duplicate_count = (df_section[columns_to_check].eq(values_to_check).all(axis=1).sum())
+        duplicate_count = (
+            df_section[columns_to_check].eq(values_to_check).all(axis=1).sum()
+        )
 
         return duplicate_count == 1
 
@@ -43,7 +45,7 @@ class SectionHandler:
         if result is not None:
             return jsonify(self.mapToDict(result))
         else:
-            return jsonify(GetStatus = "NOT FOUND"), 404
+            return jsonify(GetStatus="NOT FOUND"), 404
 
     def insertSection(self, section_json):
         if (
@@ -54,7 +56,7 @@ class SectionHandler:
             or "years" not in section_json
             or "capacity" not in section_json
         ):
-            return jsonify(InsertStatus = "Missing required fields"), 400
+            return jsonify(InsertStatus="Missing required fields"), 400
 
         roomid = section_json["roomid"]
         cid = section_json["cid"]
@@ -62,6 +64,23 @@ class SectionHandler:
         semester = section_json["semester"]
         years = section_json["years"]
         capacity = section_json["capacity"]
+
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+
+        if not isinstance(roomid, int):
+            return jsonify(InsertStatus="Invalid datatype roomid"), 400
+        if not isinstance(cid, int):
+            return jsonify(InsertStatus="Invalid datatype cid"), 400
+        if not isinstance(mid, int):
+            return jsonify(InsertStatus="Invalid datatype mid"), 400
+        if not isinstance(semester, str):
+            return jsonify(InsertStatus="Invalid datatype semester"), 400
+        if not isinstance(years, str):
+            return jsonify(InsertStatus="Invalid datatype years"), 400
+        if not isinstance(capacity, int):
+            return jsonify(InsertStatus="Invalid datatype capacity"), 400
 
         data = {
             "sid": 1000,
@@ -82,7 +101,7 @@ class SectionHandler:
         not_duplicate = self.confirmDataInDF(df_to_insert, df_section)
 
         if not not_duplicate:
-            return jsonify(InsertStatus = "Duplicate Entry"), 400
+            return jsonify(InsertStatus="Duplicate Entry"), 400
 
         df_list = clean_data(df_to_insert, "section")
 
@@ -100,7 +119,7 @@ class SectionHandler:
 
             return self.mapToDict(temp), 201
         else:
-            return jsonify(InsertStatus = "Invalid data"), 400
+            return jsonify(InsertStatus="Invalid data"), 400
 
     def deleteSectionBySid(self, sid):
         dao = SectionDAO()
@@ -118,7 +137,7 @@ class SectionHandler:
             or "years" not in section_json
             or "capacity" not in section_json
         ):
-            return jsonify(UpdateStatus = "Missing required fields"), 400
+            return jsonify(UpdateStatus="Missing required fields"), 400
 
         roomid = section_json["roomid"]
         cid = section_json["cid"]
@@ -126,7 +145,24 @@ class SectionHandler:
         semester = section_json["semester"]
         years = section_json["years"]
         capacity = section_json["capacity"]
-        
+
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+
+        if not isinstance(roomid, int):
+            return jsonify(InsertStatus="Invalid datatype roomid"), 400
+        if not isinstance(cid, int):
+            return jsonify(InsertStatus="Invalid datatype cid"), 400
+        if not isinstance(mid, int):
+            return jsonify(InsertStatus="Invalid datatype mid"), 400
+        if not isinstance(semester, str):
+            return jsonify(InsertStatus="Invalid datatype semester"), 400
+        if not isinstance(years, str):
+            return jsonify(InsertStatus="Invalid datatype years"), 400
+        if not isinstance(capacity, int):
+            return jsonify(InsertStatus="Invalid datatype capacity"), 400
+
         data = {
             "sid": 1000,
             "roomid": [roomid],
@@ -137,34 +173,34 @@ class SectionHandler:
             "capacity": [capacity],
         }
         df_to_update = pd.DataFrame(data)
-        
+
         dao = SectionDAO()
         columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
         df_section = pd.DataFrame(dao.getAllSection(), columns=columns)
         df_section = pd.concat([df_section, df_to_update], ignore_index=True)
-        
+
         not_duplicate = self.confirmDataInDF(df_to_update, df_section)
-        
+
         if not not_duplicate:
-            return jsonify(UpdateStatus = "Duplicate Entry"), 400
-        
+            return jsonify(UpdateStatus="Duplicate Entry"), 400
+
         df_list = clean_data(df_to_update, "section")
-        
+
         df_section = []
         for df, df_name in df_list:
             if df_name == "section":
                 df_section = df
-                
+
         is_data_confirmed = self.confirmDataInDF(df_to_update, df_section)
-        
+
         if is_data_confirmed:
             if dao.updateSectionBySid(sid, roomid, cid, mid, semester, years, capacity):
                 return jsonify(UpdateStatus="OK"), 200
             else:
                 return jsonify(UpdateStatus="NOT FOUND"), 404
-            
+
         else:
-            return jsonify(UpdateStatus = "Invalid data"), 400
+            return jsonify(UpdateStatus="Invalid data"), 400
 
     def getSectionPerYear(self):
         dao = SectionDAO()
@@ -173,4 +209,4 @@ class SectionHandler:
         if result is not None:
             return jsonify(result)
         else:
-            return jsonify(GetStatus = "NOT FOUND"), 404
+            return jsonify(GetStatus="NOT FOUND"), 404
