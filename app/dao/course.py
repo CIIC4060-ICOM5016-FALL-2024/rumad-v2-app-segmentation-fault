@@ -1,4 +1,5 @@
 from config.db_config import pg_config
+import pandas as pd
 import psycopg2 as pg
 
 
@@ -43,6 +44,17 @@ class ClassDAO:
         cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["term"], tempV["years"], tempV["csyllabus"]))
         return cursor.rowcount == 1
     
+    def verifySectionsAs(self, cid):
+        cursor = self.conn.cursor()
+        query = "SELECT * FROM section WHERE cid = %s;"
+        cursor.execute(query, [cid])
+        result = cursor.fetchall()
+
+        columns = [desc[0] for desc in cursor.description]
+        df = pd.DataFrame(result, columns=columns)
+        return df
+
+    
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):
         cursor = self.conn.cursor()
         query = "INSERT INTO class(cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s) returning cid;"
@@ -52,7 +64,6 @@ class ClassDAO:
         return cid
     
     def updateClassById(self, cid, cname, ccode, cdesc, term, years, cred, csyllabus):
-        #TODO Verify if class with cid exists if not return a message
         cursor = self.conn.cursor()
         query = "UPDATE class SET cname = %s, ccode = %s, cdesc = %s, term = %s, years = %s, cred = %s, csyllabus = %s WHERE cid = %s;"
         cursor.execute(query, [cname, ccode, cdesc, term, years, cred, csyllabus, cid])
@@ -62,7 +73,6 @@ class ClassDAO:
         return rowcount == 1
     
     def deleteClassById(self, cid):
-        #TODO Verify if class with cid exists if not return a message
 
         #Verify in the tables that have a foreign key to class first to avoid reference errors
         #-------------------------------------------------------------------------------------
