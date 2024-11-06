@@ -36,14 +36,11 @@ class ClassHandler:
             result = self.mapToDict(temp)
             return jsonify(result)
 
-        
-    
-    def insertClass(self, class_json):
-        dao = ClassDAO()
+    def inspectInputData(self, class_json):
 
-        # Verify if all keys are present
+    # Inspect if all keys are present
         if not all(key in class_json for key in ["cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]):
-            return jsonify(InsertStatus="Malformed post request"), 400
+            return jsonify(InsertStatus = "Malformed post request"), 400
         
         cname = class_json['cname']
         ccode = class_json['ccode']
@@ -53,18 +50,83 @@ class ClassHandler:
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
 
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [cname, ccode, cdesc, term, years, csyllabus]):
-            return jsonify(UpdateStatus = "A entry is empty"), 400
-
-        # Verify if cred value are of the correct length
-        if len(cred) > 1:
-            return jsonify(UpdateStatus = "Incorrect Credits Value"), 400
-
-        # Verify if all values are of the correct type
-        if not all(isinstance(class_json[key], str) for key in ["cname", "ccode", "cdesc", "term", "years", "csyllabus"] or isinstance(class_json['cred'], int)):
-            return jsonify(UpdateStatus = "Incorrect Datatype, verify entries"), 400
+    # Inspect Incorrect DataTypes
+        if not isinstance(cname, str):
+            return jsonify(UpdateStatus = "cname DataType is incorrect must be str or char"), 400
         
+        if not isinstance(ccode, str):
+            return jsonify(UpdateStatus = "ccode DataType is incorrect must be str or char"), 400
+        
+        if not isinstance(cdesc, str):
+            return jsonify(UpdateStatus = "cdesc DataType is incorrect must be str or char"), 400
+        
+        if not isinstance(term, str):
+            return jsonify(UpdateStatus = "term DataType is incorrect must be str or char"), 400
+        
+        if not isinstance(years, str):
+            return jsonify(UpdateStatus = "years DataType is incorrect must be str or char"), 400
+        
+        if not isinstance(cred, int):
+            return jsonify(UpdateStatus = "cred DataType is incorrect must be Integer"), 400
+        
+        if not isinstance(csyllabus, str):
+            return jsonify(UpdateStatus = "csyllabus DataType is incorrect must be str or char"), 400
+        
+    # Inspect Empty Entries
+        if len(cname.strip()) == 0:
+            return jsonify(UpdateStatus = "cname is empty"), 400
+        
+        elif len(ccode.strip()) == 0:
+            return jsonify(UpdateStatus = "ccode is empty"), 400
+        
+        elif len(cdesc.strip()) == 0:
+            return jsonify(UpdateStatus = "cdesc is empty"), 400
+        
+        elif len(term.strip()) == 0:
+            return jsonify(UpdateStatus = "term is empty"), 400
+        
+        elif len(years.strip()) == 0:
+            return jsonify(UpdateStatus = "years is empty"), 400
+        
+        elif len(csyllabus.strip()) == 0:
+            return jsonify(UpdateStatus = "csyllabus is empty"), 400
+        
+        
+    # Inspect correct lengths
+        if len(cname) > 50:
+            return jsonify(UpdateStatus = "cname cannot exceed 50 characters"), 400
+        
+        if len(ccode) > 4:
+            return jsonify(UpdateStatus = "ccode cannot exceed 4 characters"), 400
+        
+        if len(cdesc) > 100:
+            return jsonify(UpdateStatus = "cdesc cannot exceed 4 characters"), 400
+        
+        if len(term) > 35:
+            return jsonify(UpdateStatus = "term cannot exceed 4 characters"), 400
+        
+        if len(years) > 20:
+            return jsonify(UpdateStatus = "years cannot exceed 20 characters"), 400
+        
+        if len(csyllabus) > 255:
+            return jsonify(UpdateStatus = "csyllabus cannot exceed 255 characters"), 400
+        
+        if cred > 9 or cred <= 0:
+            return jsonify(UpdateStatus = "Incorrect Credits Value"), 400
+        
+    def insertClass(self, class_json):
+        returnStatement = self.inspectInputData(class_json)
+        if returnStatement != None:
+            return returnStatement
+        
+        dao = ClassDAO()
+        cname = class_json['cname']
+        ccode = class_json['ccode']
+        cdesc = class_json['cdesc']
+        term = class_json['term']
+        years = class_json['years']
+        cred = class_json['cred']
+        csyllabus = class_json['csyllabus']
         temp = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
         
         # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
@@ -76,11 +138,11 @@ class ClassHandler:
         return jsonify(self.mapToDict(result)), 201
     
     def updateClassById(self, cid, class_json):
-        dao = ClassDAO()
-
-        if not all(key in class_json for key in ["cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"]):
-            return jsonify(InsertStatus="Malformed post request"), 400
-            
+        returnStatement = self.inspectInputData(class_json)
+        if returnStatement != None:
+            return returnStatement
+        
+        dao = ClassDAO() 
         cname = class_json['cname']
         ccode = class_json['ccode']
         cdesc = class_json['cdesc']
@@ -88,19 +150,6 @@ class ClassHandler:
         years = class_json['years']
         cred = class_json['cred']
         csyllabus = class_json['csyllabus']
-
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [cname, ccode, cdesc, term, years, csyllabus]):
-            return jsonify(UpdateStatus="A entry is empty"), 400
-
-        # Verify if cred value are of the correct length
-        if cred > 9 or cred <= 0:
-            return jsonify(UpdateStatus = "Incorrect Credits Value"), 400
-        
-        # Verify if all values are of the correct type
-        if not all(isinstance(class_json[key], str) for key in ["cname", "ccode", "cdesc", "term", "years", "csyllabus"] or isinstance(class_json['cred'], int)):
-            return jsonify(UpdateStatus = "Incorrect Datatype, verify entries"), 400
-
         tempV = {"cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
 
         # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
@@ -112,7 +161,6 @@ class ClassHandler:
         
         # Verify Phase 1 Constrains
         #------------------------------------------------------------------------
-
         # Verify if class to update have a asociate section
         tempClass = {"cid": cid, "cname": cname, "ccode": ccode, "cdesc": cdesc, "term": term, "years": years, "cred": cred, "csyllabus": csyllabus}
         class_df = pd.DataFrame([tempClass])
