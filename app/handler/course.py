@@ -133,6 +133,9 @@ class ClassHandler:
         if dao.exactDuplicate(temp):
             return jsonify(UpdatetStatus = "Duplicate Entry"), 400
         
+        elif dao.credDuplicate(temp):
+            return jsonify(UpdateStatus = "Duplicate Entry"), 400
+        
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
         result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
         return jsonify(self.mapToDict(result)), 201
