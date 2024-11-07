@@ -5,10 +5,10 @@ from dao.room import RoomDAO
 class RoomHandler:
     def mapToDict(self, tuple):
         result = {
-            "rid" : tuple[0],
-            "building" : tuple[1],
-            "room_number" : tuple[2],
-            "capacity" : tuple[3]
+            "rid": tuple[0],
+            "building": tuple[1],
+            "room_number": tuple[2],
+            "capacity": tuple[3],
         }
         return result
 
@@ -35,12 +35,15 @@ class RoomHandler:
 
         if not building or not room_number or not capacity:
             return jsonify(InsertStatus="Missing required fields"), 404
-        if not isinstance(capacity, int)  or capacity <= 0:
+        if not isinstance(capacity, int) or capacity <= 0:
             return jsonify(InsertStatus="Invalid capacity"), 404
-        
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [building, room_number]):
+
+        if any(
+            len(value.strip()) == 0 or not isinstance(value, str)
+            for value in [building, room_number]
+        ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
-        
+
         dao = RoomDAO()
         rid = dao.insertRoom(building, room_number, capacity)
         if rid:
@@ -64,13 +67,15 @@ class RoomHandler:
 
         if not building or not room_number or not capacity:
             return jsonify(UpdateStatus="Missing required fields"), 404
-        if not isinstance(capacity, int)  or capacity <= 0:
+        if not isinstance(capacity, int) or capacity <= 0:
             return jsonify(UpdateStatus="Invalid capacity"), 404
-        
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [building, room_number]):
+
+        if any(
+            len(value.strip()) == 0 or not isinstance(value, str)
+            for value in [building, room_number]
+        ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
 
-        
         dao = RoomDAO()
         temp = dao.updateRoomByRid(rid, building, room_number, capacity)
         if temp:
@@ -90,9 +95,13 @@ class RoomHandler:
         else:
             return jsonify(UpdateStatus="Not Found"), 404
 
-
-
-
-
-
-
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
