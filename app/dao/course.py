@@ -34,24 +34,32 @@ class ClassDAO:
         result = cursor.fetchone()
         return result
 
-    def exactDuplicate(self, insertVal):
+    def exactDuplicate(self, Val, method):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND years = %s AND cred = %s AND csyllabus = %s;"
         cursor.execute(
             find_duplicate_query,
             (
-                insertVal["cname"],
-                insertVal["ccode"],
-                insertVal["cdesc"],
-                insertVal["term"],
-                insertVal["years"],
-                insertVal["cred"],
-                insertVal["csyllabus"],
+                Val["cname"],
+                Val["ccode"],
+                Val["cdesc"],
+                Val["term"],
+                Val["years"],
+                Val["cred"],
+                Val["csyllabus"],
             ),
         )
-        return cursor.rowcount == 1
-
-    def credDuplicate(self, tempV):
+        if method == "insert":
+            return cursor.rowcount == 1
+        
+        elif method == "update":
+             result = cursor.fetchone()
+             if result is not None:
+                return result[0]
+             return None
+    
+    
+    def insertCredDuplicate(self, tempV):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND years = %s AND csyllabus = %s;"
         cursor.execute(
@@ -66,7 +74,60 @@ class ClassDAO:
             ),
         )
         return cursor.rowcount == 1
-
+    
+    def insertCnameDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT * FROM class WHERE cname = %s;"
+        cursor.execute(find_duplicate_query, (tempV["cname"],))
+        return cursor.rowcount == 1
+    
+    def insertCcodeDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT cid FROM class WHERE ccode = %s;"
+        cursor.execute(find_duplicate_query, (tempV["ccode"],))
+        result = cursor.fetchone()
+        if result is not None:
+            return result[0]
+        return None
+    
+    def insertCdescDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT cid FROM class WHERE cdesc = %s;"
+        cursor.execute(find_duplicate_query, (tempV["cdesc"],))
+        result = cursor.fetchone()
+        if result is not None:
+            return result[0]
+        return None
+    
+    def insertCsyllabusDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT cid FROM class WHERE csyllabus = %s;"
+        cursor.execute(find_duplicate_query, (tempV["csyllabus"],))
+        result = cursor.fetchone()
+        if result is not None:
+            return result[0]
+        return None
+    
+    def insertTermDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND years = %s AND cred = %s AND csyllabus = %s;"
+        cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["years"], tempV["cred"], tempV["csyllabus"]))
+        return cursor.rowcount == 1
+    
+    def insertYearsDuplicate(self, tempV):
+        cursor = self.conn.cursor()
+        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND cred = %s AND csyllabus = %s;"
+        cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["term"], tempV["cred"], tempV["csyllabus"]))
+        return cursor.rowcount == 1
+    
+ 
+    
+    def classExists(self, cid):
+        cursor = self.conn.cursor()
+        query = "SELECT * FROM class WHERE cid = %s;"
+        cursor.execute(query, [cid])
+        return cursor.rowcount == 1
+    
     def verifySectionsAs(self, cid):
         cursor = self.conn.cursor()
         query = "SELECT * FROM section WHERE cid = %s;"
@@ -75,6 +136,7 @@ class ClassDAO:
 
         columns = [desc[0] for desc in cursor.description]
         df = pd.DataFrame(result, columns=columns)
+        
         return df
 
     def insertClass(self, cname, ccode, cdesc, term, years, cred, csyllabus):

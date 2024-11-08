@@ -35,8 +35,8 @@ class ClassHandler:
             result = self.mapToDict(temp)
             return jsonify(result)
 
-    def inspectInputData(self, class_json):
-
+    def inspectInputData(self, class_json, method, cid):
+        dao = ClassDAO()
         # Inspect if all keys are present
         if not all(
             key in class_json
@@ -51,6 +51,16 @@ class ClassHandler:
         years = class_json["years"]
         cred = class_json["cred"]
         csyllabus = class_json["csyllabus"]
+
+        temp = {
+            "cname": cname,
+            "ccode": ccode,
+            "cdesc": cdesc,
+            "term": term,
+            "years": years,
+            "cred": cred,
+            "csyllabus": csyllabus,
+        }
 
         # Inspect Incorrect DataTypes
         if not isinstance(cname, str):
@@ -137,9 +147,47 @@ class ClassHandler:
 
         if cred > 9 or cred <= 0:
             return jsonify(UpdateStatus="Incorrect Credits Value"), 400
+        
+        # Inspect Duplicates before inserting or Updating (Dont use Primary Key, that is always diferent (serial))
+        if method == "insert":
+            if dao.exactDuplicate(temp, method):
+                return jsonify(InsertStatus="Exact Duplicate Entry"), 400
+            
+            insertCcodeDuplicateCid = dao.insertCcodeDuplicate(temp)
+            if insertCcodeDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Ccode' %s. Delete or Update the existing class first." % (insertCcodeDuplicateCid, temp["ccode"])), 400
+            
+            insertCdescDuplicateCid = dao.insertCdescDuplicate(temp)
+            if insertCdescDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (insertCdescDuplicateCid, temp["cdesc"])), 400
+            
+            insertCsyllabusDuplicateCid = dao.insertCsyllabusDuplicate(temp)
+            if insertCsyllabusDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (insertCsyllabusDuplicateCid, temp["csyllabus"])), 400
+        
+        elif method == "update":
+            insertCcodeDuplicateCid = dao.insertCcodeDuplicate(temp)
+            insertCdescDuplicateCid = dao.insertCdescDuplicate(temp)
+            insertCsyllabusDuplicateCid = dao.insertCsyllabusDuplicate(temp)
+            updateExactCid = dao.exactDuplicate(temp, method)
+
+            if updateExactCid is not None:
+                return jsonify(UpdateStatus="Duplicate Entry: The class with 'cid' %s has the same exact data" % updateExactCid), 400
+            
+            if insertCcodeDuplicateCid is not None:
+                if insertCcodeDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Ccode' %s. Delete or Update the existing class first." % (insertCcodeDuplicateCid, temp["ccode"])), 400
+                    
+            if insertCdescDuplicateCid is not None:
+                if insertCdescDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (insertCdescDuplicateCid, temp["cdesc"])), 400
+                 
+            if insertCsyllabusDuplicateCid is not None:
+                if insertCsyllabusDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (insertCsyllabusDuplicateCid, temp["csyllabus"])), 400
 
     def insertClass(self, class_json):
-        returnStatement = self.inspectInputData(class_json)
+        returnStatement = self.inspectInputData(class_json, "insert", None)
         if returnStatement is not None:
             return returnStatement
 
@@ -151,29 +199,13 @@ class ClassHandler:
         years = class_json["years"]
         cred = class_json["cred"]
         csyllabus = class_json["csyllabus"]
-        temp = {
-            "cname": cname,
-            "ccode": ccode,
-            "cdesc": cdesc,
-            "term": term,
-            "years": years,
-            "cred": cred,
-            "csyllabus": csyllabus,
-        }
-
-        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
-        if dao.exactDuplicate(temp):
-            return jsonify(UpdatetStatus="Duplicate Entry"), 400
-
-        elif dao.credDuplicate(temp):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
-
+     
         cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
         result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
         return jsonify(self.mapToDict(result)), 201
 
     def updateClassById(self, cid, class_json):
-        returnStatement = self.inspectInputData(class_json)
+        returnStatement = self.inspectInputData(class_json, "update", cid)
         if returnStatement is not None:
             return returnStatement
 
@@ -185,22 +217,6 @@ class ClassHandler:
         years = class_json["years"]
         cred = class_json["cred"]
         csyllabus = class_json["csyllabus"]
-        tempV = {
-            "cname": cname,
-            "ccode": ccode,
-            "cdesc": cdesc,
-            "term": term,
-            "years": years,
-            "cred": cred,
-            "csyllabus": csyllabus,
-        }
-
-        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
-        if dao.exactDuplicate(tempV):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
-
-        elif dao.credDuplicate(tempV):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
 
         # Verify Phase 1 Constrains
         # ------------------------------------------------------------------------
@@ -219,7 +235,10 @@ class ClassHandler:
         sections_df = dao.verifySectionsAs(cid)
         result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
 
-        if result_class_df[0].empty:
+        if not dao.classExists(cid):
+            return jsonify(UpdateStatus="Class Not Found"), 404
+
+        if result_class_df[0].empty and not sections_df.empty:
             return (
                 jsonify(
                     UpdateStatus="It is not possible to modify the term or year for classes that have associated sections, First modify the sections"
