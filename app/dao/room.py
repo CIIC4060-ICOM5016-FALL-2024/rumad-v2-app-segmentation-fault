@@ -1,6 +1,7 @@
 from config.db_config import pg_config
 import psycopg2 as pg
 
+
 class RoomDAO:
     def __init__(self):
         # Create the connection string
@@ -32,11 +33,13 @@ class RoomDAO:
     def insertRoom(self, building, room_number, capacity):
         cursor = self.conn.cursor()
 
-        conflict_check_query = "SELECT 1 FROM room WHERE building = %s AND room_number = %s"
+        conflict_check_query = (
+            "SELECT 1 FROM room WHERE building = %s AND room_number = %s"
+        )
         cursor.execute(conflict_check_query, (building, room_number))
         if cursor.fetchone():
-            return None 
-        
+            return None
+
         query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s) RETURNING rid;"
         cursor.execute(query, (building, room_number, capacity))
         result = cursor.fetchone()
@@ -44,8 +47,7 @@ class RoomDAO:
         if result:
             return result[0]
         else:
-            return None 
-
+            return None
 
     def deleteRoomByRid(self, rid):
         cursor = self.conn.cursor()
@@ -58,11 +60,13 @@ class RoomDAO:
     def updateRoomByRid(self, rid, building, room_number, capacity):
         cursor = self.conn.cursor()
 
-        conflict_check_query = "SELECT 1 FROM room WHERE building = %s AND room_number = %s AND rid != %s"
+        conflict_check_query = (
+            "SELECT 1 FROM room WHERE building = %s AND room_number = %s AND rid != %s"
+        )
         cursor.execute(conflict_check_query, (building, room_number, rid))
         if cursor.fetchone():
-            return False 
-        
+            return False
+
         query = "UPDATE room SET building=%s, room_number=%s, capacity=%s WHERE rid=%s"
         cursor.execute(query, (building, room_number, capacity, rid))
         rowcount = cursor.rowcount
@@ -73,11 +77,11 @@ class RoomDAO:
         result = []
         cursor = self.conn.cursor()
         query = "SELECT * FROM room WHERE building=%s ORDER BY capacity DESC LIMIT 3;"
-        cursor.execute(query, (building,))
+        cursor.execute(query, (building.capitalize(),))
         for row in cursor:
             result.append(row)
         return result
-    
+
     def getRatioByBuilding(self, building):
         result = []
         cursor = self.conn.cursor()
@@ -89,10 +93,7 @@ class RoomDAO:
             ORDER BY (section.capacity / room.capacity) DESC
             LIMIT 3;
         """
-        cursor.execute(query, (building,))
+        cursor.execute(query, (building.capitalize(),))
         for row in cursor:
             result.append(row)
         return result
-    
-
-
