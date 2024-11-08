@@ -76,7 +76,7 @@ class RequisiteHandler:
         if is_data_confirmed:
             dao = RequisiteDAO()
             ids = dao.insertRequisite(classid, reqid, prereq)
-            temp = (ids[0], ids[1], prereq)  # type: ignore
+            temp = (ids[0], ids[1], prereq)
 
             return self.mapToDict(temp), 201
         else:
