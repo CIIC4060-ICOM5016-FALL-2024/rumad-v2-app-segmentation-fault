@@ -223,10 +223,10 @@ class ClassDAO:
 
     def getLeastClass(self):  # Verify Natural vs inner
         cursor = self.conn.cursor()
-        query = "select class.*, coalesce(tp.cnt,0) from class natural left join \
+        query = "select class.* from class natural join \
                 (select cid, count(*) as cnt from section inner join class using (cid) \
                 group by cid) as tp \
-                order by coalesce(tp.cnt,0) \
+                order by tp.cnt \
                 limit 3;"
         cursor.execute(query)
         result = []
