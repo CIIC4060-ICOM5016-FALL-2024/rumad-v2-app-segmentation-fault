@@ -1,4 +1,3 @@
-import re
 from flask import jsonify
 from dao.requisite import RequisiteDAO
 from handler.data_validation import clean_data
@@ -20,7 +19,9 @@ class RequisiteHandler:
 
         # Check if the data to insert is already in the database
         values_to_check = df_to_verify[columns_to_check].iloc[0]
-        duplicate_count = (df_requisite[columns_to_check].eq(values_to_check).all(axis=1).sum())
+        duplicate_count = (
+            df_requisite[columns_to_check].eq(values_to_check).all(axis=1).sum()
+        )
 
         return duplicate_count == 1
 
@@ -53,7 +54,7 @@ class RequisiteHandler:
         classid = requisite_json["classid"]
         reqid = requisite_json["reqid"]
         prereq = requisite_json["prereq"]
-        
+
         if not isinstance(classid, int):
             return jsonify(UpdateStatus="Invalid datatype for classid"), 400
         if not isinstance(reqid, int):
@@ -93,7 +94,7 @@ class RequisiteHandler:
             return jsonify(InsertStatus="Missing required fields"), 400
 
         prereq = requisite_json["prereq"]
-        
+
         if not isinstance(prereq, bool):
             return jsonify(UpdateStatus="Invalid datatype for prereq"), 400
 
