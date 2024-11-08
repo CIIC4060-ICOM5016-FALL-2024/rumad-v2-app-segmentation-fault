@@ -172,7 +172,10 @@ class ClassHandler:
             updateExactCid = dao.exactDuplicate(temp, method)
 
             if updateExactCid is not None:
-                return jsonify(UpdateStatus="Duplicate Entry: The class with 'cid' %s has the same exact data" % updateExactCid), 400
+                if updateExactCid != cid:
+                    return jsonify(UpdateStatus="Duplicate Entry: The class with 'cid' %s has the same exact data" % updateExactCid), 400
+                elif updateExactCid == cid:
+                    return jsonify(UpdateStatus="Duplicate Entry: This class have the desired data, no changes made" % updateExactCid), 400
             
             if insertCcodeDuplicateCid is not None:
                 if insertCcodeDuplicateCid != cid:
