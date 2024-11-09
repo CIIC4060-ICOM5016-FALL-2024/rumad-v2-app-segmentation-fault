@@ -286,20 +286,21 @@ class ClassHandler:
         
         # Inspect Duplicates before inserting or Updating (Dont use Primary Key, that is always diferent (serial))
         if method == "insert":
+            cdescDuplicateCid = dao.cdescDuplicate(temp)
+            csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
+
             if dao.exactDuplicate(temp, method):
                 return jsonify(InsertStatus="Exact Duplicate Entry"), 400
             
-            insertCdescDuplicateCid = dao.cdescDuplicate(temp)
-            if insertCdescDuplicateCid is not None:
-                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (insertCdescDuplicateCid, temp["cdesc"])), 400
+            if cdescDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (cdescDuplicateCid, temp["cdesc"])), 400
             
-            insertCsyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
-            if insertCsyllabusDuplicateCid is not None:
-                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (insertCsyllabusDuplicateCid, temp["csyllabus"])), 400
+            if csyllabusDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (csyllabusDuplicateCid, temp["csyllabus"])), 400
         
         elif method == "update":
-            insertCdescDuplicateCid = dao.cdescDuplicate(temp)
-            insertCsyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
+            cdescDuplicateCid = dao.cdescDuplicate(temp)
+            csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
             updateExactCid = dao.exactDuplicate(temp, method)
 
             if updateExactCid is not None:
@@ -308,13 +309,13 @@ class ClassHandler:
                 elif updateExactCid == cid:
                     return jsonify(UpdateStatus="Duplicate Entry: This class have the desired data, no changes made"), 400
             
-            if insertCdescDuplicateCid is not None:
-                if insertCdescDuplicateCid != cid:
-                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (insertCdescDuplicateCid, temp["cdesc"])), 400
+            if cdescDuplicateCid is not None:
+                if cdescDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (cdescDuplicateCid, temp["cdesc"])), 400
                  
-            if insertCsyllabusDuplicateCid is not None:
-                if insertCsyllabusDuplicateCid != cid:
-                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (insertCsyllabusDuplicateCid, temp["csyllabus"])), 400
+            if csyllabusDuplicateCid is not None:
+                if csyllabusDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (csyllabusDuplicateCid, temp["csyllabus"])), 400
 
     def insertClass(self, class_json):
         returnStatement = self.inspectInputData(class_json, "insert", None)
