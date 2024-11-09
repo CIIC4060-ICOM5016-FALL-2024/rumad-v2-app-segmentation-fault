@@ -1,4 +1,5 @@
 from flask import jsonify
+from dao.course import ClassDAO
 from dao.requisite import RequisiteDAO
 from handler.data_validation import clean_data
 import pandas as pd
@@ -62,25 +63,56 @@ class RequisiteHandler:
         if not isinstance(prereq, bool):
             return jsonify(UpdateStatus="Invalid datatype for prereq"), 400
 
-        data = {"classid": [classid], "reqid": [reqid], "prereq": [prereq]}
-        df_to_insert = pd.DataFrame(data)
-        df_list = clean_data(df_to_insert, "requisite")
+        dao = ClassDAO()
+        temp = dao.getAllClass()
+        df = pd.DataFrame(
+            temp,
+            columns=[
+                "classid",
+                "cname",
+                "ccode",
+                "cdesc",
+                "term",
+                "years",
+                "cred",
+                "csyllabus",
+            ],
+        )
 
-        df_requisite = []
-        for df, df_name in df_list:
-            if df_name == "requisite":
-                df_requisite = df
+        class_exist = False
+        req_exist = False
 
-        is_data_confirmed = self.confirmDataInDF(df_to_insert, df_requisite)
+        for row in df.itertuples():
+            if row.classid == classid:
+                class_exist = True
+            if row.classid == reqid:
+                req_exist = True
 
-        if is_data_confirmed:
-            dao = RequisiteDAO()
-            ids = dao.insertRequisite(classid, reqid, prereq)
-            temp = (ids[0], ids[1], prereq)  # type: ignore
+        if class_exist and req_exist:
+            data = {"classid": [classid], "reqid": [reqid], "prereq": [prereq]}
+            df_to_insert = pd.DataFrame(data)
+            df_list = clean_data(df_to_insert, "requisite")
 
-            return self.mapToDict(temp), 201
+            df_requisite = []
+            for df, df_name in df_list:
+                if df_name == "requisite":
+                    df_requisite = df
+
+            is_data_confirmed = self.confirmDataInDF(df_to_insert, df_requisite)
+
+            if is_data_confirmed:
+                dao = RequisiteDAO()
+                ids = dao.insertRequisite(classid, reqid, prereq)
+                temp = (ids[0], ids[1], prereq)  # type: ignore
+
+                return self.mapToDict(temp), 201
+            else:
+                return jsonify(InsertStatus="Duplicate Entry"), 400
         else:
-            return jsonify(InsertStatus="Duplicate Entry"), 400
+            if not class_exist:
+                return jsonify(InsertStatus="Class ID not found"), 404
+            if not req_exist:
+                return jsonify(InsertStatus="Req ID not found"), 404
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
         dao = RequisiteDAO()

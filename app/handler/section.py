@@ -1,3 +1,4 @@
+from operator import le
 from flask import jsonify
 import pandas as pd
 from handler.data_validation import clean_data
@@ -81,6 +82,9 @@ class SectionHandler:
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
             return jsonify(UpdateStatus="A entry is empty"), 400
+        
+        if any(len(value.strip()) > 4 for value in [years]):
+            return jsonify(UpdateStatus="Invalid years"), 400
 
         data = {
             "sid": 1000,
@@ -162,6 +166,9 @@ class SectionHandler:
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
             return jsonify(UpdateStatus="A entry is empty"), 400
+        
+        if any(len(value.strip()) > 4 for value in [years]):
+            return jsonify(UpdateStatus="Invalid years"), 400
 
         data = {
             "sid": 1000,
