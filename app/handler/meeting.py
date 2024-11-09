@@ -81,6 +81,9 @@ class MeetingHandler:
             return "Not Found", 404
         
     def insertMeeting(self, meeting_json):
+        if "ccode" not in meeting_json or "starttime" not in meeting_json or "endtime" not in meeting_json or "cdays" not in meeting_json:
+            return jsonify(InsertStatus="Missing required fields"), 404
+        
         ccode = meeting_json["ccode"]
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
@@ -139,6 +142,9 @@ class MeetingHandler:
             return jsonify(DeleteStatus="Not Found"), 404
         
     def updateMeetingByMid(self, mid, meeting_json):
+        if "ccode" not in meeting_json or "starttime" not in meeting_json or "endtime" not in meeting_json or "cdays" not in meeting_json:
+            return jsonify(InsertStatus="Missing required fields"), 404
+        
         ccode = meeting_json["ccode"]
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
