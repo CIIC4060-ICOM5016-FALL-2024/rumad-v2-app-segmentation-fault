@@ -288,9 +288,13 @@ class ClassHandler:
         if method == "insert":
             cdescDuplicateCid = dao.cdescDuplicate(temp)
             csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
+            cname_and_ccodeDuplicateCid = dao.cname_and_ccodeDuplicate(temp)
 
             if dao.exactDuplicate(temp, method):
                 return jsonify(InsertStatus="Exact Duplicate Entry"), 400
+            
+            if cname_and_ccodeDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cname' %s and 'Ccode' %s. Delete or Update the existing class first." % (cname_and_ccodeDuplicateCid, temp["cname"], temp["ccode"])), 400
             
             if cdescDuplicateCid is not None:
                 return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (cdescDuplicateCid, temp["cdesc"])), 400
@@ -302,12 +306,17 @@ class ClassHandler:
             cdescDuplicateCid = dao.cdescDuplicate(temp)
             csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
             updateExactCid = dao.exactDuplicate(temp, method)
+            cname_and_ccodeDuplicateCid = dao.cname_and_ccodeDuplicate(temp)
 
             if updateExactCid is not None:
                 if updateExactCid != cid:
                     return jsonify(UpdateStatus="Duplicate Entry: The class with 'cid' %s has the same exact data" % updateExactCid), 400
                 elif updateExactCid == cid:
                     return jsonify(UpdateStatus="Duplicate Entry: This class have the desired data, no changes made"), 400
+                
+            if cname_and_ccodeDuplicateCid is not None:
+                if cname_and_ccodeDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cname' %s and 'Ccode' %s. Delete or Update the existing class first." % (cname_and_ccodeDuplicateCid, temp["cname"], temp["ccode"])), 400
             
             if cdescDuplicateCid is not None:
                 if cdescDuplicateCid != cid:
