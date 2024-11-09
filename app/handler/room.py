@@ -34,9 +34,13 @@ class RoomHandler:
         capacity = room_json["capacity"]
 
         if not building or not room_number or not capacity:
-            return jsonify(InsertStatus="Missing required fields"), 404
+            return jsonify(UpdateStatus="Missing required fields"), 400
         if not isinstance(capacity, int) or capacity <= 0:
-            return jsonify(InsertStatus="Invalid capacity"), 404
+            return jsonify(UpdateStatus="Invalid capacity type"), 400
+        if not isinstance(room_number, str):
+            return jsonify(UpdateStatus="Invalid room_number type"), 400
+        if not isinstance(building, str):
+            return jsonify(UpdateStatus="Invalid building type"), 400
 
         if any(
             len(value.strip()) == 0 or not isinstance(value, str)
@@ -50,7 +54,7 @@ class RoomHandler:
             temp = (rid, building, room_number, capacity)
             return jsonify(self.mapToDict(temp)), 201
         else:
-            return jsonify(InsertStatus="Duplicate Room"), 404
+            return jsonify(InsertStatus="Duplicate Room"), 400
 
     def deleteRoomByRid(self, rid):
         dao = RoomDAO()
@@ -66,9 +70,13 @@ class RoomHandler:
         capacity = room_json["capacity"]
 
         if not building or not room_number or not capacity:
-            return jsonify(UpdateStatus="Missing required fields"), 404
+            return jsonify(UpdateStatus="Missing required fields"), 400
         if not isinstance(capacity, int) or capacity <= 0:
-            return jsonify(UpdateStatus="Invalid capacity"), 404
+            return jsonify(UpdateStatus="Invalid capacity type"), 400
+        if not isinstance(room_number, str):
+            return jsonify(UpdateStatus="Invalid room_number type"), 400
+        if not isinstance(building, str):
+            return jsonify(UpdateStatus="Invalid building type"), 400
 
         if any(
             len(value.strip()) == 0 or not isinstance(value, str)
