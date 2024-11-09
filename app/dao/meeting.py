@@ -60,12 +60,12 @@ class MeetingDAO:
         if not delta_time_to_left: delta_time_to_left = "00:00"
         if not delta_time_to_right: delta_time_to_right = "00:00"
 
-        if delta_time_to_left != "00:00" or delta_time_to_right != "00:00":
+        if delta_time_to_left != "00:00":
                 query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s - %s::interval, %s - %s::interval, %s) RETURNING mid;"
                 delta_time_to_left_dt = datetime.strptime(delta_time_to_left.split(":")[0] + ":" + delta_time_to_left.split(":")[1], "%H:%M")
                 cursor.execute(query, (ccode, starttime_dt.time(), delta_time_to_left_dt.time(), endtime_dt.time(), delta_time_to_left_dt.time(), cdays))
 
-        # if delta_time_to_right:
+        elif delta_time_to_right != "00:00":
                 query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s + %s::interval, %s + %s::interval, %s) RETURNING mid;"
                 delta_time_to_right_dt = datetime.strptime(delta_time_to_right.split(":")[0] + ":" + delta_time_to_right.split(":")[1], "%H:%M")
                 cursor.execute(query, (ccode, starttime_dt.time(), delta_time_to_right_dt.time(), endtime_dt.time(), delta_time_to_right_dt.time(), cdays))

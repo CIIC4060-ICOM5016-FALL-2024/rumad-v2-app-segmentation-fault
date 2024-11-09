@@ -19,7 +19,7 @@ class MeetingHandler:
         if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [ccode, cdays]):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
         
-        if cdays not in ["LMV", "MJ"]:
+        if cdays not in ["LWV", "MJ"]:
             return jsonify(InsertStatus="Invalid cdays"), 400 
         
         if (len(starttime.split(":")) == 1 and starttime.split(":")[0].isdigit()):
