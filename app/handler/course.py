@@ -35,8 +35,8 @@ class ClassHandler:
             result = self.mapToDict(temp)
             return jsonify(result)
 
-    def inspectInputData(self, class_json):
-
+    def inspectInputData(self, class_json, method, cid):
+        dao = ClassDAO()
         # Inspect if all keys are present
         if not all(
             key in class_json
@@ -52,105 +52,6 @@ class ClassHandler:
         cred = class_json["cred"]
         csyllabus = class_json["csyllabus"]
 
-        # Inspect Incorrect DataTypes
-        if not isinstance(cname, str):
-            return (
-                jsonify(UpdateStatus="cname DataType is incorrect must be str or char"),
-                400,
-            )
-
-        if not isinstance(ccode, str):
-            return (
-                jsonify(UpdateStatus="ccode DataType is incorrect must be str or char"),
-                400,
-            )
-
-        if not isinstance(cdesc, str):
-            return (
-                jsonify(UpdateStatus="cdesc DataType is incorrect must be str or char"),
-                400,
-            )
-
-        if not isinstance(term, str):
-            return (
-                jsonify(UpdateStatus="term DataType is incorrect must be str or char"),
-                400,
-            )
-
-        if not isinstance(years, str):
-            return (
-                jsonify(UpdateStatus="years DataType is incorrect must be str or char"),
-                400,
-            )
-
-        if not isinstance(cred, int):
-            return (
-                jsonify(UpdateStatus="cred DataType is incorrect must be Integer"),
-                400,
-            )
-
-        if not isinstance(csyllabus, str):
-            return (
-                jsonify(
-                    UpdateStatus="csyllabus DataType is incorrect must be str or char"
-                ),
-                400,
-            )
-
-        # Inspect Empty Entries
-        if len(cname.strip()) == 0:
-            return jsonify(UpdateStatus="cname is empty"), 400
-
-        elif len(ccode.strip()) == 0:
-            return jsonify(UpdateStatus="ccode is empty"), 400
-
-        elif len(cdesc.strip()) == 0:
-            return jsonify(UpdateStatus="cdesc is empty"), 400
-
-        elif len(term.strip()) == 0:
-            return jsonify(UpdateStatus="term is empty"), 400
-
-        elif len(years.strip()) == 0:
-            return jsonify(UpdateStatus="years is empty"), 400
-
-        elif len(csyllabus.strip()) == 0:
-            return jsonify(UpdateStatus="csyllabus is empty"), 400
-
-        # Inspect correct lengths
-        if len(cname) > 50:
-            return jsonify(UpdateStatus="cname cannot exceed 50 characters"), 400
-
-        if len(ccode) > 4:
-            return jsonify(UpdateStatus="ccode cannot exceed 4 characters"), 400
-
-        if len(cdesc) > 100:
-            return jsonify(UpdateStatus="cdesc cannot exceed 4 characters"), 400
-
-        if len(term) > 35:
-            return jsonify(UpdateStatus="term cannot exceed 4 characters"), 400
-
-        if len(years) > 20:
-            return jsonify(UpdateStatus="years cannot exceed 20 characters"), 400
-
-        if len(csyllabus) > 255:
-            return jsonify(UpdateStatus="csyllabus cannot exceed 255 characters"), 400
-
-        if cred > 9 or cred <= 0:
-            return jsonify(UpdateStatus="Incorrect Credits Value"), 400
-
-    def insertClass(self, class_json):
-        returnStatement = self.inspectInputData(class_json)
-        if returnStatement is not None:
-            return returnStatement
-
-        dao = ClassDAO()
-        cname = class_json["cname"]
-        ccode = class_json["ccode"]
-        cdesc = class_json["cdesc"]
-        term = class_json["term"]
-        years = class_json["years"]
-        cred = class_json["cred"]
-        csyllabus = class_json["csyllabus"]
         temp = {
             "cname": cname,
             "ccode": ccode,
@@ -161,19 +62,272 @@ class ClassHandler:
             "csyllabus": csyllabus,
         }
 
-        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
-        if dao.exactDuplicate(temp):
-            return jsonify(UpdatetStatus="Duplicate Entry"), 400
+        # Inspect Incorrect DataTypes
+        if not isinstance(cname, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="cname DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="cname DataType is incorrect must be str or char"),
+                    400,
+                )
 
-        elif dao.credDuplicate(temp):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
+        if not isinstance(ccode, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="ccode DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="ccode DataType is incorrect must be str or char"),
+                    400,
+                )
 
-        cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
-        result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
-        return jsonify(self.mapToDict(result)), 201
+        if not isinstance(cdesc, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="cdesc DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="cdesc DataType is incorrect must be str or char"),
+                    400,
+                )
 
-    def updateClassById(self, cid, class_json):
-        returnStatement = self.inspectInputData(class_json)
+        if not isinstance(term, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="term DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="term DataType is incorrect must be str or char"),
+                    400,
+                )
+
+        if not isinstance(years, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="years DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="years DataType is incorrect must be str or char"),
+                    400,
+                )
+
+        if not isinstance(cred, int):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="cred DataType is incorrect must be int"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="cred DataType is incorrect must be int"),
+                    400,
+                )
+
+        if not isinstance(csyllabus, str):
+            if method == "update":
+                return (
+                    jsonify(UpdateStatus="csyllabus DataType is incorrect must be str or char"),
+                    400,
+                )
+            
+            elif method == "insert":
+                return (
+                    jsonify(InsertStatus="csyllabus DataType is incorrect must be str or char"),
+                    400,
+                )
+
+        # Inspect Empty Entries
+        if len(cname.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="cname is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="cname is empty"), 416
+
+        elif len(ccode.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="ccode is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="ccode is empty"), 416
+
+        elif len(cdesc.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="cdesc is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="cdesc is empty"), 416
+
+        elif len(term.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="term is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="term is empty"), 416
+
+        elif len(years.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="years is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="years is empty"), 416
+
+        elif len(csyllabus.strip()) == 0:
+            if method == "update":
+                return jsonify(UpdateStatus="csyllabus is empty"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="csyllabus is empty"), 416
+
+        # Inspect correct lengths
+        if len(cname) > 50:
+            if method == "update":
+                return jsonify(UpdateStatus="cname cannot exceed 50 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="cname cannot exceed 50 characters"), 413
+
+        if len(ccode) > 4:
+            if method == "update":
+                return jsonify(UpdateStatus="ccode cannot exceed 4 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="ccode cannot exceed 4 characters"), 413
+
+        if len(cdesc) > 100:
+            if method == "update":
+                return jsonify(UpdateStatus="cdesc cannot exceed 100 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="cdesc cannot exceed 100 characters"), 413
+
+        if len(term) > 35:
+            if method == "update":
+                return jsonify(UpdateStatus="term cannot exceed 35 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="term cannot exceed 35 characters"), 413
+
+        if len(years) > 20:
+            if method == "update":
+                return jsonify(UpdateStatus="years cannot exceed 20 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="years cannot exceed 20 characters"), 413
+
+        if len(csyllabus) > 255:
+            if method == "update":
+                return jsonify(UpdateStatus="csyllabus cannot exceed 255 characters"), 413
+            elif method == "insert":
+                return jsonify(InsertStatus="csyllabus cannot exceed 255 characters"), 413
+
+        if cred > 9 or cred <= 0:
+            if method == "update":
+                return jsonify(UpdateStatus="Incorrect Credits Value"), 416
+            elif method == "insert":
+                return jsonify(InsertStatus="Incorrect Credits Value"), 416
+        
+        # Inspect Values for term and years
+        if term not in ["First Semester", "Second Semester", "First Semester, Second Semester", "According to Demand"]:
+            # Verify if the values were put without correct capital letters and if the values were put with white spaces
+            if term.replace(" ", "").strip().lower() in ["firstsemester", "secondsemester", "firstsemester,secondsemester", "accordingtodemand"]:
+                if term.replace(" ", "").strip().lower() == "firstsemester":
+                    class_json['term'] = "First Semester"
+                    temp['term'] = "First Semester"
+                if term.replace(" ", "").strip().lower() == "secondsemester":
+                    class_json['term'] = "Second Semester"
+                    temp['term'] = "Second Semester"
+                if term.replace(" ", "").strip().lower() == "firstsemester,secondsemester":
+                    class_json['term'] = "First Semester, Second Semester"
+                    temp['term'] = "First Semester, Second Semester"
+                if term.replace(" ", "").strip().lower() == "accordingtodemand":
+                    class_json['term'] = "According to Demand"
+                    temp['term'] = "According to Demand"
+
+            # Verify if the pair values were put without commas
+            elif term.replace(" ", "").replace(",", "").strip().lower() == "firstsemestersecondsemester":
+                class_json['term'] = "First Semester, Second Semester"
+                temp['term'] = "First Semester, Second Semester"
+                
+            else: 
+                if method == "update":
+                    return jsonify(UpdateStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 416
+                elif method == "insert":
+                    return jsonify(InsertStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 416
+        
+        if years not in ["Even Years", "Odd Years", "According to Demand", "Every Year"]:
+            # Verify if the values were put without correct capital letters and if the values were put with white spaces
+            if years.replace(" ", "").strip().lower() in ["evenyears", "oddyears", "accordingtodemand", "everyyear"]:
+                if years.replace(" ", "").strip().lower() == "evenyears":
+                    class_json['years'] = "Even Years"
+                    temp['years'] = "Even Years"
+                if years.replace(" ", "").strip().lower() == "oddyears":
+                    class_json['years'] = "Odd Years"
+                    temp['years'] = "Odd Years"
+                if years.replace(" ", "").strip().lower() == "accordingtodemand":
+                    class_json['years'] = "According to Demand"
+                    temp['years'] = "According to Demand"
+                if years.replace(" ", "").strip().lower() == "everyyear":
+                    class_json['years'] = "Every Year"
+                    temp['years'] = "Every Year"
+
+            else:
+                if method == "update":
+                    return jsonify(UpdateStatus="Incorrect years value, the options are: 'Even Years', 'Odd Years', 'According to Demand', 'Every Year'"), 416
+                elif method == "insert":
+                    return jsonify(InsertStatus="Incorrect years value, the options are: 'Even Years', 'Odd Years', 'According to Demand', 'Every Year'"), 416
+        
+        # Inspect Duplicates before inserting or Updating (Dont use Primary Key, that is always diferent (serial))
+        if method == "insert":
+            cdescDuplicateCid = dao.cdescDuplicate(temp)
+            csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
+            cname_and_ccodeDuplicateCid = dao.cname_and_ccodeDuplicate(temp)
+
+            if dao.exactDuplicate(temp, method):
+                return jsonify(InsertStatus="Exact Duplicate Entry"), 400
+            
+            if cname_and_ccodeDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cname' %s and 'Ccode' %s. Delete or Update the existing class first." % (cname_and_ccodeDuplicateCid, temp["cname"], temp["ccode"])), 400
+            
+            if cdescDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (cdescDuplicateCid, temp["cdesc"])), 400
+            
+            if csyllabusDuplicateCid is not None:
+                return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (csyllabusDuplicateCid, temp["csyllabus"])), 400
+        
+        elif method == "update":
+            cdescDuplicateCid = dao.cdescDuplicate(temp)
+            csyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
+            updateExactCid = dao.exactDuplicate(temp, method)
+            cname_and_ccodeDuplicateCid = dao.cname_and_ccodeDuplicate(temp)
+
+            if updateExactCid is not None:
+                if updateExactCid != cid:
+                    return jsonify(UpdateStatus="Duplicate Entry: The class with 'cid' %s has the same exact data" % updateExactCid), 400
+                elif updateExactCid == cid:
+                    return jsonify(UpdateStatus="Duplicate Entry: This class have the desired data, no changes made"), 400
+                
+            if cname_and_ccodeDuplicateCid is not None:
+                if cname_and_ccodeDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cname' %s and 'Ccode' %s. Delete or Update the existing class first." % (cname_and_ccodeDuplicateCid, temp["cname"], temp["ccode"])), 400
+            
+            if cdescDuplicateCid is not None:
+                if cdescDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (cdescDuplicateCid, temp["cdesc"])), 400
+                 
+            if csyllabusDuplicateCid is not None:
+                if csyllabusDuplicateCid != cid:
+                    return jsonify(UpdateStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (csyllabusDuplicateCid, temp["csyllabus"])), 400
+
+    def insertClass(self, class_json):
+        returnStatement = self.inspectInputData(class_json, "insert", None)
         if returnStatement is not None:
             return returnStatement
 
@@ -185,22 +339,24 @@ class ClassHandler:
         years = class_json["years"]
         cred = class_json["cred"]
         csyllabus = class_json["csyllabus"]
-        tempV = {
-            "cname": cname,
-            "ccode": ccode,
-            "cdesc": cdesc,
-            "term": term,
-            "years": years,
-            "cred": cred,
-            "csyllabus": csyllabus,
-        }
+     
+        cid = dao.insertClass(cname, ccode, cdesc, term, years, cred, csyllabus)
+        result = (cid, cname, ccode, cdesc, term, years, cred, csyllabus)
+        return jsonify(self.mapToDict(result)), 201
 
-        # Verify Duplicates before inserting (Dont use Primary Key, that is always diferent (serial))
-        if dao.exactDuplicate(tempV):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
+    def updateClassById(self, cid, class_json):
+        returnStatement = self.inspectInputData(class_json, "update", cid)
+        if returnStatement is not None:
+            return returnStatement
 
-        elif dao.credDuplicate(tempV):
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
+        dao = ClassDAO()
+        cname = class_json["cname"]
+        ccode = class_json["ccode"]
+        cdesc = class_json["cdesc"]
+        term = class_json["term"]
+        years = class_json["years"]
+        cred = class_json["cred"]
+        csyllabus = class_json["csyllabus"]
 
         # Verify Phase 1 Constrains
         # ------------------------------------------------------------------------
@@ -215,17 +371,28 @@ class ClassHandler:
             "cred": cred,
             "csyllabus": csyllabus,
         }
-        class_df = pd.DataFrame([tempClass])
+        class_df = pd.DataFrame([tempClass])     
         sections_df = dao.verifySectionsAs(cid)
         result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
 
-        if result_class_df[0].empty:
+        if not dao.classExists(cid):
+            return jsonify(UpdateStatus="Class Not Found"), 404
+
+        if result_class_df[0].empty and not sections_df.empty:
+            
+            colapseSemester = sections_df["semester"][0]
+            colapseYear = sections_df["years"][0]
+        
             return (
                 jsonify(
-                    UpdateStatus="It is not possible to modify the term or year for classes that have associated sections, First modify the sections"
+                    UpdateStatus=("It is not possible to modify the [class] 'term' to (%s) when the [section] 'semester' is (%s) "
+                                  "or modify [class] 'years' to (%s) when the [section] 'years' is (%s). "
+                                  "For classes that have associated sections, first modify the sections"
+                    ) % (term, colapseSemester, years, colapseYear)
                 ),
                 400,
             )
+        
         # ------------------------------------------------------------------------
 
         temp = dao.updateClassById(
