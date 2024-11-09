@@ -91,7 +91,7 @@ class MeetingHandler:
             endtime = endtime + ":00"
 
         dao = MeetingDAO()
-        if not dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
+        if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
             return jsonify(InsertStatus="Duplicate Meeting"), 404
 
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
@@ -149,7 +149,7 @@ class MeetingHandler:
             endtime = endtime + ":00"
         
         dao = MeetingDAO()
-        if not dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
+        if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
             return jsonify(InsertStatus="Duplicate Meeting"), 404
         
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")

@@ -26,7 +26,8 @@ class MeetingDAO:
         cursor.execute(conflict_check_query, (ccode, starttime, endtime, cdays))
         print(starttime, endtime)
         if cursor.fetchone():
-            return None
+            return True
+        return False
 
 
     def getAllMeeting(self):
