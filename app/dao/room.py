@@ -81,19 +81,3 @@ class RoomDAO:
         for row in cursor:
             result.append(row)
         return result
-
-    def getRatioByBuilding(self, building):
-        result = []
-        cursor = self.conn.cursor()
-        query = """
-            SELECT room.*
-            FROM room
-            JOIN section ON room.rid = section.roomid
-            WHERE room.building = %s
-            ORDER BY (section.capacity / room.capacity) DESC
-            LIMIT 3;
-        """
-        cursor.execute(query, (building.capitalize(),))
-        for row in cursor:
-            result.append(row)
-        return result

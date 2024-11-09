@@ -127,7 +127,7 @@ def getMaxCapacity(building):
 # Top 3 rooms with the most student-to-capacity ratio
 @app.route("/segmentation_fault/room/<string:building>/ratio", methods=["POST"])
 def getRatioByBuilding(building):
-    return RoomHandler().getRatioByBuilding(building)
+    return SectionHandler().getRatioByBuilding(building)
 
 
 # Top 3 classes that were taught the most per room

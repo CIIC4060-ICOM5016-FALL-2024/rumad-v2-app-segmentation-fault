@@ -81,7 +81,7 @@ class SectionHandler:
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
             return jsonify(UpdateStatus="A entry is empty"), 400
-        
+
         if any(len(value.strip()) > 4 for value in [years]):
             return jsonify(UpdateStatus="Invalid years"), 400
 
@@ -165,7 +165,7 @@ class SectionHandler:
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
             return jsonify(UpdateStatus="A entry is empty"), 400
-        
+
         if any(len(value.strip()) > 4 for value in [years]):
             return jsonify(UpdateStatus="Invalid years"), 400
 
@@ -216,3 +216,14 @@ class SectionHandler:
             return jsonify(result)
         else:
             return jsonify(GetStatus="NOT FOUND"), 404
+
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = SectionDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
