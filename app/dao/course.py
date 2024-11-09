@@ -186,7 +186,7 @@ class ClassDAO:
             result.append(row)
         return result
 
-    def getLeastClass(self):  # Verify Natural vs inner
+    def getLeastClass(self):
         cursor = self.conn.cursor()
         query = "select class.* from class natural join \
                 (select cid, count(*) as cnt from section inner join class using (cid) \
