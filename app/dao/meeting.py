@@ -63,11 +63,13 @@ class MeetingDAO:
         if delta_time_to_left != "00:00":
                 query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s - %s::interval, %s - %s::interval, %s) RETURNING mid;"
                 delta_time_to_left_dt = datetime.strptime(delta_time_to_left.split(":")[0] + ":" + delta_time_to_left.split(":")[1], "%H:%M")
+                print(delta_time_to_left_dt.time(), delta_time_to_left_dt.time())
                 cursor.execute(query, (ccode, starttime_dt.time(), delta_time_to_left_dt.time(), endtime_dt.time(), delta_time_to_left_dt.time(), cdays))
 
         elif delta_time_to_right != "00:00":
                 query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s + %s::interval, %s + %s::interval, %s) RETURNING mid;"
                 delta_time_to_right_dt = datetime.strptime(delta_time_to_right.split(":")[0] + ":" + delta_time_to_right.split(":")[1], "%H:%M")
+                print(delta_time_to_right_dt.time(), delta_time_to_right_dt.time())
                 cursor.execute(query, (ccode, starttime_dt.time(), delta_time_to_right_dt.time(), endtime_dt.time(), delta_time_to_right_dt.time(), cdays))
         
         else:
@@ -76,7 +78,7 @@ class MeetingDAO:
 
         mid = cursor.fetchone()
         if mid and (delta_time_to_left != "00:00" or delta_time_to_right != "00:00"):
-            self.updateAllMeetingTime(ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right)
+            self.updateAllMeetingTime(ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right, mid)
 
         self.conn.commit()
         return mid
@@ -109,7 +111,7 @@ class MeetingDAO:
         self.conn.commit()
         return mid
     
-    def updateAllMeetingTime(self, ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right):
+    def updateAllMeetingTime(self, ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right, ignored_mid=-1):
         try:
             starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
             endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
@@ -119,14 +121,14 @@ class MeetingDAO:
             cursor = self.conn.cursor()
             adjust_meeting_query = """
                 UPDATE meeting SET starttime = starttime + %s::interval, endtime = endtime + %s::interval
-                WHERE cdays = %s AND ((starttime >= %s) OR (endtime > %s));
+                WHERE mid != %s AND cdays = %s AND ((starttime >= %s) OR (endtime > %s));
             """
-            cursor.execute(adjust_meeting_query, (delta_time_to_right.time(), delta_time_to_right.time(), cdays, starttime_dt.time(), endtime_dt.time()))
+            cursor.execute(adjust_meeting_query, (delta_time_to_right.time(), delta_time_to_right.time(), ignored_mid , cdays, starttime_dt.time(), endtime_dt.time()))
             adjust_meeting_query = """
                 UPDATE meeting SET starttime = starttime - %s::interval, endtime = endtime - %s::interval
-                WHERE cdays = %s AND ((starttime < %s) OR (endtime <= %s));
+                WHERE mid != %s AND cdays = %s AND ((starttime < %s) OR (endtime <= %s));
             """
-            cursor.execute(adjust_meeting_query, (delta_time_to_left.time(), delta_time_to_left.time(), cdays, starttime_dt.time(), endtime_dt.time()))
+            cursor.execute(adjust_meeting_query, (ignored_mid, delta_time_to_left.time(), delta_time_to_left.time(), ignored_mid , cdays, starttime_dt.time(), endtime_dt.time()))
             self.conn.commit()
 
         except Exception as e:
