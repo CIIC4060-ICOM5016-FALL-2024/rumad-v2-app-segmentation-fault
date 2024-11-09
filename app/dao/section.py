@@ -61,7 +61,7 @@ class SectionDAO:
         cursor.execute(query)
         result = cursor.fetchall()
         return result
-    
+
     def getRatioByBuilding(self, building):
         result = []
         cursor = self.conn.cursor()
