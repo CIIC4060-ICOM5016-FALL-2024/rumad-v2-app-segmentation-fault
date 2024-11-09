@@ -1,6 +1,7 @@
+import pandas as pd
 from flask import jsonify
 from dao.room import RoomDAO
-
+from dao.section import SectionDAO
 
 class RoomHandler:
     def mapToDict(self, tuple):
@@ -83,6 +84,17 @@ class RoomHandler:
             for value in [building, room_number]
         ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
+        
+        
+        dao = SectionDAO()
+        section_data = dao.getAllSection()
+        df_section = pd.DataFrame(section_data, columns=['sid', 'roomid', 'cid', 'mid', 'semester', 'years', 'capacity'])
+        
+        for index, row in df_section.iterrows():
+            if row['roomid'] == rid:
+                if row['capacity'] < capacity:
+                    return jsonify(UpdateStatus=f"Capacity is less than the current section capacity sid:{row['sid']}"), 400
+        
 
         dao = RoomDAO()
         temp = dao.updateRoomByRid(rid, building, room_number, capacity)
