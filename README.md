@@ -1,6 +1,6 @@
 ## Hosted REST API address
 - **Collection Path**: `Collection/segmentation_fault_routes.json`
-- - **API Host**: [https://rumad-db-5dd7ab118ab8.herokuapp.com/](https://rumad-db-5dd7ab118ab8.herokuapp.com/)
+- **API Host**: [https://rumad-db-5dd7ab118ab8.herokuapp.com/](https://rumad-db-5dd7ab118ab8.herokuapp.com/)
 
 ## Heroku Credentials
 
