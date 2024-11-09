@@ -153,22 +153,22 @@ class ClassHandler:
             if dao.exactDuplicate(temp, method):
                 return jsonify(InsertStatus="Exact Duplicate Entry"), 400
             
-            insertCcodeDuplicateCid = dao.insertCcodeDuplicate(temp)
+            insertCcodeDuplicateCid = dao.ccodeDuplicate(temp)
             if insertCcodeDuplicateCid is not None:
                 return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Ccode' %s. Delete or Update the existing class first." % (insertCcodeDuplicateCid, temp["ccode"])), 400
             
-            insertCdescDuplicateCid = dao.insertCdescDuplicate(temp)
+            insertCdescDuplicateCid = dao.cdescDuplicate(temp)
             if insertCdescDuplicateCid is not None:
                 return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Cdesc' %s. Delete or Update the existing class first." % (insertCdescDuplicateCid, temp["cdesc"])), 400
             
-            insertCsyllabusDuplicateCid = dao.insertCsyllabusDuplicate(temp)
+            insertCsyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
             if insertCsyllabusDuplicateCid is not None:
                 return jsonify(InsertStatus="Duplicate entry: The class with 'cid' %s has the same 'Csyllabus' %s. Delete or Update the existing class first." % (insertCsyllabusDuplicateCid, temp["csyllabus"])), 400
         
         elif method == "update":
-            insertCcodeDuplicateCid = dao.insertCcodeDuplicate(temp)
-            insertCdescDuplicateCid = dao.insertCdescDuplicate(temp)
-            insertCsyllabusDuplicateCid = dao.insertCsyllabusDuplicate(temp)
+            insertCcodeDuplicateCid = dao.ccodeDuplicate(temp)
+            insertCdescDuplicateCid = dao.cdescDuplicate(temp)
+            insertCsyllabusDuplicateCid = dao.csyllabusDuplicate(temp)
             updateExactCid = dao.exactDuplicate(temp, method)
 
             if updateExactCid is not None:

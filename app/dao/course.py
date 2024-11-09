@@ -59,29 +59,13 @@ class ClassDAO:
              return None
     
     
-    def insertCredDuplicate(self, tempV):
-        cursor = self.conn.cursor()
-        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND years = %s AND csyllabus = %s;"
-        cursor.execute(
-            find_duplicate_query,
-            (
-                tempV["cname"],
-                tempV["ccode"],
-                tempV["cdesc"],
-                tempV["term"],
-                tempV["years"],
-                tempV["csyllabus"],
-            ),
-        )
-        return cursor.rowcount == 1
-    
-    def insertCnameDuplicate(self, tempV):
+    def cnameDuplicate(self, tempV):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT * FROM class WHERE cname = %s;"
         cursor.execute(find_duplicate_query, (tempV["cname"],))
         return cursor.rowcount == 1
     
-    def insertCcodeDuplicate(self, tempV):
+    def ccodeDuplicate(self, tempV):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT cid FROM class WHERE ccode = %s;"
         cursor.execute(find_duplicate_query, (tempV["ccode"],))
@@ -90,7 +74,7 @@ class ClassDAO:
             return result[0]
         return None
     
-    def insertCdescDuplicate(self, tempV):
+    def cdescDuplicate(self, tempV):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT cid FROM class WHERE cdesc = %s;"
         cursor.execute(find_duplicate_query, (tempV["cdesc"],))
@@ -99,7 +83,7 @@ class ClassDAO:
             return result[0]
         return None
     
-    def insertCsyllabusDuplicate(self, tempV):
+    def csyllabusDuplicate(self, tempV):
         cursor = self.conn.cursor()
         find_duplicate_query = "SELECT cid FROM class WHERE csyllabus = %s;"
         cursor.execute(find_duplicate_query, (tempV["csyllabus"],))
@@ -107,20 +91,6 @@ class ClassDAO:
         if result is not None:
             return result[0]
         return None
-    
-    def insertTermDuplicate(self, tempV):
-        cursor = self.conn.cursor()
-        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND years = %s AND cred = %s AND csyllabus = %s;"
-        cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["years"], tempV["cred"], tempV["csyllabus"]))
-        return cursor.rowcount == 1
-    
-    def insertYearsDuplicate(self, tempV):
-        cursor = self.conn.cursor()
-        find_duplicate_query = "SELECT * FROM class WHERE cname = %s AND ccode = %s AND cdesc = %s AND term = %s AND cred = %s AND csyllabus = %s;"
-        cursor.execute(find_duplicate_query, (tempV["cname"], tempV["ccode"], tempV["cdesc"], tempV["term"], tempV["cred"], tempV["csyllabus"]))
-        return cursor.rowcount == 1
-    
- 
     
     def classExists(self, cid):
         cursor = self.conn.cursor()
