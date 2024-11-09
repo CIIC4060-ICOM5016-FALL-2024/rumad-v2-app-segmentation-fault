@@ -117,9 +117,9 @@ def requisiteByClassIdReqId(classid, reqid):
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
 
 
-# LOCAL STATICS (3/4)
+# LOCAL STATICS (4/4)
 # Top 3 rooms per building with the most capacity
-@app.route("/segmentation_fault/<string:building>/capacity", methods=["POST"])
+@app.route("/segmentation_fault/room/<string:building>/capacity", methods=["POST"])
 def getMaxCapacity(building):
     return RoomHandler().getMaxCapacity(building)
 
