@@ -109,44 +109,44 @@ class ClassHandler:
 
         # Inspect Empty Entries
         if len(cname.strip()) == 0:
-            return jsonify(UpdateStatus="cname is empty"), 400
+            return jsonify(UpdateStatus="cname is empty"), 416
 
         elif len(ccode.strip()) == 0:
-            return jsonify(UpdateStatus="ccode is empty"), 400
+            return jsonify(UpdateStatus="ccode is empty"), 416
 
         elif len(cdesc.strip()) == 0:
-            return jsonify(UpdateStatus="cdesc is empty"), 400
+            return jsonify(UpdateStatus="cdesc is empty"), 416
 
         elif len(term.strip()) == 0:
-            return jsonify(UpdateStatus="term is empty"), 400
+            return jsonify(UpdateStatus="term is empty"), 416
 
         elif len(years.strip()) == 0:
-            return jsonify(UpdateStatus="years is empty"), 400
+            return jsonify(UpdateStatus="years is empty"), 416
 
         elif len(csyllabus.strip()) == 0:
-            return jsonify(UpdateStatus="csyllabus is empty"), 400
+            return jsonify(UpdateStatus="csyllabus is empty"), 416
 
         # Inspect correct lengths
         if len(cname) > 50:
-            return jsonify(UpdateStatus="cname cannot exceed 50 characters"), 400
+            return jsonify(UpdateStatus="cname cannot exceed 50 characters"), 413
 
         if len(ccode) > 4:
-            return jsonify(UpdateStatus="ccode cannot exceed 4 characters"), 400
+            return jsonify(UpdateStatus="ccode cannot exceed 4 characters"), 413
 
         if len(cdesc) > 100:
-            return jsonify(UpdateStatus="cdesc cannot exceed 4 characters"), 400
+            return jsonify(UpdateStatus="cdesc cannot exceed 4 characters"), 413
 
         if len(term) > 35:
-            return jsonify(UpdateStatus="term cannot exceed 4 characters"), 400
+            return jsonify(UpdateStatus="term cannot exceed 4 characters"), 413
 
         if len(years) > 20:
-            return jsonify(UpdateStatus="years cannot exceed 20 characters"), 400
+            return jsonify(UpdateStatus="years cannot exceed 20 characters"), 413
 
         if len(csyllabus) > 255:
-            return jsonify(UpdateStatus="csyllabus cannot exceed 255 characters"), 400
+            return jsonify(UpdateStatus="csyllabus cannot exceed 255 characters"), 413
 
         if cred > 9 or cred <= 0:
-            return jsonify(UpdateStatus="Incorrect Credits Value"), 400
+            return jsonify(UpdateStatus="Incorrect Credits Value"), 416
         
         # Inspect Duplicates before inserting or Updating (Dont use Primary Key, that is always diferent (serial))
         if method == "insert":
@@ -248,6 +248,7 @@ class ClassHandler:
                 ),
                 400,
             )
+        
         # ------------------------------------------------------------------------
 
         temp = dao.updateClassById(
