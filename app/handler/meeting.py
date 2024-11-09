@@ -89,6 +89,19 @@ class MeetingHandler:
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
         
+        if not isinstance(ccode, str):
+            return jsonify(InsertStatus="Invalid datatype ccode"), 400
+        if not isinstance(starttime, str):
+            return jsonify(InsertStatus="Invalid datatype starttime"), 400
+        if not isinstance(endtime, str):
+            return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        if not isinstance(cdays, str):
+            return jsonify(InsertStatus="Invalid datatype cdays"), 400
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+        
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
             return jsonify_error, error
@@ -149,6 +162,19 @@ class MeetingHandler:
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
+        
+        if not isinstance(ccode, str):
+            return jsonify(InsertStatus="Invalid datatype ccode"), 400
+        if not isinstance(starttime, str):
+            return jsonify(InsertStatus="Invalid datatype starttime"), 400
+        if not isinstance(endtime, str):
+            return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        if not isinstance(cdays, str):
+            return jsonify(InsertStatus="Invalid datatype cdays"), 400
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
         
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
