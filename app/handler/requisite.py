@@ -88,7 +88,7 @@ class RequisiteHandler:
             if row.classid == reqid:
                 req_exist = True
 
-        if class_exist == True and req_exist == True:
+        if class_exist and req_exist:
             data = {"classid": [classid], "reqid": [reqid], "prereq": [prereq]}
             df_to_insert = pd.DataFrame(data)
             df_list = clean_data(df_to_insert, "requisite")
@@ -109,9 +109,9 @@ class RequisiteHandler:
             else:
                 return jsonify(InsertStatus="Duplicate Entry"), 400
         else:
-            if class_exist == False:
+            if not class_exist:
                 return jsonify(InsertStatus="Class ID not found"), 404
-            if req_exist == False:
+            if not req_exist:
                 return jsonify(InsertStatus="Req ID not found"), 404
 
     def deleteRequisiteByClassIdReqId(self, classid, reqid):
