@@ -1,4 +1,3 @@
-from operator import le
 from flask import jsonify
 import pandas as pd
 from handler.data_validation import clean_data
