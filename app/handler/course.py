@@ -157,39 +157,39 @@ class ClassHandler:
         # Inspect Empty Entries
         if len(cname.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="cname is empty"), 416
+                return jsonify(UpdateStatus="cname is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="cname is empty"), 416
+                return jsonify(InsertStatus="cname is empty"), 400
 
         elif len(ccode.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="ccode is empty"), 416
+                return jsonify(UpdateStatus="ccode is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="ccode is empty"), 416
+                return jsonify(InsertStatus="ccode is empty"), 400
 
         elif len(cdesc.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="cdesc is empty"), 416
+                return jsonify(UpdateStatus="cdesc is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="cdesc is empty"), 416
+                return jsonify(InsertStatus="cdesc is empty"), 400
 
         elif len(term.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="term is empty"), 416
+                return jsonify(UpdateStatus="term is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="term is empty"), 416
+                return jsonify(InsertStatus="term is empty"), 400
 
         elif len(years.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="years is empty"), 416
+                return jsonify(UpdateStatus="years is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="years is empty"), 416
+                return jsonify(InsertStatus="years is empty"), 400
 
         elif len(csyllabus.strip()) == 0:
             if method == "update":
-                return jsonify(UpdateStatus="csyllabus is empty"), 416
+                return jsonify(UpdateStatus="csyllabus is empty"), 400
             elif method == "insert":
-                return jsonify(InsertStatus="csyllabus is empty"), 416
+                return jsonify(InsertStatus="csyllabus is empty"), 400
 
         # Inspect correct lengths
         if len(cname) > 50:
@@ -230,9 +230,9 @@ class ClassHandler:
 
         if cred > 9 or cred <= 0:
             if method == "update":
-                return jsonify(UpdateStatus="Incorrect Credits Value"), 416
+                return jsonify(UpdateStatus="Incorrect Credits Value"), 413
             elif method == "insert":
-                return jsonify(InsertStatus="Incorrect Credits Value"), 416
+                return jsonify(InsertStatus="Incorrect Credits Value"), 413
         
         # Inspect Values for term and years
         if term not in ["First Semester", "Second Semester", "First Semester, Second Semester", "According to Demand"]:
@@ -258,9 +258,9 @@ class ClassHandler:
                 
             else: 
                 if method == "update":
-                    return jsonify(UpdateStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 416
+                    return jsonify(UpdateStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 400
                 elif method == "insert":
-                    return jsonify(InsertStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 416
+                    return jsonify(InsertStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 400
         
         if years not in ["Even Years", "Odd Years", "According to Demand", "Every Year"]:
             # Verify if the values were put without correct capital letters and if the values were put with white spaces
