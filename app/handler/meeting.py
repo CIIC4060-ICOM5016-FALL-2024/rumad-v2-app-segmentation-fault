@@ -38,6 +38,8 @@ class MeetingHandler:
         if not (len(starttime.split(":")) == 2 or len(starttime.split(":")) == 3) and (not (len(endtime.split(":")) == 2 or len(endtime.split(":")) == 3)):
             return jsonify(InsertStatus="Invalid time format"), 400
 
+        if (len(starttime.split(":")) == 3 and not starttime.split(":")[2].isdigit() or len(endtime.split(":")) == 3 and not endtime.split(":")[2].isdigit()):
+            return jsonify(InsertStatus="Invalid time format"), 400
         
         if (not (starttime.split(":")[0].isdigit() and starttime.split(":")[1].isdigit() and endtime.split(":")[0].isdigit() and endtime.split(":")[1].isdigit())):    
             return jsonify(InsertStatus="Invalid time format"), 400
@@ -53,7 +55,7 @@ class MeetingHandler:
         if (cdays == "MJ" and (starttime_dt >= datetime.strptime("10:15", "%H:%M") and endtime_dt <= datetime.strptime("12:30", "%H:%M"))):
             return jsonify(InsertStatus="Invalid time range for MJ meetings"), 400
         
-        if cdays == "LMV" and not (endtime_dt - starttime_dt == timedelta(hours=0, minutes=50)):
+        if cdays == "LWV" and not (endtime_dt - starttime_dt == timedelta(hours=0, minutes=50)):
             return jsonify(InsertStatus="Invalid time range for LMV meetings"), 400
         
         if cdays == "MJ" and not (endtime_dt - starttime_dt == timedelta(hours=1, minutes=15)):
@@ -104,14 +106,14 @@ class MeetingHandler:
 
         
         mid = None
-        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30):
+        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right_dt =  timedelta_12_30 - starttime_dt
             starttime = str((starttime_dt + delta_time_to_right_dt).time())
             endtime = str((endtime_dt + delta_time_to_right_dt).time())
             mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_right=str(delta_time_to_right_dt))
             dao.deleteAllMeetingsWithInvalidTime()
         
-        elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15):
+        elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left_dt =  endtime_dt - timedelta_10_15
             starttime = str((starttime_dt - delta_time_to_left_dt).time())
             endtime = str((endtime_dt - delta_time_to_left_dt).time())
@@ -160,12 +162,12 @@ class MeetingHandler:
         timedelta_12_30 = datetime.strptime("12:30", "%H:%M")
         timedelta_10_15 = datetime.strptime("10:15", "%H:%M")    
 
-        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30):
+        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right_dt =  timedelta_12_30 - starttime_dt
             result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_right=str(delta_time_to_right_dt))
             dao.deleteAllMeetingsWithInvalidTime()
 
-        elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15):
+        elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left_dt =  endtime_dt - timedelta_10_15
             result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_left=str(delta_time_to_left_dt))
             dao.deleteAllMeetingsWithInvalidTime()
