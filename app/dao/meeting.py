@@ -1,6 +1,11 @@
 from config.db_config import pg_config
+from datetime import datetime
+
 import psycopg2 as pg
 
+def convert_to_minutes(time_str):
+    hours, minutes, _ = map(int, time_str.split(':'))
+    return hours * 60 + minutes
 
 class MeetingDAO:
     def __init__(self):
@@ -14,6 +19,14 @@ class MeetingDAO:
         )
 
         self.conn = pg.connect(url)
+
+    def checkMeetingDuplication(self, ccode, starttime, endtime, cdays):
+        cursor = self.conn.cursor()
+        conflict_check_query = "SELECT 1 FROM meeting WHERE ccode = %s AND starttime = %s AND endtime = %s AND cdays = %s;"
+        cursor.execute(conflict_check_query, (ccode, starttime, endtime, cdays))
+        if cursor.fetchone():
+            return None
+        return 1
 
     def getAllMeeting(self):
         cursor = self.conn.cursor()
@@ -35,9 +48,57 @@ class MeetingDAO:
 
     def insertMeeting(self, ccode, starttime, endtime, cdays):
         cursor = self.conn.cursor()
+
+        if not self.checkMeetingDuplication(ccode, starttime, endtime, cdays):
+            return None
+        
+        starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
+        endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
+
         query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s, %s, %s) RETURNING mid;"
-        cursor.execute(query, (ccode, starttime, endtime, cdays))
+        cursor.execute(query, (ccode, starttime_dt, endtime_dt, cdays))
         mid = cursor.fetchone()
+        self.conn.commit()
+        return mid
+    
+    def insertMeetingAndDisplaceByTimeAmout(self, ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right):
+        cursor = self.conn.cursor()
+
+        if not self.checkMeetingDuplication(ccode, starttime, endtime, cdays):
+            return None
+        
+        str_left = delta_time_to_left
+        starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
+        endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
+        delta_time_to_right = datetime.strptime(delta_time_to_right.split(":")[0] + ":" + delta_time_to_right.split(":")[1], "%H:%M")
+        delta_time_to_left = datetime.strptime(delta_time_to_left.split(":")[0] + ":" + delta_time_to_left.split(":")[1], "%H:%M")
+    
+        insert_meeting_query = """
+                INSERT INTO meeting(ccode, starttime, endtime, cdays)
+                VALUES (%s, %s + %s::interval, %s + %s::interval, %s) RETURNING mid;
+            """
+        
+        if str_left == "00:00":
+            cursor.execute(insert_meeting_query, (ccode, starttime_dt.time(), delta_time_to_right.time(), endtime_dt.time(), delta_time_to_right.time(), cdays))
+            print("inserting to the right")
+        else:
+            cursor.execute(insert_meeting_query, (ccode, starttime_dt.time(), delta_time_to_left.time(), endtime_dt.time(), delta_time_to_left.time(), cdays))
+            print("inserting to the left")
+            
+        mid = cursor.fetchone()
+
+        if mid:
+            adjust_meeting_query = """
+                UPDATE meeting SET starttime = starttime + %s::interval, endtime = endtime + %s::interval
+                WHERE cdays = %s AND ((starttime >= %s) OR (endtime > %s));
+            """
+            cursor.execute(adjust_meeting_query, (delta_time_to_right.time(), delta_time_to_right.time(), cdays, starttime_dt.time(), endtime_dt.time()))
+            adjust_meeting_query = """
+                UPDATE meeting SET starttime = starttime - %s::interval, endtime = endtime - %s::interval
+                WHERE cdays = %s AND ((starttime < %s) OR (endtime <= %s));
+            """
+            cursor.execute(adjust_meeting_query, (delta_time_to_left.time(), delta_time_to_left.time(), cdays, starttime_dt.time(), endtime_dt.time()))
+
         self.conn.commit()
         return mid
 
