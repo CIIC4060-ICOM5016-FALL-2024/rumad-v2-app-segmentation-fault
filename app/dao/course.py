@@ -65,14 +65,6 @@ class ClassDAO:
         cursor.execute(find_duplicate_query, (tempV["cname"],))
         return cursor.rowcount == 1
     
-    def ccodeDuplicate(self, tempV):
-        cursor = self.conn.cursor()
-        find_duplicate_query = "SELECT cid FROM class WHERE ccode = %s;"
-        cursor.execute(find_duplicate_query, (tempV["ccode"],))
-        result = cursor.fetchone()
-        if result is not None:
-            return result[0]
-        return None
     
     def cdescDuplicate(self, tempV):
         cursor = self.conn.cursor()
