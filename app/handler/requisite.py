@@ -1,4 +1,3 @@
-import re
 from flask import jsonify
 from dao.course import ClassDAO
 from dao.requisite import RequisiteDAO
@@ -63,21 +62,32 @@ class RequisiteHandler:
             return jsonify(UpdateStatus="Invalid datatype for reqid"), 400
         if not isinstance(prereq, bool):
             return jsonify(UpdateStatus="Invalid datatype for prereq"), 400
-        
+
         dao = ClassDAO()
         temp = dao.getAllClass()
-        df = pd.DataFrame(temp, columns=["classid", "cname", "ccode", "cdesc", "term", "years", "cred", "csyllabus"])
-        
+        df = pd.DataFrame(
+            temp,
+            columns=[
+                "classid",
+                "cname",
+                "ccode",
+                "cdesc",
+                "term",
+                "years",
+                "cred",
+                "csyllabus",
+            ],
+        )
+
         class_exist = False
         req_exist = False
-        
-        
+
         for row in df.itertuples():
             if row.classid == classid:
                 class_exist = True
             if row.classid == reqid:
                 req_exist = True
-        
+
         if class_exist == True and req_exist == True:
             data = {"classid": [classid], "reqid": [reqid], "prereq": [prereq]}
             df_to_insert = pd.DataFrame(data)
