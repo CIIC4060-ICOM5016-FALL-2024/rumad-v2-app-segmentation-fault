@@ -88,8 +88,8 @@ class MeetingHandler:
             return jsonify_error, error
 
         dao = MeetingDAO()
-        mid = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
-        if mid:
+        mid_temp = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
+        if mid_temp:
             return jsonify(InsertStatus=f"Duplicate Meeting, meeting id: {mid[0]}"), 404
 
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
@@ -108,8 +108,8 @@ class MeetingHandler:
             delta_time_to_right_str = str(delta_time_to_right)
             starttime_temp = str((starttime_dt + delta_time_to_right).time())
             endtime_temp = str((endtime_dt + delta_time_to_right).time())
-            mid = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid:
+            mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
+            if mid_temp:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 400
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
@@ -117,8 +117,8 @@ class MeetingHandler:
             delta_time_to_left_str = str(delta_time_to_left)
             starttime_temp = str((starttime_dt - delta_time_to_left).time())
             endtime_temp = str((endtime_dt - delta_time_to_left).time())
-            mid = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid:
+            mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
+            if mid_temp:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meeting id: {mid[0]}"), 400
             
         elif(meetings_conflict):
@@ -154,8 +154,8 @@ class MeetingHandler:
             return jsonify_error, error
         
         dao = MeetingDAO()
-        mid = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
-        if mid:
+        mid_temp = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
+        if mid_temp:
             return jsonify(InsertStatus=f"Duplicate Meeting {mid}"), 404
         
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
@@ -171,16 +171,16 @@ class MeetingHandler:
         if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
-            mid = dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays)
-            if mid:
-                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 404   
+            mid_temp = dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays)
+            if mid_temp:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid_temp[0]}"), 404   
 
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
             delta_time_to_left_str = str(delta_time_to_left)
-            mid = mid = dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays)
-            if mid:
-                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meetingid: {mid[0]}"), 404
+            mid_temp = dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays)
+            if mid_temp:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meetingid: {mid_temp[0]}"), 404
             
         elif(meetings_conflict):
             result = []
@@ -191,7 +191,6 @@ class MeetingHandler:
 
         # print("delta1:", delta_time_to_left, delta_time_to_right)
         result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
-        dao.deleteAllMeetingsWithInvalidTime()
 
         mid_To_Delete = dao.deleteAllMeetingsWithInvalidTime()
         if mid_To_Delete is not None:

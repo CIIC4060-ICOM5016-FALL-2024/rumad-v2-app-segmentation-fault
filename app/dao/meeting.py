@@ -146,7 +146,7 @@ class MeetingDAO:
         """
         findMeets_ToDelete_Cursor.execute(findmidsToDelete)
         cursor.execute(query)
-        result = findMeets_ToDelete_Cursor.fetchall()
+        result = findMeets_ToDelete_Cursor.fetchone()
         self.conn.commit()
         if result is not None:
             mid = result[0]
