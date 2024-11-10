@@ -65,8 +65,10 @@ class MeetingDAO:
     def insertMeeting(self, ccode, starttime, endtime, cdays, delta_time_to_left=None, delta_time_to_right=None):
         cursor = self.conn.cursor()
 
-        if not delta_time_to_left: delta_time_to_left = "00:00"
-        if not delta_time_to_right: delta_time_to_right = "00:00"
+        if not delta_time_to_left: 
+            delta_time_to_left = "00:00"
+        if not delta_time_to_right: 
+            delta_time_to_right = "00:00"
         
         query = "INSERT INTO meeting(ccode, starttime, endtime, cdays) VALUES (%s, %s, %s, %s) RETURNING mid;"
         cursor.execute(query, (ccode, starttime, endtime, cdays))
@@ -81,8 +83,10 @@ class MeetingDAO:
     def updateMeetingByMid(self, mid, ccode, starttime, endtime, cdays, delta_time_to_left=None, delta_time_to_right=None):
         cursor = self.conn.cursor()
 
-        if not delta_time_to_left: delta_time_to_left = "00:00"
-        if not delta_time_to_right: delta_time_to_right = "00:00"
+        if not delta_time_to_left: 
+            delta_time_to_left = "00:00"
+        if not delta_time_to_right: 
+            delta_time_to_right = "00:00"
 
         query = "UPDATE meeting SET ccode = %s, starttime = %s, endtime = %s, cdays = %s WHERE mid = %s RETURNING mid;"
         cursor.execute(query, (ccode, starttime, endtime, cdays, mid))
@@ -96,8 +100,10 @@ class MeetingDAO:
     
     def updateAllMeetingTime(self, ccode, starttime, endtime, cdays, delta_time_to_left, delta_time_to_right, ignored_mid=-1):
 
-        if not delta_time_to_left: delta_time_to_left = "00:00"
-        if not delta_time_to_right: delta_time_to_right = "00:00"
+        if not delta_time_to_left: 
+            delta_time_to_left = "00:00"
+        if not delta_time_to_right: 
+            delta_time_to_right = "00:00"
     
         # print(delta_time_to_right, delta_time_to_left)
         delta_time_to_right = datetime.strptime(delta_time_to_right.split(":")[0] + ":" + delta_time_to_right.split(":")[1], "%H:%M")
