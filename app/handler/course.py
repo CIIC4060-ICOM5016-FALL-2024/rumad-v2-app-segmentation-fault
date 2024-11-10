@@ -379,15 +379,13 @@ class ClassHandler:
         }
         class_df = pd.DataFrame([tempClass])     
         sections_df = dao.verifySectionsAs(cid)
-        if sections_df.shape[0] > 0:
-            original_SectionSize = sections_df.shape[0]
+        original_SectionSize = sections_df.shape[0]
         if not dao.classExists(cid):
             return jsonify(UpdateStatus="Class Not Found"), 404
         
-        
         result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
 
-        if result_class_df[0].shape[0] != original_SectionSize:
+        if (result_class_df[0].shape[0] != original_SectionSize) and (original_SectionSize != 0 and original_SectionSize != None):
 
             return (
                 jsonify(
