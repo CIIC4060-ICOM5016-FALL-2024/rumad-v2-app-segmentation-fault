@@ -95,6 +95,17 @@ class MeetingHandler:
             return jsonify(InsertStatus="Invalid datatype starttime"), 400
         if not isinstance(endtime, str):
             return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        
+        try:
+            datetime.strptime(starttime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
+
+        try:
+            datetime.strptime(endtime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
+        
         if not isinstance(cdays, str):
             return jsonify(InsertStatus="Invalid datatype cdays"), 400
         
@@ -169,6 +180,17 @@ class MeetingHandler:
             return jsonify(InsertStatus="Invalid datatype starttime"), 400
         if not isinstance(endtime, str):
             return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        
+        try:
+            datetime.strptime(starttime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
+
+        try:
+            datetime.strptime(endtime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
+        
         if not isinstance(cdays, str):
             return jsonify(InsertStatus="Invalid datatype cdays"), 400
         
