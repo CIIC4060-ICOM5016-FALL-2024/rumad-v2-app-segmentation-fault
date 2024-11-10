@@ -129,7 +129,9 @@ class MeetingHandler:
 
                  
         mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
-        dao.deleteAllMeetingsWithInvalidTime()
+        mid_To_Delete = dao.deleteAllMeetingsWithInvalidTime()
+        if mid_To_Delete is not None:
+            return jsonify(InsertStatus="OK, This insert delete the meetings with 'ids' %s" % (mid_To_Delete)), 200
 
         if mid:
             temp = (mid, ccode, starttime_temp, endtime_temp, cdays)
@@ -190,6 +192,10 @@ class MeetingHandler:
         # print("delta1:", delta_time_to_left, delta_time_to_right)
         result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
         dao.deleteAllMeetingsWithInvalidTime()
+
+        mid_To_Delete = dao.deleteAllMeetingsWithInvalidTime()
+        if mid_To_Delete is not None:
+            return jsonify(InsertStatus="OK, This insert delete the meetings with 'ids' %s" % (mid_To_Delete)), 200
 
         if result:
             return jsonify(UpdateStatus="OK"), 200

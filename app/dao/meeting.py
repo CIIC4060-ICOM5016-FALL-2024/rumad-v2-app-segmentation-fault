@@ -138,12 +138,19 @@ class MeetingDAO:
 
     def deleteAllMeetingsWithInvalidTime(self):
         cursor = self.conn.cursor()
+        findMeets_ToDelete_Cursor = self.conn.cursor()
+        findmidsToDelete = "SELECT mid FROM meeting WHERE cdays = 'MJ' AND (starttime < '07:30:00' OR endtime > '19:45:00');"
         query = """
             DELETE FROM meeting
             WHERE cdays = 'MJ' AND (starttime < '07:30:00' OR endtime > '19:45:00');
         """
+        findMeets_ToDelete_Cursor.execute(findmidsToDelete)
         cursor.execute(query)
-        rowcount = cursor.rowcount
+        result = findMeets_ToDelete_Cursor.fetchall()
         self.conn.commit()
-        return rowcount
+        if result is not None:
+            mid = result[0]
+            return mid
+        else:
+            return None
 
