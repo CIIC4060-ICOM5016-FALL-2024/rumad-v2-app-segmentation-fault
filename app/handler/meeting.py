@@ -13,53 +13,39 @@ class MeetingHandler:
         return result
     
     def validateMeetingInput(self, ccode, starttime, endtime, cdays):
-        cdays = cdays.upper()
         if not ccode or not starttime or not endtime or not cdays:
             return jsonify(InsertStatus="Missing required fields"), 404
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [ccode, cdays]):
+        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [ccode, starttime, endtime, cdays]):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
         
+        cdays = cdays.upper()
         if cdays not in ["LWV", "MJ"]:
             return jsonify(InsertStatus="Invalid cdays"), 400 
         
-        if (len(starttime.split(":")) == 1 and starttime.split(":")[0].isdigit()):
-            starttime = starttime + ":00"
-        if (len(endtime.split(":")) == 1 and endtime.split(":")[0].isdigit()):
-            endtime = endtime + ":00"
+        starttime_dt = endtime_dt = None
+        try:
+             starttime_dt = datetime.strptime(starttime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
 
-        if (len(starttime.split(":")) == 3 and starttime.split(":")[2].isdigit()):
-            starttime = starttime.split(":")[0] + ":" + starttime.split(":")[1]
-        if (len(endtime.split(":")) == 3 and endtime.split(":")[2].isdigit()):
-            endtime = endtime.split(":")[0] + ":" + endtime.split(":")[1]
+        try:
+            endtime_dt = datetime.strptime(endtime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
 
-        if (len(starttime.split(":")) > 3 or len(endtime.split(":")) > 3):
-            return jsonify(InsertStatus="Invalid time format"), 400
-        
-        if not (len(starttime.split(":")) == 2 or len(starttime.split(":")) == 3) and (not (len(endtime.split(":")) == 2 or len(endtime.split(":")) == 3)):
-            return jsonify(InsertStatus="Invalid time format"), 400
-
-        if (len(starttime.split(":")) == 3 and not starttime.split(":")[2].isdigit() or len(endtime.split(":")) == 3 and not endtime.split(":")[2].isdigit()):
-            return jsonify(InsertStatus="Invalid time format"), 400
-        
-        if (not (starttime.split(":")[0].isdigit() and starttime.split(":")[1].isdigit() and endtime.split(":")[0].isdigit() and endtime.split(":")[1].isdigit())):    
-            return jsonify(InsertStatus="Invalid time format"), 400
-        
-        starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
-        endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
-        
         if (starttime_dt >= endtime_dt or starttime_dt == endtime_dt):	
-            return jsonify(InsertStatus="Invalid time range"), 400
+            return jsonify(InsertStatus="Invalid time range, starttime is the same or more than endtime"), 400
         
         if (cdays == "MJ" and (starttime_dt < datetime.strptime("7:30", "%H:%M") or endtime_dt > datetime.strptime("19:45", "%H:%M"))):
             return jsonify(InsertStatus="Invalid time range"), 400
         
         if (cdays == "MJ" and (starttime_dt >= datetime.strptime("10:15", "%H:%M") and endtime_dt <= datetime.strptime("12:30", "%H:%M"))):
-            return jsonify(InsertStatus="Invalid time range for MJ meetings"), 400
+            return jsonify(InsertStatus="Invalid time range for MJ meetings, 'Hora Universal'"), 400
         
-        if cdays == "LWV" and not (endtime_dt - starttime_dt == timedelta(hours=0, minutes=50)):
+        if cdays == "LWV" and not (endtime_dt - starttime_dt == timedelta(hours=0, minutes=50, seconds=0)):
             return jsonify(InsertStatus="Invalid time range for LMV meetings"), 400
         
-        if cdays == "MJ" and not (endtime_dt - starttime_dt == timedelta(hours=1, minutes=15)):
+        if cdays == "MJ" and not (endtime_dt - starttime_dt == timedelta(hours=1, minutes=15, seconds=0)):
             return jsonify(InsertStatus="Invalid time range for MJ meetings"), 400
         
         return None, None
@@ -90,38 +76,9 @@ class MeetingHandler:
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
         
-        if not isinstance(ccode, str):
-            return jsonify(InsertStatus="Invalid datatype ccode"), 400
-        if not isinstance(starttime, str):
-            return jsonify(InsertStatus="Invalid datatype starttime"), 400
-        if not isinstance(endtime, str):
-            return jsonify(InsertStatus="Invalid datatype endtime"), 400
-        
-        try:
-            datetime.strptime(starttime, "%H:%M:%S")
-        except ValueError:
-            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
-
-        try:
-            datetime.strptime(endtime, "%H:%M:%S")
-        except ValueError:
-            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
-        
-        if not isinstance(cdays, str):
-            return jsonify(InsertStatus="Invalid datatype cdays"), 400
-        
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
-            return jsonify(UpdateStatus="A entry is empty"), 400
-        
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
             return jsonify_error, error
-
-        if len(starttime.split(":")) == 1:
-            starttime = starttime + ":00"
-        if len(endtime.split(":")) == 1:
-            endtime = endtime + ":00"
 
         dao = MeetingDAO()
         if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
@@ -132,46 +89,35 @@ class MeetingHandler:
         timedelta_12_30 = datetime.strptime("12:30", "%H:%M")
         timedelta_10_15 = datetime.strptime("10:15", "%H:%M")
 
-        mid = None
-        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
-            delta_time_to_right_dt =  timedelta_12_30 - starttime_dt
-            starttime = str((starttime_dt + delta_time_to_right_dt).time())
-            endtime = str((endtime_dt + delta_time_to_right_dt).time())
+        starttime_temp, endtime_temp = starttime, endtime
+        delta_time_to_left_str = delta_time_to_right_str = None  
 
-            if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
+
+        if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
+            delta_time_to_right =  timedelta_12_30 - starttime_dt
+            delta_time_to_right_str = str(delta_time_to_right)
+            starttime_temp = str((starttime_dt + delta_time_to_right).time())
+            endtime_temp = str((endtime_dt + delta_time_to_right).time())
+            if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
                 return jsonify(InsertStatus="Duplicate Meeting"), 404
-            
-            mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_right=str(delta_time_to_right_dt))
-            dao.deleteAllMeetingsWithInvalidTime()
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
-            delta_time_to_left_dt =  endtime_dt - timedelta_10_15
-            starttime = str((starttime_dt - delta_time_to_left_dt).time())
-            endtime = str((endtime_dt - delta_time_to_left_dt).time())
-            
-            if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
+            delta_time_to_left =  endtime_dt - timedelta_10_15
+            delta_time_to_left_str = str(delta_time_to_left)
+            starttime_temp = str((starttime_dt - delta_time_to_left).time())
+            endtime_temp = str((endtime_dt - delta_time_to_left).time())
+            if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
                 return jsonify(InsertStatus="Duplicate Meeting"), 404
-            
-            mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_left=str(delta_time_to_left_dt))   
-            dao.deleteAllMeetingsWithInvalidTime()
                  
-        else:
-            mid = dao.insertMeeting(ccode, starttime, endtime, cdays)
+        mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
+        dao.deleteAllMeetingsWithInvalidTime()
 
         if mid:
-            temp = (mid, ccode, starttime, endtime, cdays)
+            temp = (mid, ccode, starttime_temp, endtime_temp, cdays)
             return jsonify(self.mapToDict(temp)), 201
         else:
             return jsonify(InsertStatus="Error Inserting Meeting"), 400
         
-
-    def deleteMeetingByMid(self, mid):
-        dao = MeetingDAO()
-        result = dao.deleteMeetingByMid(mid)
-        if result:
-            return jsonify(DeleteStatus="OK"), 200
-        else:
-            return jsonify(DeleteStatus="Not Found"), 404
         
     def updateMeetingByMid(self, mid, meeting_json):
         if "ccode" not in meeting_json or "starttime" not in meeting_json or "endtime" not in meeting_json or "cdays" not in meeting_json:
@@ -181,39 +127,10 @@ class MeetingHandler:
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
-        
-        if not isinstance(ccode, str):
-            return jsonify(InsertStatus="Invalid datatype ccode"), 400
-        if not isinstance(starttime, str):
-            return jsonify(InsertStatus="Invalid datatype starttime"), 400
-        if not isinstance(endtime, str):
-            return jsonify(InsertStatus="Invalid datatype endtime"), 400
-        
-        try:
-            datetime.strptime(starttime, "%H:%M:%S")
-        except ValueError:
-            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
-
-        try:
-            datetime.strptime(endtime, "%H:%M:%S")
-        except ValueError:
-            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
-        
-        if not isinstance(cdays, str):
-            return jsonify(InsertStatus="Invalid datatype cdays"), 400
-        
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
-            return jsonify(UpdateStatus="A entry is empty"), 400
-        
+                
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
             return jsonify_error, error
-        
-        if len(starttime.split(":")) == 1:
-            starttime = starttime + ":00"
-        if len(endtime.split(":")) == 1:
-            endtime = endtime + ":00"
         
         dao = MeetingDAO()
         if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
@@ -222,22 +139,38 @@ class MeetingHandler:
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
         endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
         timedelta_12_30 = datetime.strptime("12:30", "%H:%M")
-        timedelta_10_15 = datetime.strptime("10:15", "%H:%M")    
+        timedelta_10_15 = datetime.strptime("10:15", "%H:%M")  
+
+        delta_time_to_left = delta_time_to_right = None  
+        delta_time_to_left_str = delta_time_to_right_str = None  
+
 
         if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
-            delta_time_to_right_dt =  timedelta_12_30 - starttime_dt
-            result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_right=str(delta_time_to_right_dt))
-            dao.deleteAllMeetingsWithInvalidTime()
+            delta_time_to_right =  timedelta_12_30 - starttime_dt
+            delta_time_to_right_str = str(delta_time_to_right)
+            if dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays):
+                return jsonify(InsertStatus="Duplicate Meeting"), 404   
 
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
-            delta_time_to_left_dt =  endtime_dt - timedelta_10_15
-            result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_left=str(delta_time_to_left_dt))
-            dao.deleteAllMeetingsWithInvalidTime()
+            delta_time_to_left =  endtime_dt - timedelta_10_15
+            delta_time_to_left_str = str(delta_time_to_left)
+            if dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays):
+                return jsonify(InsertStatus="Duplicate Meeting"), 404
+            
 
-        else:
-            result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays)
+        # print("delta1:", delta_time_to_left, delta_time_to_right)
+        result = dao.updateMeetingByMid(mid, ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
+        dao.deleteAllMeetingsWithInvalidTime()
 
         if result:
             return jsonify(UpdateStatus="OK"), 200
         else:
             return jsonify(UpdateStatus="Not Found"), 404
+        
+    def deleteMeetingByMid(self, mid):
+        dao = MeetingDAO()
+        result = dao.deleteMeetingByMid(mid)
+        if result:
+            return jsonify(DeleteStatus="OK"), 200
+        else:
+            return jsonify(DeleteStatus="Not Found"), 404
