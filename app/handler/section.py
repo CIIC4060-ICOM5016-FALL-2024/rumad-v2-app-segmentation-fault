@@ -77,6 +77,8 @@ class SectionHandler:
             return jsonify(InsertStatus="Invalid datatype years"), 400
         if not isinstance(capacity, int):
             return jsonify(InsertStatus="Invalid datatype capacity"), 400
+        if capacity <= 0:
+            return jsonify(InsertStatus="Capacity less than 1"), 400
 
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
@@ -161,6 +163,8 @@ class SectionHandler:
             return jsonify(InsertStatus="Invalid datatype years"), 400
         if not isinstance(capacity, int):
             return jsonify(InsertStatus="Invalid datatype capacity"), 400
+        if capacity <= 0:
+            return jsonify(InsertStatus="Capacity less than 1"), 400
 
         # Verify str length of all values
         if any(len(value.strip()) == 0 for value in [semester, years]):
