@@ -23,11 +23,26 @@ class MeetingDAO:
     def checkMeetingDuplicate(self, ccode, starttime, endtime, cdays):
         # print(ccode, starttime, endtime, cdays)
         cursor = self.conn.cursor()
-        conflict_check_query = "SELECT 1 FROM meeting WHERE ccode = %s AND starttime = %s::time AND endtime = %s::time AND cdays = %s;"
+        conflict_check_query = "SELECT mid FROM meeting WHERE ccode = %s AND starttime = %s::time AND endtime = %s::time AND cdays = %s;"
         cursor.execute(conflict_check_query, (ccode, starttime, endtime, cdays))
-        if cursor.fetchone():
-            return True
-        return False
+        mid = cursor.fetchone()
+        return mid
+    
+    def checkMeetingConflict(self, starttime, endtime, cdays):
+        cursor = self.conn.cursor()
+        conflict_query = """
+            SELECT * 
+            FROM meeting 
+            WHERE cdays = %s AND 
+            ((starttime <= %s AND endtime >= %s) 
+            OR (starttime <= %s AND endtime >= %s));
+        """
+        cursor.execute(conflict_query, (cdays, starttime, starttime, endtime, endtime))
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+
 
     def getAllMeeting(self):
         cursor = self.conn.cursor()
@@ -102,7 +117,6 @@ class MeetingDAO:
         cursor.execute(adjust_meeting_query, (delta_time_to_left.time(), delta_time_to_left.time(), starttime, endtime))
 
         self.conn.commit()
-
 
     def deleteMeetingByMid(self, mid):
         cursor = self.conn.cursor()

@@ -15,7 +15,12 @@ class MeetingHandler:
     def validateMeetingInput(self, ccode, starttime, endtime, cdays):
         if not ccode or not starttime or not endtime or not cdays:
             return jsonify(InsertStatus="Missing required fields"), 404
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [ccode, starttime, endtime, cdays]):
+        
+        if any(
+            not isinstance(value, str) for value in [ccode, starttime, endtime, cdays]
+        ) or any(
+            len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]
+        ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
         
         cdays = cdays.upper()
@@ -53,7 +58,6 @@ class MeetingHandler:
         
         return None, None
 
-    
     def getAllMeeting(self):
         result = []
         dao = MeetingDAO()
@@ -84,8 +88,9 @@ class MeetingHandler:
             return jsonify_error, error
 
         dao = MeetingDAO()
-        if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
-            return jsonify(InsertStatus="Duplicate Meeting"), 404
+        mid = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
+        if mid:
+            return jsonify(InsertStatus=f"Duplicate Meeting, meeting id: {mid[0]}"), 404
 
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
         endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
@@ -95,22 +100,33 @@ class MeetingHandler:
         starttime_temp, endtime_temp = starttime, endtime
         delta_time_to_left_str = delta_time_to_right_str = None  
 
+        meetings_conflict = dao.checkMeetingConflict(starttime, endtime, cdays)
+
 
         if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
             starttime_temp = str((starttime_dt + delta_time_to_right).time())
             endtime_temp = str((endtime_dt + delta_time_to_right).time())
-            if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
-                return jsonify(InsertStatus="Meeting conflict with meeting at 12:30pm"), 400
+            mid = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
+            if mid:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 400
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
             delta_time_to_left_str = str(delta_time_to_left)
             starttime_temp = str((starttime_dt - delta_time_to_left).time())
             endtime_temp = str((endtime_dt - delta_time_to_left).time())
-            if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
-                return jsonify(InsertStatus="Meeting conflict with meeting at 9:00am"), 400
+            mid = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
+            if mid:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meeting id: {mid[0]}"), 400
+            
+        elif(meetings_conflict):
+            result = []
+            for item in meetings_conflict:
+                result.append(self.mapToDict(item))
+            return jsonify(InsertStatus="Meeting conflict", conflict=result), 400
+
                  
         mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
         dao.deleteAllMeetingsWithInvalidTime()
@@ -136,8 +152,9 @@ class MeetingHandler:
             return jsonify_error, error
         
         dao = MeetingDAO()
-        if dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays):
-            return jsonify(InsertStatus="Duplicate Meeting"), 404
+        mid = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
+        if mid:
+            return jsonify(InsertStatus=f"Duplicate Meeting {mid}"), 404
         
         starttime_dt = datetime.strptime(starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M")
         endtime_dt = datetime.strptime(endtime.split(":")[0] + ":" + endtime.split(":")[1], "%H:%M")
@@ -147,18 +164,27 @@ class MeetingHandler:
         delta_time_to_left = delta_time_to_right = None  
         delta_time_to_left_str = delta_time_to_right_str = None  
 
+        meetings_conflict = dao.checkMeetingConflict(starttime, endtime, cdays)
 
         if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
-            if dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays):
-                return jsonify(InsertStatus="Meeting conflict with meeting at 12:30pm"), 404   
+            mid = dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays)
+            if mid:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 404   
 
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
             delta_time_to_left_str = str(delta_time_to_left)
-            if dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays):
-                return jsonify(InsertStatus="Meeting conflict with meeting at 9:00am"), 404
+            mid = mid = dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays)
+            if mid:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meetingid: {mid[0]}"), 404
+            
+        elif(meetings_conflict):
+            result = []
+            for item in meetings_conflict:
+                result.append(self.mapToDict(item))
+            return jsonify(InsertStatus="Meeting conflict", conflict=result), 400
             
 
         # print("delta1:", delta_time_to_left, delta_time_to_right)
