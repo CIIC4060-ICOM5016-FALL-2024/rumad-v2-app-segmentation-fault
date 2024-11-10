@@ -109,7 +109,7 @@ class MeetingHandler:
             starttime_temp = str((starttime_dt + delta_time_to_right).time())
             endtime_temp = str((endtime_dt + delta_time_to_right).time())
             mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid_temp:
+            if mid_temp and mid_temp != mid:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 400
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
@@ -118,7 +118,7 @@ class MeetingHandler:
             starttime_temp = str((starttime_dt - delta_time_to_left).time())
             endtime_temp = str((endtime_dt - delta_time_to_left).time())
             mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid_temp:
+            if mid_temp and mid_temp != mid:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meeting id: {mid[0]}"), 400
             
         elif(meetings_conflict):
@@ -172,14 +172,14 @@ class MeetingHandler:
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
             mid_temp = dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays)
-            if mid_temp:
+            if mid_temp and mid_temp != mid:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid_temp[0]}"), 404   
 
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
             delta_time_to_left_str = str(delta_time_to_left)
             mid_temp = dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays)
-            if mid_temp:
+            if mid_temp and  mid_temp != mid:
                 return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meetingid: {mid_temp[0]}"), 404
             
         elif(meetings_conflict):
