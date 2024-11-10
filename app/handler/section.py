@@ -187,12 +187,15 @@ class SectionHandler:
         dao = SectionDAO()
         columns = ["sid", "roomid", "cid", "mid", "semester", "years", "capacity"]
         df_section = pd.DataFrame(dao.getAllSection(), columns=columns)
+        # Exclude the current section from the duplicate check
+        df_section = df_section[df_section["sid"] != sid]
+
         df_section = pd.concat([df_section, df_to_update], ignore_index=True)
 
         not_duplicate = self.confirmDataInDF(df_to_update, df_section)
 
         if not not_duplicate:
-            return jsonify(UpdateStatus="Duplicate Entry"), 400
+            return jsonify(InsertStatus="Duplicate Entry"), 400
 
         df_list = clean_data(df_to_update, "section")
 
