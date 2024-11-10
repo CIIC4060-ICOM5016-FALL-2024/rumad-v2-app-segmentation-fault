@@ -1,0 +1,903 @@
+{
+	"info": {
+		"_postman_id": "e27bc8d2-40e0-41f8-aabd-eb9defdfaf09",
+		"name": "Segmentation Fault Routes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39273206",
+		"_collection_link": "https://segmentation-fault-6960.postman.co/workspace/Segmentation-Fault-Workspace~adb5ef9d-a0db-41ce-8772-e1d065b1e63d/collection/39273206-e27bc8d2-40e0-41f8-aabd-eb9defdfaf09?action=share&source=collection_link&creator=39273206"
+	},
+	"item": [
+		{
+			"name": "section",
+			"item": [
+				{
+					"name": "segmentation_fault/section",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/section/sid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/9",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/section/sid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/12",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/section/sid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n    \"capacity\": 24,\n    \"cid\": 26,\n    \"mid\": 4,\n    \"roomid\": 24,\n    \"semester\": \"Fall\",\n    \"years\": \"2030\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/9",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/section",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n        \"capacity\": 25,\n        \"cid\": 26,\n        \"mid\": 4,\n        \"roomid\": 24,\n        \"semester\": \"Fall\",\n        \"years\": \"2025\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "requisite",
+			"item": [
+				{
+					"name": "segmentation_fault/requisite",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/requisite",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"requisite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/requisite/classid/reqid",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"prereq\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/requisite/4/2",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"requisite",
+								"4",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/requisite/classid/reqid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/requisite/4/2",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"requisite",
+								"4",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/requisite/classid/reqid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"prereq\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/requisite/4/2",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"requisite",
+								"4",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/requisite",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"classid\": 5,\n    \"prereq\": true,\n    \"reqid\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/requisite",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"requisite"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "room",
+			"item": [
+				{
+					"name": "segmentation_fault/room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room/rid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/1",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room/rid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/1",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room/rid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"building\": \"ey\",\n    \"capacity\": 120,\n    \"room_number\": \"128\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/5",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"building\": \"Stefani\",\n    \"capacity\": 0,\n    \"room_number\": \"113\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "meeting",
+			"item": [
+				{
+					"name": "segmentation_fault/meeting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/meeting",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/meeting/mid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/meeting/12",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"meeting",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/meeting/mid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ccode\": \"21\",\n    \"cdays\": \"LWV\",\n    \"endtime\": \"09:20:00\",\n    \"starttime\": \"08:30:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/meeting/12",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"meeting",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/meeting/mid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ccode\": \"21\",\n    \"cdays\": \"LWV\",\n    \"endtime\": \"09:20:00\",\n    \"starttime\": \"08:30:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/meeting/2",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"meeting",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/meeting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\n        \"ccode\": \"98\",\n        \"cdays\": \"MJ\",\n        \"endtime\": \"08:45:00\",\n        \"starttime\": \"07:30:00\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/meeting",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "class",
+			"item": [
+				{
+					"name": "segmentation_fault/class",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/class",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/class/cid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/class/39",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"class",
+								"39"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/class/cid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/class/12",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"class",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/class/cid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ccode\": \"3015\",\n    \"cdesc\": \"Introduction to Computer Programming I\",\n    \"cname\": \"CIIC\",\n    \"cred\": 4,\n    \"csyllabus\": \"https://www.uprm.edu/cse/wp-content/uploads/sites/153/2020/03/CIIC-3015-Introduction-to-Computer-Programming-I.pdf\",\n    \"term\": \"First Semester, Second Semester\",\n    \"years\": \"Every Year\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/class/38",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"class",
+								"38"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/class",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"ccode\": \"4070\",\n    \"cdesc\": \"Computer Networks\",\n    \"cname\": \"CIIC\",\n    \"cred\": 3,\n    \"csyllabus\": \"https://www.uprm.edu/cse/wp-content/uploads/sites/153/2019/11/CIIC-4070-Computer-Networks.pdf\",\n    \"term\": \"Second Semester\",\n    \"years\": \"Every Year\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/class",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"class"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "local_statistics",
+			"item": [
+				{
+					"name": "segmentation_fault/room/<building>/capacity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/Stefani/capacity",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"Stefani",
+								"capacity"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room/<building>/ratio",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/Stefani/ratio",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room",
+								"Stefani",
+								"ratio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/room/<rid>/classes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/9/classes",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"room",
+								"9",
+								"classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/classes/<year>/<semester>",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/classes/2018/Fall",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"classes",
+								"2018",
+								"Fall"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "global_statistics",
+			"item": [
+				{
+					"name": "segmentation_fault/most/meeting",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/meeting",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"most",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/most/prerequisite",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/prerequisite",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"most",
+								"prerequisite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/section/year",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"section",
+								"year"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/least/classes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/least/classes",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"least",
+								"classes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

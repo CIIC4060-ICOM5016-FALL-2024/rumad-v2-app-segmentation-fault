@@ -73,6 +73,7 @@ def roomByRID(rid):
     else:
         return RoomHandler().deleteRoomByRid(rid)
 
+
 # CLASS ROUTES
 @app.route("/segmentation_fault/class", methods=["GET", "POST"])
 def courses():
@@ -116,46 +117,52 @@ def requisiteByClassIdReqId(classid, reqid):
         return RequisiteHandler().getRequisiteByClassIdReqId(classid, reqid)
 
 
-# LOCAL STATICS (3/4)
+# LOCAL STATICS (4/4)
 # Top 3 rooms per building with the most capacity
-@app.route("/segmentation_fault/<string:building>/capacity", methods=['GET'])
+@app.route("/segmentation_fault/room/<string:building>/capacity", methods=["POST"])
 def getMaxCapacity(building):
     return RoomHandler().getMaxCapacity(building)
 
-@app.route("/segmentation_fault/room/<string:building>/ratio", methods=['GET'])
+
+# Top 3 rooms with the most student-to-capacity ratio
+@app.route("/segmentation_fault/room/<string:building>/ratio", methods=["POST"])
 def getRatioByBuilding(building):
-    #TODO: Ask what supposed to be the input
-    return RoomHandler().getRatioByBuilding(building)
+    return SectionHandler().getRatioByBuilding(building)
+
 
 # Top 3 classes that were taught the most per room
-@app.route("/segmentation_fault/room/<id>/classes", methods=["GET"])
+@app.route("/segmentation_fault/room/<id>/classes", methods=["POST"])
 def mostPerRoom(id):
     return ClassHandler().getMostPerRoom(id)
 
+
 # Top 3 most taught classes per semester per year
-@app.route("/segmentation_fault/classes/<year>/<semester>", methods=["GET"])
+@app.route("/segmentation_fault/classes/<year>/<semester>", methods=["POST"])
 def mostPerSemester(year, semester):
     return ClassHandler().getMostPerSemester(year, semester)
 
 
 # GLOBAL STATICS (4/4)
 # Top 5 meetings with the most sections
-@app.route("/segmentation_fault/most/meeting", methods=["GET"])
+@app.route("/segmentation_fault/most/meeting", methods=["POST"])
 def mostMeeting():
     return MeetingHandler().getMostMeeting()
 
+
 # Top 3 classes that appears the most as prerequisite to other classes
-@app.route("/segmentation_fault/most/prerequisite", methods=["GET"])
+@app.route("/segmentation_fault/most/prerequisite", methods=["POST"])
 def mostPrerequisite():
     return ClassHandler().getMostPrerequisite()
 
+
 # Top 3 classes that were offered the least
-@app.route("/segmentation_fault/least/classes", methods=["GET"])
+@app.route("/segmentation_fault/least/classes", methods=["POST"])
 def leastClass():
     return ClassHandler().getLeastClass()
 
+
 # Total number of sections per year
-@app.route("/segmentation_fault/section/year", methods=["GET"])
+@app.route("/segmentation_fault/section/year", methods=["POST"])
 def sectionYear():
     return SectionHandler().getSectionPerYear()
 

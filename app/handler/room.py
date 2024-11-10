@@ -1,14 +1,16 @@
+import pandas as pd
 from flask import jsonify
 from dao.room import RoomDAO
+from dao.section import SectionDAO
 
 
 class RoomHandler:
     def mapToDict(self, tuple):
         result = {
-            "rid" : tuple[0],
-            "building" : tuple[1],
-            "room_number" : tuple[2],
-            "capacity" : tuple[3]
+            "rid": tuple[0],
+            "building": tuple[1],
+            "room_number": tuple[2],
+            "capacity": tuple[3],
         }
         return result
 
@@ -34,20 +36,27 @@ class RoomHandler:
         capacity = room_json["capacity"]
 
         if not building or not room_number or not capacity:
-            return jsonify(InsertStatus="Missing required fields"), 404
-        if not isinstance(capacity, int)  or capacity <= 0:
-            return jsonify(InsertStatus="Invalid capacity"), 404
-        
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [building, room_number]):
+            return jsonify(UpdateStatus="Missing required fields"), 400
+        if not isinstance(capacity, int) or capacity <= 0:
+            return jsonify(UpdateStatus="Invalid capacity type"), 400
+        if not isinstance(room_number, str):
+            return jsonify(UpdateStatus="Invalid room_number type"), 400
+        if not isinstance(building, str):
+            return jsonify(UpdateStatus="Invalid building type"), 400
+
+        if any(
+            len(value.strip()) == 0 or not isinstance(value, str)
+            for value in [building, room_number]
+        ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
-        
+
         dao = RoomDAO()
         rid = dao.insertRoom(building, room_number, capacity)
         if rid:
             temp = (rid, building, room_number, capacity)
             return jsonify(self.mapToDict(temp)), 201
         else:
-            return jsonify(InsertStatus="Duplicate Room"), 404
+            return jsonify(InsertStatus="Duplicate Room"), 400
 
     def deleteRoomByRid(self, rid):
         dao = RoomDAO()
@@ -63,14 +72,37 @@ class RoomHandler:
         capacity = room_json["capacity"]
 
         if not building or not room_number or not capacity:
-            return jsonify(UpdateStatus="Missing required fields"), 404
-        if not isinstance(capacity, int)  or capacity <= 0:
-            return jsonify(UpdateStatus="Invalid capacity"), 404
-        
-        if any(len(value.strip()) == 0 or not isinstance(value, str) for value in [building, room_number]):
+            return jsonify(UpdateStatus="Missing required fields"), 400
+        if not isinstance(capacity, int) or capacity <= 0:
+            return jsonify(UpdateStatus="Invalid capacity type"), 400
+        if not isinstance(room_number, str):
+            return jsonify(UpdateStatus="Invalid room_number type"), 400
+        if not isinstance(building, str):
+            return jsonify(UpdateStatus="Invalid building type"), 400
+
+        if any(
+            len(value.strip()) == 0 or not isinstance(value, str)
+            for value in [building, room_number]
+        ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
 
-        
+        dao = SectionDAO()
+        section_data = dao.getAllSection()
+        df_section = pd.DataFrame(
+            section_data,
+            columns=["sid", "roomid", "cid", "mid", "semester", "years", "capacity"],
+        )
+
+        for index, row in df_section.iterrows():
+            if row["roomid"] == rid:
+                if row["capacity"] < capacity:
+                    return (
+                        jsonify(
+                            UpdateStatus=f"The new capacity is less than the current capacity for section ID {row['sid']}"
+                        ),
+                        400,
+                    )
+
         dao = RoomDAO()
         temp = dao.updateRoomByRid(rid, building, room_number, capacity)
         if temp:
@@ -89,10 +121,3 @@ class RoomHandler:
             return jsonify(result), 200
         else:
             return jsonify(UpdateStatus="Not Found"), 404
-
-
-
-
-
-
-

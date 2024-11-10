@@ -65,10 +65,6 @@ class SectionHandler:
         years = section_json["years"]
         capacity = section_json["capacity"]
 
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [semester, years]):
-            return jsonify(UpdateStatus="A entry is empty"), 400
-
         if not isinstance(roomid, int):
             return jsonify(InsertStatus="Invalid datatype roomid"), 400
         if not isinstance(cid, int):
@@ -81,6 +77,13 @@ class SectionHandler:
             return jsonify(InsertStatus="Invalid datatype years"), 400
         if not isinstance(capacity, int):
             return jsonify(InsertStatus="Invalid datatype capacity"), 400
+
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+
+        if any(len(value.strip()) > 4 for value in [years]):
+            return jsonify(UpdateStatus="Invalid years"), 400
 
         data = {
             "sid": 1000,
@@ -146,10 +149,6 @@ class SectionHandler:
         years = section_json["years"]
         capacity = section_json["capacity"]
 
-        # Verify str length of all values
-        if any(len(value.strip()) == 0 for value in [semester, years]):
-            return jsonify(UpdateStatus="A entry is empty"), 400
-
         if not isinstance(roomid, int):
             return jsonify(InsertStatus="Invalid datatype roomid"), 400
         if not isinstance(cid, int):
@@ -162,6 +161,13 @@ class SectionHandler:
             return jsonify(InsertStatus="Invalid datatype years"), 400
         if not isinstance(capacity, int):
             return jsonify(InsertStatus="Invalid datatype capacity"), 400
+
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [semester, years]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
+
+        if any(len(value.strip()) > 4 for value in [years]):
+            return jsonify(UpdateStatus="Invalid years"), 400
 
         data = {
             "sid": 1000,
@@ -210,3 +216,14 @@ class SectionHandler:
             return jsonify(result)
         else:
             return jsonify(GetStatus="NOT FOUND"), 404
+
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = SectionDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
