@@ -102,15 +102,14 @@ class MeetingHandler:
 
         meetings_conflict = dao.checkMeetingConflict(starttime, endtime, cdays)
 
-
         if(starttime_dt >= timedelta_10_15 and starttime_dt < timedelta_12_30 and cdays == "MJ"):
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
             starttime_temp = str((starttime_dt + delta_time_to_right).time())
             endtime_temp = str((endtime_dt + delta_time_to_right).time())
             mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid_temp and mid_temp != mid:
-                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid[0]}"), 400
+            if mid_temp:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid_temp[0]}"), 400
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
@@ -118,8 +117,8 @@ class MeetingHandler:
             starttime_temp = str((starttime_dt - delta_time_to_left).time())
             endtime_temp = str((endtime_dt - delta_time_to_left).time())
             mid_temp = dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays)
-            if mid_temp and mid_temp != mid:
-                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meeting id: {mid[0]}"), 400
+            if mid_temp:
+                return jsonify(InsertStatus=f"Meeting conflict with meeting at 9:00am, meeting id: {mid_temp[0]}"), 400
             
         elif(meetings_conflict):
             result = []
