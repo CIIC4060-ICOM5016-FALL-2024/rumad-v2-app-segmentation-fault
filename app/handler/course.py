@@ -373,22 +373,20 @@ class ClassHandler:
         }
         class_df = pd.DataFrame([tempClass])     
         sections_df = dao.verifySectionsAs(cid)
-        result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
-
+        if sections_df.shape[0] > 0:
+            original_SectionSize = sections_df.shape[0]
         if not dao.classExists(cid):
             return jsonify(UpdateStatus="Class Not Found"), 404
-
-        if result_class_df[0].empty and not sections_df.empty:
-            
-            colapseSemester = sections_df["semester"][0]
-            colapseYear = sections_df["years"][0]
         
+        
+        result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
+
+        if result_class_df[0].shape[0] != original_SectionSize:
+
             return (
                 jsonify(
-                    UpdateStatus=("It is not possible to modify the [class] 'term' to (%s) when the [section] 'semester' is (%s) "
-                                  "or modify [class] 'years' to (%s) when the [section] 'years' is (%s). "
-                                  "For classes that have associated sections, first modify the sections"
-                    ) % (term, colapseSemester, years, colapseYear)
+                    UpdateStatus=("This class have associated sections, and not all complish the new term or years values. First modify the sections."
+                    )
                 ),
                 400,
             )
