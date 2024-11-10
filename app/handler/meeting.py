@@ -82,10 +82,37 @@ class MeetingHandler:
             return "Not Found", 404
         
     def insertMeeting(self, meeting_json):
+        if "ccode" not in meeting_json or "starttime" not in meeting_json or "endtime" not in meeting_json or "cdays" not in meeting_json:
+            return jsonify(InsertStatus="Missing required fields"), 404
+        
         ccode = meeting_json["ccode"]
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
+        
+        if not isinstance(ccode, str):
+            return jsonify(InsertStatus="Invalid datatype ccode"), 400
+        if not isinstance(starttime, str):
+            return jsonify(InsertStatus="Invalid datatype starttime"), 400
+        if not isinstance(endtime, str):
+            return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        
+        try:
+            datetime.strptime(starttime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
+
+        try:
+            datetime.strptime(endtime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
+        
+        if not isinstance(cdays, str):
+            return jsonify(InsertStatus="Invalid datatype cdays"), 400
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
         
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
@@ -147,10 +174,37 @@ class MeetingHandler:
             return jsonify(DeleteStatus="Not Found"), 404
         
     def updateMeetingByMid(self, mid, meeting_json):
+        if "ccode" not in meeting_json or "starttime" not in meeting_json or "endtime" not in meeting_json or "cdays" not in meeting_json:
+            return jsonify(InsertStatus="Missing required fields"), 404
+        
         ccode = meeting_json["ccode"]
         starttime = meeting_json["starttime"]
         endtime = meeting_json["endtime"]
         cdays = meeting_json["cdays"]
+        
+        if not isinstance(ccode, str):
+            return jsonify(InsertStatus="Invalid datatype ccode"), 400
+        if not isinstance(starttime, str):
+            return jsonify(InsertStatus="Invalid datatype starttime"), 400
+        if not isinstance(endtime, str):
+            return jsonify(InsertStatus="Invalid datatype endtime"), 400
+        
+        try:
+            datetime.strptime(starttime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for starttime"), 400
+
+        try:
+            datetime.strptime(endtime, "%H:%M:%S")
+        except ValueError:
+            return jsonify(InsertStatus="Invalid datetime format for endtime"), 400
+        
+        if not isinstance(cdays, str):
+            return jsonify(InsertStatus="Invalid datatype cdays"), 400
+        
+        # Verify str length of all values
+        if any(len(value.strip()) == 0 for value in [ccode, starttime, endtime, cdays]):
+            return jsonify(UpdateStatus="A entry is empty"), 400
         
         jsonify_error, error = self.validateMeetingInput(ccode, starttime, endtime, cdays)
         if error:
