@@ -97,7 +97,7 @@ class MeetingHandler:
         if result:
             return jsonify(self.mapToDict(result))
         else:
-            return "Not Found", 404
+            return jsonify(InsertStatus="Not Found"), 404
 
     def insertMeeting(self, meeting_json):
         if (
