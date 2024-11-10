@@ -99,7 +99,7 @@ class MeetingHandler:
             starttime_temp = str((starttime_dt + delta_time_to_right).time())
             endtime_temp = str((endtime_dt + delta_time_to_right).time())
             if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
-                return jsonify(InsertStatus="Duplicate Meeting"), 404
+                return jsonify(InsertStatus="Meeting conflict with meeting at 12:30pm"), 400
         
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
@@ -107,7 +107,7 @@ class MeetingHandler:
             starttime_temp = str((starttime_dt - delta_time_to_left).time())
             endtime_temp = str((endtime_dt - delta_time_to_left).time())
             if dao.checkMeetingDuplicate(ccode, starttime_temp, endtime_temp, cdays):
-                return jsonify(InsertStatus="Duplicate Meeting"), 404
+                return jsonify(InsertStatus="Meeting conflict with meeting at 9:00am"), 400
                  
         mid = dao.insertMeeting(ccode, starttime, endtime, cdays, delta_time_to_left=delta_time_to_left_str, delta_time_to_right=delta_time_to_right_str)
         dao.deleteAllMeetingsWithInvalidTime()
@@ -149,13 +149,13 @@ class MeetingHandler:
             delta_time_to_right =  timedelta_12_30 - starttime_dt
             delta_time_to_right_str = str(delta_time_to_right)
             if dao.checkMeetingDuplicate(ccode, str(starttime_dt + delta_time_to_right), str(endtime_dt + delta_time_to_right), cdays):
-                return jsonify(InsertStatus="Duplicate Meeting"), 404   
+                return jsonify(InsertStatus="Meeting conflict with meeting at 12:30pm"), 404   
 
         elif(endtime_dt < timedelta_12_30 and endtime_dt > timedelta_10_15 and cdays == "MJ"):
             delta_time_to_left =  endtime_dt - timedelta_10_15
             delta_time_to_left_str = str(delta_time_to_left)
             if dao.checkMeetingDuplicate(ccode, str(starttime_dt - delta_time_to_left), str(endtime_dt - delta_time_to_left), cdays):
-                return jsonify(InsertStatus="Duplicate Meeting"), 404
+                return jsonify(InsertStatus="Meeting conflict with meeting at 9:00am"), 404
             
 
         # print("delta1:", delta_time_to_left, delta_time_to_right)

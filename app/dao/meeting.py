@@ -29,7 +29,6 @@ class MeetingDAO:
             return True
         return False
 
-
     def getAllMeeting(self):
         cursor = self.conn.cursor()
         query = "SELECT mid, ccode, starttime, endtime, cdays FROM meeting;"
