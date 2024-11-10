@@ -95,7 +95,7 @@ class RoomHandler:
 
         for index, row in df_section.iterrows():
             if row["roomid"] == rid:
-                if row["capacity"] < capacity:
+                if row["capacity"] > capacity:
                     return (
                         jsonify(
                             UpdateStatus=f"The new capacity is less than the current capacity for section ID {row['sid']}"

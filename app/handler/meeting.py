@@ -295,8 +295,10 @@ class MeetingHandler:
         elif meetings_conflict:
             result = []
             for item in meetings_conflict:
-                result.append(self.mapToDict(item))
-            return jsonify(InsertStatus="Meeting conflict", conflict=result), 400
+                if mid != item[0]:
+                    result.append(self.mapToDict(item))
+            if len(result) > 0:
+                return jsonify(InsertStatus="Meeting conflict", conflict=result), 400
 
         # print("delta1:", delta_time_to_left, delta_time_to_right)
         result = dao.updateMeetingByMid(

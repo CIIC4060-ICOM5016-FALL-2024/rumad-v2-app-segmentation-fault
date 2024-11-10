@@ -34,8 +34,8 @@ class MeetingDAO:
             SELECT * 
             FROM meeting 
             WHERE cdays = %s AND 
-            ((starttime <= %s AND endtime >= %s) 
-            OR (starttime <= %s AND endtime >= %s));
+            ((starttime < %s AND endtime >= %s) 
+            OR (starttime <= %s AND endtime > %s));
         """
         cursor.execute(conflict_query, (cdays, starttime, starttime, endtime, endtime))
         result = []

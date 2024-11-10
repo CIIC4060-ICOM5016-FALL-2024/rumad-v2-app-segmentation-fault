@@ -14,7 +14,7 @@ class RequisiteHandler:
         return result
 
     def confirmDataInDF(self, df_to_verify, df_requisite):
-        columns_to_check = ["classid", "reqid", "prereq"]
+        columns_to_check = ["classid", "reqid"]
         df_requisite = df_requisite.astype({col: str for col in columns_to_check})
         df_to_verify = df_to_verify.astype({col: str for col in columns_to_check})
 
