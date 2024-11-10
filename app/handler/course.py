@@ -235,9 +235,9 @@ class ClassHandler:
                 return jsonify(InsertStatus="Incorrect Credits Value"), 413
         
         # Inspect Values for term and years
-        if term not in ["First Semester", "Second Semester", "First Semester, Second Semester", "According to Demand"]:
+        if term not in ["First Semester", "Second Semester", "First Semester, Second Semester", "According to Demand", "V1", "V2"]:
             # Verify if the values were put without correct capital letters and if the values were put with white spaces
-            if term.replace(" ", "").strip().lower() in ["firstsemester", "secondsemester", "firstsemester,secondsemester", "accordingtodemand"]:
+            if term.replace(" ", "").strip().lower() in ["firstsemester", "secondsemester", "firstsemester,secondsemester", "accordingtodemand", "v1", "v2"]:
                 if term.replace(" ", "").strip().lower() == "firstsemester":
                     class_json['term'] = "First Semester"
                     temp['term'] = "First Semester"
@@ -250,6 +250,12 @@ class ClassHandler:
                 if term.replace(" ", "").strip().lower() == "accordingtodemand":
                     class_json['term'] = "According to Demand"
                     temp['term'] = "According to Demand"
+                if term.replace(" ", "").strip().lower() == "v1":
+                    class_json['term'] = "V1"
+                    temp['term'] = "V1"
+                if term.replace(" ", "").strip().lower() == "v2":
+                    class_json['term'] = "V2"
+                    temp['term'] = "V2"
 
             # Verify if the pair values were put without commas
             elif term.replace(" ", "").replace(",", "").strip().lower() == "firstsemestersecondsemester":
@@ -258,23 +264,23 @@ class ClassHandler:
                 
             else: 
                 if method == "update":
-                    return jsonify(UpdateStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 400
+                    return jsonify(UpdateStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand', 'V1', 'V2'"), 400
                 elif method == "insert":
                     return jsonify(InsertStatus="Incorrect term value, the options are: 'First Semester', 'Second Semester', 'First Semester, Second Semester', 'According to Demand'"), 400
         
         if years not in ["Even Years", "Odd Years", "According to Demand", "Every Year"]:
             # Verify if the values were put without correct capital letters and if the values were put with white spaces
             if years.replace(" ", "").strip().lower() in ["evenyears", "oddyears", "accordingtodemand", "everyyear"]:
-                if years.replace(" ", "").strip().lower() == "evenyears":
+                if (years.replace(" ", "").strip().lower() == "evenyears") or (years.replace(" ", "").strip().lower() == "evenyear"):
                     class_json['years'] = "Even Years"
                     temp['years'] = "Even Years"
-                if years.replace(" ", "").strip().lower() == "oddyears":
+                if (years.replace(" ", "").strip().lower() == "oddyears") or (years.replace(" ", "").strip().lower() == "oddyear"):
                     class_json['years'] = "Odd Years"
                     temp['years'] = "Odd Years"
-                if years.replace(" ", "").strip().lower() == "accordingtodemand":
+                if (years.replace(" ", "").strip().lower() == "accordingtodemand") or (years.replace(" ", "").strip().lower() == "accordingtodemands"):
                     class_json['years'] = "According to Demand"
                     temp['years'] = "According to Demand"
-                if years.replace(" ", "").strip().lower() == "everyyear":
+                if (years.replace(" ", "").strip().lower() == "everyyear") or (years.replace(" ", "").strip().lower() == "everyyears"):
                     class_json['years'] = "Every Year"
                     temp['years'] = "Every Year"
 
@@ -373,22 +379,20 @@ class ClassHandler:
         }
         class_df = pd.DataFrame([tempClass])     
         sections_df = dao.verifySectionsAs(cid)
-        result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
-
+        if sections_df.shape[0] > 0:
+            original_SectionSize = sections_df.shape[0]
         if not dao.classExists(cid):
             return jsonify(UpdateStatus="Class Not Found"), 404
-
-        if result_class_df[0].empty and not sections_df.empty:
-            
-            colapseSemester = sections_df["semester"][0]
-            colapseYear = sections_df["years"][0]
         
+        
+        result_class_df = rem_courses_with_invalid_timeframe(sections_df, class_df)
+
+        if result_class_df[0].shape[0] != original_SectionSize:
+
             return (
                 jsonify(
-                    UpdateStatus=("It is not possible to modify the [class] 'term' to (%s) when the [section] 'semester' is (%s) "
-                                  "or modify [class] 'years' to (%s) when the [section] 'years' is (%s). "
-                                  "For classes that have associated sections, first modify the sections"
-                    ) % (term, colapseSemester, years, colapseYear)
+                    UpdateStatus=("This class have associated sections, and not all complish the new term or years values. First modify the sections."
+                    )
                 ),
                 400,
             )
