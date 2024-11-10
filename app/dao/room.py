@@ -81,3 +81,10 @@ class RoomDAO:
         for row in cursor:
             result.append(row)
         return result
+    
+    def checkDuplicateRoom(self, building, room_number, rid):
+        query = "SELECT * FROM room WHERE building = %s AND room_number = %s AND rid != %s"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (building, room_number, rid))
+        result = cursor.fetchone()
+        return result is not None

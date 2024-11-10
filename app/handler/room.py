@@ -87,6 +87,10 @@ class RoomHandler:
             for value in [building, room_number]
         ):
             return jsonify(InsertStatus="A entry is empty or invalid type"), 400
+        
+        dao = RoomDAO()
+        if dao.checkDuplicateRoom(building, room_number, rid):
+            return jsonify(UpdateStatus="Duplicate entry"), 400
 
         dao = SectionDAO()
         section_data = dao.getAllSection()
