@@ -31,12 +31,13 @@ class RoomHandler:
             return "Not Found", 404
 
     def insertRoom(self, room_json):
+        if not room_json or "building" not in room_json or "room_number" not in room_json or "capacity" not in room_json:
+            return jsonify(UpdateStatus="Missing required fields"), 400
+        
         building = room_json["building"]
         room_number = room_json["room_number"]
         capacity = room_json["capacity"]
 
-        if not building or not room_number or not capacity:
-            return jsonify(UpdateStatus="Missing required fields"), 400
         if not isinstance(capacity, int) or capacity <= 0:
             return jsonify(UpdateStatus="Invalid capacity type"), 400
         if not isinstance(room_number, str):
@@ -67,12 +68,13 @@ class RoomHandler:
             return jsonify(DeleteStatus="Not Found"), 404
 
     def updateRoomByRid(self, rid, room_json):
+        if not room_json or "building" not in room_json or "room_number" not in room_json or "capacity" not in room_json:
+            return jsonify(UpdateStatus="Missing required fields"), 400
+        
         building = room_json["building"]
         room_number = room_json["room_number"]
         capacity = room_json["capacity"]
 
-        if not building or not room_number or not capacity:
-            return jsonify(UpdateStatus="Missing required fields"), 400
         if not isinstance(capacity, int) or capacity <= 0:
             return jsonify(UpdateStatus="Invalid capacity type"), 400
         if not isinstance(room_number, str):
