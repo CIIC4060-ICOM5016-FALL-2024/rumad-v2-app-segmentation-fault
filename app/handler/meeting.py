@@ -233,7 +233,7 @@ class MeetingHandler:
 
         dao = MeetingDAO()
         mid_temp = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
-        if mid_temp:
+        if mid_temp and mid_temp != mid:
             return jsonify(InsertStatus=f"Duplicate Meeting {mid}"), 404
 
         starttime_dt = datetime.strptime(
