@@ -45,6 +45,11 @@ class MeetingHandler:
         if (cdays == "MJ" and (starttime_dt >= datetime.strptime("10:15", "%H:%M") and endtime_dt <= datetime.strptime("12:30", "%H:%M"))):
             return jsonify(InsertStatus="Invalid time range for MJ meetings, 'Hora Universal'"), 400
         
+        if cdays == "LWV" and not (endtime_dt - starttime_dt == timedelta(hours=0, minutes=50, seconds=0)):
+            return jsonify(InsertStatus="Invalid time range for LMV meetings"), 400
+        
+        if cdays == "MJ" and not (endtime_dt - starttime_dt == timedelta(hours=1, minutes=15, seconds=0)):
+            return jsonify(InsertStatus="Invalid time range for MJ meetings"), 400
         
         return None, None
 
