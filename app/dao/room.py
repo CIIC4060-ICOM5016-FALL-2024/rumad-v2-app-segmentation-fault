@@ -88,3 +88,10 @@ class RoomDAO:
         cursor.execute(query, (building, room_number, rid))
         result = cursor.fetchone()
         return result is not None
+    
+    def roomExists(self, rid):
+        query = "SELECT * FROM room WHERE rid = %s"
+        cursor = self.conn.cursor()
+        cursor.execute(query, (rid,))
+        result = cursor.fetchone()
+        return result is not None
