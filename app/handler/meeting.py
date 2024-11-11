@@ -233,8 +233,8 @@ class MeetingHandler:
 
         dao = MeetingDAO()
         mid_temp = dao.checkMeetingDuplicate(ccode, starttime, endtime, cdays)
-        if mid_temp and mid_temp != mid:
-            return jsonify(InsertStatus=f"Duplicate Meeting {mid_temp}"), 404
+        if mid_temp and mid_temp[0] != mid:
+            return jsonify(InsertStatus=f"Duplicate Meeting {mid_temp[0]}"), 404
 
         starttime_dt = datetime.strptime(
             starttime.split(":")[0] + ":" + starttime.split(":")[1], "%H:%M"
@@ -263,7 +263,7 @@ class MeetingHandler:
                 str(endtime_dt + delta_time_to_right),
                 cdays,
             )
-            if mid_temp and mid_temp != mid:
+            if mid_temp and mid_temp[0] != mid:
                 return (
                     jsonify(
                         InsertStatus=f"Meeting conflict with meeting at 12:30pm, meeting id: {mid_temp[0]}"
@@ -284,7 +284,7 @@ class MeetingHandler:
                 str(endtime_dt - delta_time_to_left),
                 cdays,
             )
-            if mid_temp and mid_temp != mid:
+            if mid_temp and mid_temp[0] != mid:
                 return (
                     jsonify(
                         InsertStatus=f"Meeting conflict with meeting at 9:00am, meetingid: {mid_temp[0]}"
