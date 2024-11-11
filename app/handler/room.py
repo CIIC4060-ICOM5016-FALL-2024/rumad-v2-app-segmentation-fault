@@ -28,7 +28,7 @@ class RoomHandler:
         if result:
             return jsonify(self.mapToDict(result))
         else:
-            return "Not Found", 404
+            return jsonify(GetStatus="Not Found"), 404
 
     def insertRoom(self, room_json):
         if not room_json or "building" not in room_json or "room_number" not in room_json or "capacity" not in room_json:
