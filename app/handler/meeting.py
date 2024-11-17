@@ -355,6 +355,9 @@ class MeetingHandler:
         dao = MeetingDAO()
         temp = dao.getMostMeeting()
 
-        for row in temp:
-            result.append(self.MostMeetingMapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.MostMeetingMapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404

@@ -141,7 +141,7 @@ class RoomHandler:
                 result.append(self.mapToDict(item))
             return jsonify(result), 200
         else:
-            return jsonify(UpdateStatus="Not Found"), 404
+            return jsonify(Error="Not Found"), 404
     
     def getRatioByBuilding(self, building):
         result = []
@@ -152,4 +152,4 @@ class RoomHandler:
                 result.append(self.RatiomapToDict(item))
             return jsonify(result), 200
         else:
-            return jsonify(UpdateStatus="Not Found"), 404
+            return jsonify(Error="Not Found"), 404

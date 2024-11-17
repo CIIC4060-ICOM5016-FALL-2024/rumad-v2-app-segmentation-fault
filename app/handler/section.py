@@ -231,4 +231,4 @@ class SectionHandler:
                 result.append(self.SectionPerYear(row))
             return jsonify(result) 
         else:
-            return jsonify(GetStatus="NOT FOUND"), 404
+            return jsonify(Error="NOT FOUND"), 404

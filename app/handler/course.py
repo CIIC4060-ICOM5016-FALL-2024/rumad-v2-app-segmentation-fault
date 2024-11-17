@@ -433,33 +433,45 @@ class ClassHandler:
         dao = ClassDAO()
         temp = dao.getMostPrerequisite()
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.mapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getMostPerRoom(self, id):
         result = []
         dao = ClassDAO()
         temp = dao.getMostPerRoom(id)
-
-        for row in temp:
-            result.append(self.CountClassmapToDict(row))
-        return jsonify(result)
+        
+        if temp:
+            for row in temp:
+                result.append(self.CountClassmapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getLeastClass(self):
         result = []
         dao = ClassDAO()
         temp = dao.getLeastClass()
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.mapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getMostPerSemester(self, year, semester):
         result = []
         dao = ClassDAO()
         temp = dao.getMostPerSemester(year, semester)
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.mapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
