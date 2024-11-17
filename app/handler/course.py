@@ -17,6 +17,19 @@ class ClassHandler:
         result["cred"] = tuple[6]
         result["csyllabus"] = tuple[7]
         return result
+    
+    def CountClassmapToDict(self, tuple):
+        result = {}
+        result["cid"] = tuple[0]
+        result["cname"] = tuple[1]
+        result["ccode"] = tuple[2]
+        result["cdesc"] = tuple[3]
+        result["term"] = tuple[4]
+        result["years"] = tuple[5]
+        result["cred"] = tuple[6]
+        result["csyllabus"] = tuple[7]
+        result["class_count"] = tuple[8]
+        return result
 
     def getAllClass(self):
         result = []
@@ -430,7 +443,7 @@ class ClassHandler:
         temp = dao.getMostPerRoom(id)
 
         for row in temp:
-            result.append(self.mapToDict(row))
+            result.append(self.CountClassmapToDict(row))
         return jsonify(result)
 
     def getLeastClass(self):

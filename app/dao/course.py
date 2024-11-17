@@ -176,7 +176,7 @@ class ClassDAO:
                     ORDER BY class_count DESC \
                     LIMIT 3 \
                 ) \
-                SELECT class.* \
+                SELECT class.*, temp.class_count\
                 FROM class \
                 inner JOIN temp ON class.cid = temp.cid \
                 ORDER BY temp.class_count DESC;"
