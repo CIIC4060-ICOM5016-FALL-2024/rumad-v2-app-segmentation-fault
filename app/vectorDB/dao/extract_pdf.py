@@ -3,7 +3,17 @@ import re
 import os
 
 
-def text_formatter(raw_text):
+def text_formatter(raw_text, base_name):
+    # Remove "Page X of Y" lines
+    raw_text = re.sub(r"Page \d+ of \d+", "", raw_text)
+
+    if base_name == "CIIC-5150-Machine-Learning-Algorithms":
+        #! This PDF is unique and should not be processed like the others
+        pass
+    else:
+        # Remove everything after "12."
+        raw_text = re.sub(r"12\..*", "", raw_text, flags=re.DOTALL)
+
     # Remove excessive line breaks and combine multiple spaces into one
     normalized_text = re.sub(r"\n\s*\n", "\n", raw_text)
     normalized_text = re.sub(r"\s{2,}", " ", normalized_text)
@@ -29,7 +39,7 @@ def pdf_text_extractor(pdf_path, output_folder):
             extracted_text += f"{text}\n"
 
     # Clean the extracted text
-    cleaned_text = text_formatter(extracted_text)
+    cleaned_text = text_formatter(extracted_text, base_name)
 
     # Ensure the output folder exists
     os.makedirs(output_folder, exist_ok=True)
