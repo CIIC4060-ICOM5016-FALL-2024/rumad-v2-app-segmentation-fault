@@ -223,14 +223,3 @@ class SectionHandler:
             return jsonify(result)
         else:
             return jsonify(GetStatus="NOT FOUND"), 404
-
-    def getRatioByBuilding(self, building):
-        result = []
-        dao = SectionDAO()
-        temp = dao.getRatioByBuilding(building)
-        if temp:
-            for item in temp:
-                result.append(self.mapToDict(item))
-            return jsonify(result), 200
-        else:
-            return jsonify(UpdateStatus="Not Found"), 404

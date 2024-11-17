@@ -13,6 +13,16 @@ class RoomHandler:
             "capacity": tuple[3],
         }
         return result
+    
+    def RatiomapToDict(self, tuple):
+        result = {
+            "rid": tuple[0],
+            "building": tuple[1],
+            "room_number": tuple[2],
+            "capacity": tuple[3],
+            "ratio": tuple[4],
+        }
+        return result
 
     def getAllRoom(self):
         result = []
@@ -129,6 +139,17 @@ class RoomHandler:
         if temp:
             for item in temp:
                 result.append(self.mapToDict(item))
+            return jsonify(result), 200
+        else:
+            return jsonify(UpdateStatus="Not Found"), 404
+    
+    def getRatioByBuilding(self, building):
+        result = []
+        dao = RoomDAO()
+        temp = dao.getRatioByBuilding(building)
+        if temp:
+            for item in temp:
+                result.append(self.RatiomapToDict(item))
             return jsonify(result), 200
         else:
             return jsonify(UpdateStatus="Not Found"), 404
