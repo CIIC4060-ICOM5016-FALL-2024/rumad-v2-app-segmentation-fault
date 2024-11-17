@@ -30,6 +30,19 @@ class ClassHandler:
         result["csyllabus"] = tuple[7]
         result["class_count"] = tuple[8]
         return result
+    
+    def MostPreReqmapToDict(self, tuple):
+        result = {}
+        result["cid"] = tuple[0]
+        result["cname"] = tuple[1]
+        result["ccode"] = tuple[2]
+        result["cdesc"] = tuple[3]
+        result["term"] = tuple[4]
+        result["years"] = tuple[5]
+        result["cred"] = tuple[6]
+        result["csyllabus"] = tuple[7]
+        result["prerequisite_classes"] = tuple[8]
+        return result
 
     def getAllClass(self):
         result = []
@@ -435,7 +448,7 @@ class ClassHandler:
 
         if temp:
             for row in temp:
-                result.append(self.mapToDict(row))
+                result.append(self.MostPreReqmapToDict(row))
             return jsonify(result)
         else:
             return jsonify(Error="Not Found"), 404

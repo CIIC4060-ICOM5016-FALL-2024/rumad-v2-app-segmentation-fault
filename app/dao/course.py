@@ -160,12 +160,12 @@ class ClassDAO:
     def getMostPrerequisite(self):
         cursor = self.conn.cursor()
         query = """
-            SELECT c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus, COUNT(r.classid) AS most_prerequisite_class 
+            SELECT c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus, COUNT(r.classid) AS prerequisite_classes 
             FROM requisite AS r 
             INNER JOIN class AS c ON r.reqid = c.cid 
             WHERE r.prereq = TRUE
             GROUP BY c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus 
-            ORDER BY most_prerequisite_class DESC 
+            ORDER BY prerequisite_classes DESC 
             LIMIT 3;
         """
         cursor.execute(query)
