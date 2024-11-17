@@ -1,3 +1,4 @@
+import re
 from flask import jsonify
 from dao.course import ClassDAO
 import pandas as pd
@@ -15,6 +16,19 @@ class ClassHandler:
         result["years"] = tuple[5]
         result["cred"] = tuple[6]
         result["csyllabus"] = tuple[7]
+        return result
+    
+    def CountmapToDict(self, tuple):
+        result = {}
+        result["cid"] = tuple[0]
+        result["cname"] = tuple[1]
+        result["ccode"] = tuple[2]
+        result["cdesc"] = tuple[3]
+        result["term"] = tuple[4]
+        result["years"] = tuple[5]
+        result["cred"] = tuple[6]
+        result["csyllabus"] = tuple[7]
+        result["count"] = tuple[8]
         return result
 
     def getAllClass(self):
@@ -438,7 +452,7 @@ class ClassHandler:
         temp = dao.getLeastClass()
 
         for row in temp:
-            result.append(self.mapToDict(row))
+            result.append(self.CountmapToDict(row))
         return jsonify(result)
 
     def getMostPerSemester(self, year, semester):
