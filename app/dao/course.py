@@ -159,7 +159,15 @@ class ClassDAO:
 
     def getMostPrerequisite(self):
         cursor = self.conn.cursor()
-        query = "SELECT c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus, COUNT(r.classid) AS most_prerequisite_class FROM requisite AS r INNER JOIN class AS c ON r.reqid = c.cid WHERE r.prereq = TRUE AND cid != 37 GROUP BY c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus ORDER BY most_prerequisite_class DESC LIMIT 3;"
+        query = """
+            SELECT c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus, COUNT(r.classid) AS prerequisite_classes 
+            FROM requisite AS r 
+            INNER JOIN class AS c ON r.reqid = c.cid 
+            WHERE r.prereq = TRUE
+            GROUP BY c.cid, c.cname, c.ccode, c.cdesc, c.term, c.years, c.cred, c.csyllabus 
+            ORDER BY prerequisite_classes DESC 
+            LIMIT 3;
+        """
         cursor.execute(query)
         result = []
         for row in cursor:
@@ -176,7 +184,7 @@ class ClassDAO:
                     ORDER BY class_count DESC \
                     LIMIT 3 \
                 ) \
-                SELECT class.* \
+                SELECT class.*, temp.class_count\
                 FROM class \
                 inner JOIN temp ON class.cid = temp.cid \
                 ORDER BY temp.class_count DESC;"
@@ -188,11 +196,13 @@ class ClassDAO:
 
     def getLeastClass(self):
         cursor = self.conn.cursor()
-        query = "select class.* from class natural join \
-                (select cid, count(*) as cnt from section inner join class using (cid) \
-                group by cid) as tp \
-                order by tp.cnt \
-                limit 3;"
+        query = """
+                SELECT class.cid, class.cname, class.ccode, class.cdesc, class.term, class.years, class.cred, class.csyllabus, class_count FROM class NATURAL JOIN 
+                ( SELECT cid, COUNT(*) as class_count FROM section INNER JOIN class using (cid) GROUP BY cid ) as temp
+                GROUP BY cid, class_count
+                ORDER BY class_count
+                LIMIT 3;
+            """
         cursor.execute(query)
         result = []
         for row in cursor:

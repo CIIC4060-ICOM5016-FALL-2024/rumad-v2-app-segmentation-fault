@@ -95,3 +95,19 @@ class RoomDAO:
         cursor.execute(query, (rid,))
         result = cursor.fetchone()
         return result is not None
+    
+    def getRatioByBuilding(self, building):
+        result = []
+        cursor = self.conn.cursor()
+        query = """
+            SELECT room.*, (CAST(section.capacity AS FLOAT) / CAST(room.capacity AS FLOAT)) AS Ratio
+            FROM section
+            JOIN room ON section.roomid = room.rid
+            WHERE room.building = %s
+            ORDER BY (CAST(section.capacity AS FLOAT) / CAST(room.capacity AS FLOAT)) DESC
+            LIMIT 3;
+        """
+        cursor.execute(query, (building.capitalize(),))
+        for row in cursor:
+            result.append(row)
+        return result

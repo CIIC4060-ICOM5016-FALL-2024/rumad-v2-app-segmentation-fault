@@ -15,6 +15,12 @@ class SectionHandler:
         result["years"] = tuple[5]
         result["capacity"] = tuple[6]
         return result
+    
+    def SectionPerYear(self, tuple):
+        result = {}
+        result["years"] = tuple[0]
+        result["sections"] = tuple[1]
+        return result
 
     def confirmDataInDF(self, df_to_verify, df_section):
         columns_to_check = ["roomid", "cid", "mid", "semester", "years"]
@@ -216,21 +222,13 @@ class SectionHandler:
             return jsonify(UpdateStatus="Invalid data"), 400
 
     def getSectionPerYear(self):
-        dao = SectionDAO()
-        result = dao.getSectionPerYear()
-
-        if result is not None:
-            return jsonify(result)
-        else:
-            return jsonify(GetStatus="NOT FOUND"), 404
-
-    def getRatioByBuilding(self, building):
         result = []
         dao = SectionDAO()
-        temp = dao.getRatioByBuilding(building)
-        if temp:
-            for item in temp:
-                result.append(self.mapToDict(item))
-            return jsonify(result), 200
+        temp = dao.getSectionPerYear()
+
+        if temp is not None:
+            for row in temp:
+                result.append(self.SectionPerYear(row))
+            return jsonify(result) 
         else:
-            return jsonify(UpdateStatus="Not Found"), 404
+            return jsonify(Error="NOT FOUND"), 404
