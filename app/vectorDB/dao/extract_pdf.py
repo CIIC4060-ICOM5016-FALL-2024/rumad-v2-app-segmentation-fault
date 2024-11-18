@@ -5,31 +5,34 @@ import os
 
 
 def text_formatter(raw_text, base_name):
+    # Remove excessive line breaks and combine multiple spaces into one
+    normalized_text = re.sub(r"\n\s*\n", "\n", raw_text)
+    normalized_text = re.sub(r"\s{2,}", " ", normalized_text)
+    normalized_text = normalized_text.strip()
+    normalized_text = re.sub(r"(\d+\.)", r"\n\1 ", normalized_text)
+    
+    # Convert text to lower case
+    normalized_text = normalized_text.lower()
+
+    # Wrap text to the specified line length
+    wrapped_text = textwrap.fill(normalized_text, width=80)
+    
     # Remove "Page X of Y" lines
-    raw_text = re.sub(r"Page \d+ of \d+", "", raw_text)
+    wrapped_text = re.sub(r"Page \d+ of \d+", "", wrapped_text)
 
     if base_name == "CIIC-5150-Machine-Learning-Algorithms":
         #! This PDF is unique and should not be processed like the others
         pass
     else:
         # Remove text starting from "University of Puerto Rico - Mayagüez Campus" until the four-digit course number
-        raw_text = re.sub(
-            r"University of Puerto Rico - Mayagüez Campus.*?\b\d{4}\b",
+        wrapped_text = re.sub(
+            r"university of puerto rico - mayagüez campus.*?\b\d{4}\b",
             "",
-            raw_text,
+            wrapped_text,
             flags=re.DOTALL,
         )
         # Remove everything after "12."
-        raw_text = re.sub(r"12\. A.*", "", raw_text, flags=re.DOTALL)
-
-    # Remove excessive line breaks and combine multiple spaces into one
-    normalized_text = re.sub(r"\n\s*\n", "\n", raw_text)
-    normalized_text = re.sub(r"\s{2,}", " ", normalized_text)
-    normalized_text = normalized_text.strip()
-    normalized_text = re.sub(r"(\d+\.)", r"\n\1 ", normalized_text)
-
-    # Wrap text to the specified line length
-    wrapped_text = textwrap.fill(normalized_text, width=80)
+        wrapped_text = re.sub(r"12\. A.*", "", wrapped_text, flags=re.DOTALL)
 
     # return normalized_text
     return wrapped_text
