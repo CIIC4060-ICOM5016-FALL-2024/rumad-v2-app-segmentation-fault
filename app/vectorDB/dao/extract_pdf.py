@@ -22,7 +22,7 @@ def text_formatter(raw_text, base_name):
 
     if base_name == "CIIC-5150-Machine-Learning-Algorithms":
         #! This PDF is unique and should not be processed like the others
-        pass
+        wrapped_text = re.sub(r"reasonable accommodation.*?grading system", "grading system", wrapped_text, flags=re.DOTALL)
     else:
         # Remove text starting from "University of Puerto Rico - Mayagüez Campus" until the four-digit course number
         wrapped_text = re.sub(
