@@ -1,3 +1,4 @@
+import re
 from flask import jsonify
 from dao.course import ClassDAO
 import pandas as pd
@@ -15,6 +16,32 @@ class ClassHandler:
         result["years"] = tuple[5]
         result["cred"] = tuple[6]
         result["csyllabus"] = tuple[7]
+        return result
+    
+    def CountClassmapToDict(self, tuple):
+        result = {}
+        result["cid"] = tuple[0]
+        result["cname"] = tuple[1]
+        result["ccode"] = tuple[2]
+        result["cdesc"] = tuple[3]
+        result["term"] = tuple[4]
+        result["years"] = tuple[5]
+        result["cred"] = tuple[6]
+        result["csyllabus"] = tuple[7]
+        result["class_count"] = tuple[8]
+        return result
+    
+    def MostPreReqmapToDict(self, tuple):
+        result = {}
+        result["cid"] = tuple[0]
+        result["cname"] = tuple[1]
+        result["ccode"] = tuple[2]
+        result["cdesc"] = tuple[3]
+        result["term"] = tuple[4]
+        result["years"] = tuple[5]
+        result["cred"] = tuple[6]
+        result["csyllabus"] = tuple[7]
+        result["prerequisite_classes"] = tuple[8]
         return result
 
     def getAllClass(self):
@@ -419,33 +446,45 @@ class ClassHandler:
         dao = ClassDAO()
         temp = dao.getMostPrerequisite()
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.MostPreReqmapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getMostPerRoom(self, id):
         result = []
         dao = ClassDAO()
         temp = dao.getMostPerRoom(id)
-
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        
+        if temp:
+            for row in temp:
+                result.append(self.CountClassmapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getLeastClass(self):
         result = []
         dao = ClassDAO()
         temp = dao.getLeastClass()
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.CountClassmapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
 
     def getMostPerSemester(self, year, semester):
         result = []
         dao = ClassDAO()
         temp = dao.getMostPerSemester(year, semester)
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.mapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404

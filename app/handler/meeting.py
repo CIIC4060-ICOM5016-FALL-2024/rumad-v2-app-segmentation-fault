@@ -1,3 +1,4 @@
+import re
 from flask import jsonify
 from datetime import datetime, timedelta
 from dao.meeting import MeetingDAO
@@ -15,6 +16,21 @@ class MeetingHandler:
             tuple[3].strftime("%H:%M:%S") if hasattr(tuple[3], "strftime") else tuple[3]
         )
         result["cdays"] = tuple[4]
+        return result
+    
+    def MostMeetingMapToDict(self, tuple):
+        result = {}
+        result["mid"] = tuple[0]
+        result["ccode"] = tuple[1]
+        result["starttime"] = (
+            tuple[2].strftime("%H:%M:%S") if hasattr(tuple[2], "strftime") else tuple[2]
+        )
+        result["endtime"] = (
+            tuple[3].strftime("%H:%M:%S") if hasattr(tuple[3], "strftime") else tuple[3]
+        )
+        result["cdays"] = tuple[4]
+        result["section_count"] = tuple[5]
+        
         return result
 
     def validateMeetingInput(self, ccode, starttime, endtime, cdays):
@@ -339,6 +355,9 @@ class MeetingHandler:
         dao = MeetingDAO()
         temp = dao.getMostMeeting()
 
-        for row in temp:
-            result.append(self.mapToDict(row))
-        return jsonify(result)
+        if temp:
+            for row in temp:
+                result.append(self.MostMeetingMapToDict(row))
+            return jsonify(result)
+        else:
+            return jsonify(Error="Not Found"), 404
