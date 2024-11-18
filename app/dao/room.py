@@ -100,11 +100,11 @@ class RoomDAO:
         result = []
         cursor = self.conn.cursor()
         query = """
-            SELECT room.*, (section.capacity / room.capacity) AS Ratio
+            SELECT room.*, (CAST(section.capacity AS FLOAT) / CAST(room.capacity AS FLOAT)) AS Ratio
             FROM section
-            JOIN room on section.roomid = room.rid
+            JOIN room ON section.roomid = room.rid
             WHERE room.building = %s
-            ORDER BY (section.capacity / room.capacity) DESC
+            ORDER BY (CAST(section.capacity AS FLOAT) / CAST(room.capacity AS FLOAT)) DESC
             LIMIT 3;
         """
         cursor.execute(query, (building.capitalize(),))
