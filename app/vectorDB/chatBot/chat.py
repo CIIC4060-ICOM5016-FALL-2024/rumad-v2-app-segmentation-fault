@@ -1,6 +1,6 @@
 from dao.fragments import FragmentsDAO
 from embedding import embeddingClass
-from langchain_ollama import chatOllama
+from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -34,17 +34,18 @@ promt = PromptTemplate(
     Question: {question}
     Answer:
     """,
-    input_variables=["question", "documents"], 
+    input_variables=["questions[0]", "documents"], 
 )
 
 print(promt)
 print(promt.format(question=questions[0], documents=documents))
 
 # Initialize the LLM with llama 3.1 model
-llm = chatOllama(
+llm = ChatOllama(
     model="llama3.1",
     temperature=0,
 )
+
 
 # Create a chain combining the promt template and LLM
 chain = promt | llm | StrOutputParser()
