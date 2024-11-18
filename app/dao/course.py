@@ -196,11 +196,13 @@ class ClassDAO:
 
     def getLeastClass(self):
         cursor = self.conn.cursor()
-        query = "select class.* from class natural join \
-                (select cid, count(*) as cnt from section inner join class using (cid) \
-                group by cid) as tp \
-                order by tp.cnt \
-                limit 3;"
+        query = """
+                SELECT class.cid, class.cname, class.ccode, class.cdesc, class.term, class.years, class.cred, class.csyllabus, class_count FROM class NATURAL JOIN 
+                ( SELECT cid, COUNT(*) as class_count FROM section INNER JOIN class using (cid) GROUP BY cid ) as temp
+                GROUP BY cid, class_count
+                ORDER BY class_count
+                LIMIT 3;
+            """
         cursor.execute(query)
         result = []
         for row in cursor:
