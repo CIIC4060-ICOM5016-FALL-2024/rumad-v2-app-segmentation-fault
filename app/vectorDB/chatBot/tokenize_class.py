@@ -21,5 +21,4 @@ class Tokenize:
         for t in chararter_split_texts:
             token_split_texts += token_split.split_text(t)
         
-        print(chararter_split_texts)
         return token_split_texts
