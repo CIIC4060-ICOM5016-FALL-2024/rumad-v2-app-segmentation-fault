@@ -1,0 +1,1 @@
+#TODO onelle extrac_pdf logic and add files manager logic for all pdfs
