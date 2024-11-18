@@ -1,4 +1,5 @@
 import fitz  # PyMuPDF
+import textwrap
 import re
 import os
 
@@ -11,8 +12,15 @@ def text_formatter(raw_text, base_name):
         #! This PDF is unique and should not be processed like the others
         pass
     else:
+        # Remove text starting from "University of Puerto Rico - Mayagüez Campus" until the four-digit course number
+        raw_text = re.sub(
+            r"University of Puerto Rico - Mayagüez Campus.*?\b\d{4}\b",
+            "",
+            raw_text,
+            flags=re.DOTALL,
+        )
         # Remove everything after "12."
-        raw_text = re.sub(r"12\..*", "", raw_text, flags=re.DOTALL)
+        raw_text = re.sub(r"12\. A.*", "", raw_text, flags=re.DOTALL)
 
     # Remove excessive line breaks and combine multiple spaces into one
     normalized_text = re.sub(r"\n\s*\n", "\n", raw_text)
@@ -20,7 +28,11 @@ def text_formatter(raw_text, base_name):
     normalized_text = normalized_text.strip()
     normalized_text = re.sub(r"(\d+\.)", r"\n\1 ", normalized_text)
 
-    return normalized_text
+    # Wrap text to the specified line length
+    wrapped_text = textwrap.fill(normalized_text, width=80)
+
+    # return normalized_text
+    return wrapped_text
 
 
 def pdf_text_extractor(pdf_path, output_folder):
