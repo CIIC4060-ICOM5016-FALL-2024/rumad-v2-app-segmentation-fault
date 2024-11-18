@@ -6,6 +6,9 @@ class embeddingClass:
      
    def embed(self, sentence):
         return self.model.encode(sentence)
+   
+   def similarity(self, emb1, emb2):
+        return self.model.similarity(emb1, emb2)
 
         
         
