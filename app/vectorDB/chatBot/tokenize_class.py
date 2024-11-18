@@ -1,6 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters import SentenceTransformersTokenTextSplitter
-from sentence_transformers import SentenceTransformer
 import spacy
 
 # Load a spaCy model
@@ -9,7 +8,6 @@ nlp = spacy.load("en_core_web_sm")
 class Tokenize:
     def __init__(self):
         self.separators = [" ", "\n", "\t", "\r", "\f", "\v", "\n\n", ". ",""]
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
 
     def tokenize_text(self, text):
 
