@@ -6,5 +6,6 @@ class embeddingClass:
      
    def embed(self, sentence):
         return self.model.encode(sentence)
+
         
         
