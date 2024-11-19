@@ -10,7 +10,7 @@ import subprocess
 import gc
 
 # Run the extract_pdf.py script
-#result1 = subprocess.run(["python", "./app/vectorDB/dao/extract_pdf.py"], capture_output=True, text=True)
+result1 = subprocess.run(["python", "./app/vectorDB/dao/extract_pdf.py"], capture_output=True, text=True)
 
 # Initialize the DAOs and folder path
 syllabusDao = SyllabusDAO()
