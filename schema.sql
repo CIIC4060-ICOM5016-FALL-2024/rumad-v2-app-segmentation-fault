@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS "syllabus" (
   "chunkid" INTEGER PRIMARY KEY DEFAULT nextval('syllabus_seq'),
   "courseid" INTEGER,
   "embedding_text" vector(500),
-  "chunk" VARCHAR(255),
+  "chunk" VARCHAR,
 
 
   FOREIGN KEY ("courseid") REFERENCES "class"("cid") ON DELETE CASCADE
