@@ -61,6 +61,15 @@ class ClassHandler:
         else:
             result = self.mapToDict(temp)
             return jsonify(result)
+        
+    def getClassByCname_Ccode(self, cname, ccode):
+        dao = ClassDAO()
+        temp = dao.getClassByCname_Ccode(cname, ccode)
+        if not temp:
+            return jsonify(Error="Class Not Found"), 404
+        else:
+            result = self.mapToDict(temp)
+            return jsonify(result)
 
     def inspectInputData(self, class_json, method, cid):
         dao = ClassDAO()
