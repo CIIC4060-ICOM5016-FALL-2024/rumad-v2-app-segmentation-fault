@@ -12,37 +12,26 @@ class Tokenize:
     def tokenize_text(self, text):
 
         # List to store the cleaned tokens (without stop words and lemmatized)
-        cleaned_tokens = []
+        all_chunks = []
 
         # Split the text (Chunks of 1000 characters)
         splitter = RecursiveCharacterTextSplitter(
             separators=self.separators,
-            chunk_size=1000,
+            chunk_size=200,
             chunk_overlap=0
         )
-        chararter_split_texts = splitter.split_text(text)
+        character_split_texts = splitter.split_text(text)
 
         # Split the text into tokens (256 tokens per chunk) 
         token_split = SentenceTransformersTokenTextSplitter(
             chunk_overlap=0,
-            tokens_per_chunk=256
+            tokens_per_chunk=100
         )
 
-        for t in chararter_split_texts:
-            tokens = token_split.split_text(t)
-    
-
-            # Apply the spacy model to obtain (stop words, base verbs)
-            for token in tokens:
-                doc = nlp(token)
-
-                # Delete stop Words
-                for token in doc:
-                    if not token.is_stop:
-                        cleaned_tokens.append(token)
-                
-                # Lemmatize the verbs (Change the verbs to base form)
-                cleaned_tokens = [token.lemma_ for token in cleaned_tokens]
-
         
-        return cleaned_tokens
+        character_split_texts = splitter.split_text(text)
+        for chunk in character_split_texts:
+            token_chunks = token_split.split_text(chunk)
+            all_chunks.append(token_chunks)
+
+        return all_chunks
