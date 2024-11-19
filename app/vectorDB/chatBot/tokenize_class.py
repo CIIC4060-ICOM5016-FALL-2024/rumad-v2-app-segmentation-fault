@@ -17,7 +17,7 @@ class Tokenize:
         # Split the text (Chunks of 1000 characters)
         splitter = RecursiveCharacterTextSplitter(
             separators=self.separators,
-            chunk_size=200,
+            chunk_size=600,
             chunk_overlap=0
         )
         character_split_texts = splitter.split_text(text)
@@ -25,7 +25,7 @@ class Tokenize:
         # Split the text into tokens (256 tokens per chunk) 
         token_split = SentenceTransformersTokenTextSplitter(
             chunk_overlap=0,
-            tokens_per_chunk=100
+            tokens_per_chunk=1
         )
 
         
