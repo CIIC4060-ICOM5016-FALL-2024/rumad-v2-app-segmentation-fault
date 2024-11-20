@@ -1,16 +1,27 @@
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 import numpy as np
 from dao.course import ClassDAO
 from dao.syllabus import SyllabusDAO
 from tokenize_class import Tokenize
 from embedding import embeddingClass
-import subprocess
+from extract import Extract
 import gc
 
-# Run the extract_pdf.py script
-result1 = subprocess.run(["python", "./app/vectorDB/dao/extract_pdf.py"], capture_output=True, text=True)
+# Use a relative path for the syllabus directory
+input_directory = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../syllabuses")
+)
+output_directory = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../extracted_syllabuses")
+)
+
+# Extract the Syllabus pdf into .txt files
+extract_pdf = Extract()
+extract_pdf.extract_directory(input_directory, output_directory)
 
 # Initialize the DAOs and folder path
 syllabusDao = SyllabusDAO()
@@ -19,9 +30,10 @@ emb = embeddingClass()
 class_Dao = ClassDAO()
 folder_path = "./extracted_syllabuses"
 
+
 def normalizer(vector):
     vector = np.array(vector)
-    padded_vector = np.pad(vector,pad_width=(0,500 - len(vector)), mode='constant')
+    padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
     return padded_vector
 
 
@@ -48,12 +60,6 @@ for f in folder:
             del actual_chunk
             gc.collect()
 
-        
-
     print(f"\033[34m{f} chunks insertion:\033[92m done \n\033[0m")
 
 folder.clear()
-        
-
-
-

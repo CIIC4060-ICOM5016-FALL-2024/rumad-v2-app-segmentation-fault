@@ -3,7 +3,21 @@ import textwrap
 import re
 import os
 
-#! REFACTOR THIS TO A CLASS
+
+class Extract:
+    def __init__(self):
+        pass
+
+    def extract_directory(self, folder_path, output_folder):
+        if not os.path.isdir(folder_path):
+            raise FileNotFoundError(f"No such directory: '{folder_path}'")
+
+        for f in os.listdir(folder_path):
+            if f.endswith(".pdf"):
+                input_path = os.path.join(folder_path, f)
+                pdf_text_extractor(input_path, output_folder)
+
+
 def text_formatter(raw_text, base_name):
     # Remove excessive line breaks and combine multiple spaces into one
     normalized_text = re.sub(r"\n\s*\n", "\n", raw_text)  # Remove multiple newlines
@@ -103,24 +117,3 @@ def pdf_text_extractor(pdf_path, output_folder):
 
     print(f"Syllabus \033[92m{base_name}\033[0m has been extracted.")
     return output_path
-
-
-def extract_directory(folder_path, output_folder):
-    if not os.path.isdir(folder_path):
-        raise FileNotFoundError(f"No such directory: '{folder_path}'")
-
-    for f in os.listdir(folder_path):
-        if f.endswith(".pdf"):
-            input_path = os.path.join(folder_path, f)
-            pdf_text_extractor(input_path, output_folder)
-
-
-if __name__ == "__main__":
-    # Use a relative path for the syllabus directory
-    input_directory = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../../syllabuses")
-    )
-    output_directory = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "../../../extracted_syllabuses")
-    )
-    text_file_paths = extract_directory(input_directory, output_directory)
