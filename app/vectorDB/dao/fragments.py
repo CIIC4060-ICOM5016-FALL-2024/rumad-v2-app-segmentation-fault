@@ -23,9 +23,10 @@ class FragmentsDAO:
         self.conn.commit()
         return fid
     
+    
     def getAllFragments(self, emb):
         cursor = self.conn.cursor()
-        query = "SELECT fid, did, content, embedding %s as distance FROM fragments;"
+        query = "SELECT fid, did, content, embedding as distance FROM fragments where embedding = %s order my distance limit 30;"
         cursor.execute(query, (emb,))
         result = []
         for row in cursor:

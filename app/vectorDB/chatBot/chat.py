@@ -1,3 +1,8 @@
+import sys
+import os
+#add the parent directory to the path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),"..")))
+
 from dao.fragments import FragmentsDAO
 from embedding import embeddingClass
 from langchain_ollama import ChatOllama

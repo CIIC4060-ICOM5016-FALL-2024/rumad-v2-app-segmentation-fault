@@ -33,6 +33,13 @@ class ClassDAO:
         cursor.execute(query, [cid])
         result = cursor.fetchone()
         return result
+    
+    def getClassByCname_Ccode(self, cname, ccode):
+        cursor = self.conn.cursor()
+        query = "SELECT cid, cname, ccode, cdesc, term, years, cred, csyllabus FROM class WHERE cname = %s AND ccode = %s;"
+        cursor.execute(query, [cname, ccode])
+        result = cursor.fetchone()
+        return result
 
     def exactDuplicate(self, Val, method):
         cursor = self.conn.cursor()
