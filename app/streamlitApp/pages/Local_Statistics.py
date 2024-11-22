@@ -71,6 +71,8 @@ top_three_rooms_per_capacity_container = st.container()
 top_three_rooms_per_ration_container = st.container()
 top_three_classes_taught_per_semester_container = st.container()
 top_three_classes_taught_per_room_container = st.container()
+key = 0 # key for download syllabus button to avoid caching issues
+
 
 with top_three_rooms_per_capacity_container:
     st.subheader("Top 3 rooms with the most capacity")
@@ -226,21 +228,25 @@ with top_three_classes_taught_per_semester_container:
                     </table>
                     <hr>
                 """, unsafe_allow_html=True)
-                syllabus_url = class_info["csyllabus"]
                 try:
-                    file_response = requests.get(syllabus_url)
-                    if file_response.status_code == 200:
-                        # Prepare file content for download
-                        file_bytes = io.BytesIO(file_response.content)
-                        st.download_button(
-                            label="Download Syllabus",
-                            data=file_bytes,
-                            file_name=f"{class_info['ccode']}_syllabus.pdf",
-                            mime="application/pdf",
-                            key=f"download_syllabus_{class_info['cid']}"
-                        )
+                    syllabus_url = class_info["csyllabus"]
+                    if syllabus_url == 'None':
+                        st.write("No syllabus available for this class.")
                     else:
-                        st.write("Error: Could not fetch the syllabus file.")
+                        file_response = requests.get(syllabus_url)
+                        if file_response.status_code == 200:
+                            # Prepare file content for download
+                            file_bytes = io.BytesIO(file_response.content)
+                            st.download_button(
+                                label="Download Syllabus",
+                                data=file_bytes,
+                                file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                mime="application/pdf",
+                                key=f"download_syllabus_{class_info['cid'], key}"
+                            )
+                            key += 1
+                        else:
+                            st.write("Error: Could not fetch the syllabus file.")
                 except Exception as e:
                     st.write("Error downloading syllabus:", e)
         else:
@@ -310,20 +316,26 @@ with top_three_classes_taught_per_room_container:
                         </table>
                         <hr>
                     """, unsafe_allow_html=True)
-                    syllabus_url = class_info["csyllabus"]
+                    
                     try:
-                        file_response = requests.get(syllabus_url)
-                        if file_response.status_code == 200:
-                            # Prepare file content for download
-                            file_bytes = io.BytesIO(file_response.content)
-                            st.download_button(
-                                label="Download Syllabus",
-                                data=file_bytes,
-                                file_name=f"{class_info['ccode']}_syllabus.pdf",
-                                mime="application/pdf"
-                            )
+                        syllabus_url = class_info["csyllabus"]
+                        if syllabus_url == 'None':
+                            st.write("No syllabus available for this class.")
                         else:
-                            st.write("Error: Could not fetch the syllabus file.")
+                            file_response = requests.get(syllabus_url)
+                            if file_response.status_code == 200:
+                                # Prepare file content for download
+                                file_bytes = io.BytesIO(file_response.content)
+                                st.download_button(
+                                    label="Download Syllabus",
+                                    data=file_bytes,
+                                    file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_syllabus_{class_info['cid'], key}"
+                                )
+                                key += 1
+                            else:
+                                st.write("Error: Could not fetch the syllabus file.")
                     except Exception as e:
                         st.write("Error downloading syllabus:", e)
             else:
