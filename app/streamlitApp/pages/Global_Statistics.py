@@ -70,6 +70,7 @@ top_five_meetings_with_most_sections_container = st.container()
 top_three_classes_as_prerequisite_container = st.container()
 top_three_classes_offered_least_container = st.container()
 total_sections_per_year_container = st.container()
+key = 0 # key for download syllabus button to avoid caching issues
 
 with top_five_meetings_with_most_sections_container:
     st.subheader("Top 5 meetings with the most sections.")
@@ -134,7 +135,7 @@ with top_three_classes_as_prerequisite_container:
                         </tr>
                         <tr>
                             <td>Code</td>
-                            <td>{class_info["cname"]} ({class_info["ccode"]})</td>
+                            <td>{class_info["cname"]}{class_info["ccode"]}</td>
                         </tr>
                         <tr>
                             <td>Description</td>
@@ -177,8 +178,9 @@ with top_three_classes_as_prerequisite_container:
                                 data=file_bytes,
                                 file_name=f"{class_info['ccode']}_syllabus.pdf",
                                 mime="application/pdf",
-                                key=f"download_syllabus_{class_info['cid']}"
+                                key=f"download_syllabus_{class_info['cid'], key}"
                             )
+                            key += 1
                         else:
                             st.write("Error: Could not fetch the syllabus file.")
                 except Exception as e:
@@ -187,15 +189,70 @@ with top_three_classes_as_prerequisite_container:
     
 with top_three_classes_offered_least_container:
     st.subheader("Top 3 classes offered the least")
-    graph = st.bar_chart(
-        {"Class 1": 10, "Class 2": 8, "Class 3": 6}, 
-        x_label="Number of times offered",
-        y_label="Class",
-        horizontal=True, 
-        use_container_width=True, 
-        height=400, 
-        color="#327136"
-        )
+    st.divider()
+    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/least/classes")
+    if response.status_code == 200:
+            data = response.json()
+            for i, class_info in enumerate(data):
+                st.markdown(f"""
+                    <h3>Class {i + 1}</h3>
+                    <table class="custom-table">
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Code</td>
+                            <td>{class_info["cname"]}{class_info["ccode"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Description</td>
+                            <td>{class_info["cdesc"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Class ID</td>
+                            <td>{class_info["cid"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Credits</td>
+                            <td>{class_info["cred"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Term</td>
+                            <td>{class_info["term"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Years</td>
+                            <td>{class_info["years"]}</td>
+                        </tr>
+                        <tr>
+                            <td>Offered count</td>
+                            <td>{class_info["class_count"]}</td>
+                        </tr>
+                    </table>
+                    <hr>
+                """, unsafe_allow_html=True)
+                try:
+                    syllabus_url = class_info["csyllabus"]
+                    if syllabus_url == 'None':
+                        st.write("No syllabus available for this class.")
+                    else:
+                        file_response = requests.get(syllabus_url)
+                        if file_response.status_code == 200:
+                            # Prepare file content for download
+                            file_bytes = io.BytesIO(file_response.content)
+                            st.download_button(
+                                label="Download Syllabus",
+                                data=file_bytes,
+                                file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                mime="application/pdf",
+                                key=f"download_syllabus_{class_info['cid'], key}"
+                            )
+                            key += 1
+                        else:
+                            st.write("Error: Could not fetch the syllabus file.")
+                except Exception as e:
+                    st.write("Error downloading syllabus:", e)
     
 with total_sections_per_year_container:
     st.subheader("Total sections per year")

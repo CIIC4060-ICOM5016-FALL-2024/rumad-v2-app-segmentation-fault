@@ -203,7 +203,7 @@ with top_three_classes_taught_per_semester_container:
                         </tr>
                         <tr>
                             <td>Code</td>
-                            <td>{class_info["cname"]} ({class_info["ccode"]})</td>
+                            <td>{class_info["cname"]}{class_info["ccode"]}</td>
                         </tr>
                         <tr>
                             <td>Description</td>
@@ -287,7 +287,7 @@ with top_three_classes_taught_per_room_container:
                             </tr>
                             <tr>
                                 <td>Code</td>
-                                <td>{class_info["cname"]} ({class_info["ccode"]})</td>
+                                <td>{class_info["cname"]}{class_info["ccode"]}</td>
                             </tr>
                             <tr>
                                 <td>Description</td>
