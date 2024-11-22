@@ -1,6 +1,7 @@
 from config.db_config import pg_config
 import psycopg2 as pg
 
+
 class SyllabusDAO:
     def __init__(self):
         # Create the connection string
@@ -18,10 +19,10 @@ class SyllabusDAO:
         cursor = self.conn.cursor()
         query = "INSERT INTO syllabus(courseid, embedding_text, chunk) VALUES(%s, %s, %s) RETURNING chunkid;"
         cursor.execute(query, (courseid, embedding_text, chunk))
-        chunkid = cursor.fetchone()[0]
+        # chunkid = cursor.fetchone()[0]
         self.conn.commit()
         return courseid
-    
+
     def getAllSyllabus(self):
         cursor = self.conn.cursor()
         query = "SELECT chunkid, courseid, embedding_text as distance, chunk FROM syllabus order by distance limit 30;"
@@ -30,7 +31,7 @@ class SyllabusDAO:
         for row in cursor:
             result.append(row)
         return result
-    
+
     def getAllSyllabusByCid(self, courseid):
         cursor = self.conn.cursor()
         query = "SELECT chunkid, courseid, embedding_text as distance , chunk FROM syllabus WHERE courseid = %s order by distance limit 30;"
@@ -39,10 +40,22 @@ class SyllabusDAO:
         for row in cursor:
             result.append(row)
         return result
-    
+
     def getSyllabusById(self, chunkid):
         cursor = self.conn.cursor()
         query = "SELECT chunkid, courseid, embedding_text as distance , chunk FROM syllabus WHERE chunkid = %s;"
         cursor.execute(query, [chunkid])
         result = cursor.fetchone()
+        return result
+
+    def getAllFragments(self, embedding_text):
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT chunkid, courseid, chunk, embedding_text <-> %s as distance
+            FROM syllabus 
+            ORDER BY distance 
+            LIMIT 30;
+            """
+            cursor.execute(query, (embedding_text,))
+            result = cursor.fetchall()
         return result
