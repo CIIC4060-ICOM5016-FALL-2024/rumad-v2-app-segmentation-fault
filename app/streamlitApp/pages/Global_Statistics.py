@@ -87,13 +87,14 @@ with top_five_meetings_with_most_sections_container:
         df, 
         x="mid", 
         y="section_count", 
-        color="mid",
-        color_discrete_sequence=df["colors"],
         labels={"section_count": "Number of sections", "mid": "Meeting ID"},
         )
+    fig.update_traces(marker_color="#327136")
     
     fig.update_layout(
         xaxis=dict(
+            type="category",
+            # categoryorder="total ascending",
             showline=True,  # Show boundary line for x-axis
             linewidth=2,  # Line width
             linecolor="black",  # Line color
@@ -102,7 +103,6 @@ with top_five_meetings_with_most_sections_container:
             gridwidth=0.5,  # Gridline width
         ),
         yaxis=dict(
-            categoryorder="total ascending",
             showline=True,  # Show boundary line for y-axis
             linewidth=2,  # Line width
             linecolor="black",  # Line color

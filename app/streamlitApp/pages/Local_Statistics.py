@@ -96,6 +96,7 @@ with top_three_rooms_per_capacity_container:
             fig_stacked = px.bar(
                 df,
                 x="capacity",
+                y="room_number",
                 color="room_number",
                 color_discrete_sequence=df["colors"],  
                 labels={"Capacity": "Room Capacity", "Building": "Building Name"},
@@ -111,6 +112,7 @@ with top_three_rooms_per_capacity_container:
                     gridwidth=0.5,  # Gridline width
                 ),
                 yaxis=dict(
+                    type="category",
                     categoryorder="total ascending",
                     showline=True,  # Show boundary line for y-axis
                     linewidth=2,  # Line width
@@ -146,6 +148,7 @@ with top_three_rooms_per_ration_container:
             fig_stacked = px.bar(
                 df,
                 x="ratio",
+                y="room_number",
                 color="room_number",
                 color_discrete_sequence=df["colors"],  
                 labels={"Capacity": "Room Capacity", "Building": "Building Name"},
@@ -161,6 +164,7 @@ with top_three_rooms_per_ration_container:
                     gridwidth=0.5,  # Gridline width
                 ),
                 yaxis=dict(
+                    type="category",
                     categoryorder="total ascending",
                     showline=True,  # Show boundary line for y-axis
                     linewidth=2,  # Line width
