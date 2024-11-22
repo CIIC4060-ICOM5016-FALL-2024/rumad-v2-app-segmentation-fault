@@ -1,21 +1,96 @@
 import streamlit as st
 import requests
 
+# Set up Streamlit page configuration
 st.set_page_config(
-    page_title="This is the Streamlit frontend of Segmentation Fault team."
+    page_title="Authentication",
+    layout="centered",
 )
 
-st.title('This is the RestAPI of Segmentation Fault team.')
+# Title
+st.title("Aunthetication Page")
 
+# Main function
 def main():
     try:
+        # Connect to the API
         response = requests.get("https://rumad-db-5dd7ab118ab8.herokuapp.com/")
+        
         if response.status_code == 200:
-            st.write("Home for the Segmentation Fault team.")
-        else:
-            st.write("Error:")
-    except requests.exceptions.ConnectionError:
-        st.write("Error: Could not connect to the API. Make sure the Flask API is running.")
+            st.success("Connected to the API successfully!")
 
+            # Authentication UI
+            st.title("🔒 Authentication")
+
+            # Tabs for different login methods
+            auth_mode = st.radio(
+                "Choose an option:",
+                ["Create new account", "Login to existing account", "Guest login"],
+                index=1,
+                horizontal=True,
+            )
+
+            # Form for login
+            if auth_mode == "Login to existing account":
+                st.subheader("Login to existing account")
+                
+                # Input fields for login form
+                with st.form("login_form"):
+                    username = st.text_input("Enter your unique username", placeholder="Username")
+                    password = st.text_input("Enter your password", type="password", placeholder="Password")
+                    show_password = st.checkbox("Show password")
+                    
+                    # Display the password dynamically if checkbox is selected
+                    if show_password:
+                        st.text(f"Password: {password}")
+
+                    # Login button
+                    login_button = st.form_submit_button("🔓 Login")
+
+                    # Handle login logic
+                    if login_button:
+                        if username and password:
+                            # Call the API for authentication 
+                            login_response = requests.post(
+                                "https://rumad-db-5dd7ab118ab8.herokuapp.com/login",
+                                json={"username": username, "password": password},
+                            )
+                            
+                            if login_response.status_code == 200:
+                                st.success(f"Welcome back, {username}!")
+                            else:
+                                st.error("Invalid username or password.")
+                        else:
+                            st.error("Please enter both username and password!")
+
+            # Optional: UI for "Create new account" or "Guest login"
+            elif auth_mode == "Create new account":
+                st.subheader("Create new account")
+                with st.form("register_form"):
+                    new_username = st.text_input("Choose a unique username", placeholder="Username")
+                    new_password = st.text_input("Choose a password", type="password", placeholder="Password")
+                    register_button = st.form_submit_button("Register")
+                    
+                    if register_button:
+                        # Call the API to create a new account
+                        register_response = requests.post(
+                            "https://rumad-db-5dd7ab118ab8.herokuapp.com/register",
+                            json={"username": new_username, "password": new_password},
+                        )
+                        
+                        if register_response.status_code == 201:
+                            st.success("Account created successfully! Please log in.")
+                        else:
+                            st.error("Failed to create account. Try a different username.")
+
+            elif auth_mode == "Guest login":
+                st.subheader("Guest login")
+                st.info("Guest login functionality goes here.")
+        else:
+            st.error("Error: Unable to connect to the API. Please try again later.")
+    except requests.exceptions.ConnectionError:
+        st.error("Error: Could not connect to the API. Make sure the Flask API is running.")
+
+# Run the app
 if __name__ == "__main__":
     main()
