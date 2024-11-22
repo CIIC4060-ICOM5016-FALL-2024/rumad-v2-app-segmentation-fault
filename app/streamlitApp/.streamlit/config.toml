@@ -1,2 +1,4 @@
 [theme]
 layout = "centered"
+base="light"
+primaryColor="#327136"

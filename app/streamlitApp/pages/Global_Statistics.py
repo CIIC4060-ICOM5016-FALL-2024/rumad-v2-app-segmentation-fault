@@ -256,12 +256,37 @@ with top_three_classes_offered_least_container:
     
 with total_sections_per_year_container:
     st.subheader("Total sections per year")
-    graph = st.bar_chart(
-        {"2019": 100, "2020": 80, "2021": 60}, 
-        x_label="Number of sections",
-        y_label="Year",
-        horizontal=True, 
-        use_container_width=True, 
-        height=400, 
-        color="#327136"
+    st.divider()
+    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year")
+    data = response.json()
+    df = pd.json_normalize(data)
+    df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min()) 
+    df["colors"] = generate_green_shades("#327136", df["normalized_sections"])
+
+    fig = px.bar(
+        df, 
+        x="years", 
+        y="sections", 
+        color="years",
+        color_discrete_sequence=df["colors"],
+        labels={"sections": "Number of sections", "years": "Year"},
         )
+    fig.update_layout(
+        xaxis=dict(
+            showline=True,  # Show boundary line for x-axis
+            linewidth=2,  # Line width
+            linecolor="black",  # Line color
+            showgrid=True,  # Enable gridlines
+            gridcolor="lightgray",  # Gridline color
+            gridwidth=0.5,  # Gridline width
+        ),
+        yaxis=dict(
+            categoryorder="total ascending",
+            showline=True,  # Show boundary line for y-axis
+            linewidth=2,  # Line width
+            linecolor="black",  # Line color
+        ),
+        plot_bgcolor="white",  # Set background color to white
+    )
+    fig.add_trace(px.line(df, x="years", y="sections").data[0])
+    st.plotly_chart(fig)
