@@ -1,5 +1,9 @@
+# Folders
 venv/
 DB_PROJECT_FALL24/
+extracted_syllabuses/
+
+# 
 *.pyc
 .vscode
 .idea
