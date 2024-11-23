@@ -1,9 +1,5 @@
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_text_splitters import SentenceTransformersTokenTextSplitter
-import spacy
-
-# Load a spaCy model
-nlp = spacy.load("en_core_web_sm")
 
 class Tokenize:
     def __init__(self):
