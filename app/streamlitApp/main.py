@@ -25,7 +25,7 @@ def main():
             # Tabs for different login methods
             auth_mode = st.radio(
                 "Choose an option:",
-                ["Create new account", "Login to existing account", "Guest login"],
+                ["Create new account", "Login to existing account"],
                 index=1,
                 horizontal=True,
             )
@@ -52,7 +52,7 @@ def main():
                         if username and password:
                             # Call the API for authentication 
                             login_response = requests.post(
-                                "https://rumad-db-5dd7ab118ab8.herokuapp.com/login",
+                                "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/login",
                                 json={"username": username, "password": password},
                             )
                             
@@ -63,7 +63,7 @@ def main():
                         else:
                             st.error("Please enter both username and password!")
 
-            # Optional: UI for "Create new account" or "Guest login"
+            # Optional: UI for "Create new account" 
             elif auth_mode == "Create new account":
                 st.subheader("Create new account")
                 with st.form("register_form"):
@@ -74,18 +74,15 @@ def main():
                     if register_button:
                         # Call the API to create a new account
                         register_response = requests.post(
-                            "https://rumad-db-5dd7ab118ab8.herokuapp.com/register",
+                            "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/signup",
                             json={"username": new_username, "password": new_password},
                         )
-                        
+                        print(register_response.status_code)
                         if register_response.status_code == 201:
                             st.success("Account created successfully! Please log in.")
                         else:
                             st.error("Failed to create account. Try a different username.")
 
-            elif auth_mode == "Guest login":
-                st.subheader("Guest login")
-                st.info("Guest login functionality goes here.")
         else:
             st.error("Error: Unable to connect to the API. Please try again later.")
     except requests.exceptions.ConnectionError:
