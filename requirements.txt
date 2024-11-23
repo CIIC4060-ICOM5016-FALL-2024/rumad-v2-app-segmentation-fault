@@ -29,7 +29,7 @@ pexpect==4.9.0
 platformdirs==4.3.6
 prompt_toolkit==3.0.48
 psutil==6.1.0
-psycopg2-binary==2.9.9
+psycopg2-binary
 ptyprocess==0.7.0
 pure_eval==0.2.3
 Pygments==2.18.0
