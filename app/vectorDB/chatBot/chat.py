@@ -6,7 +6,6 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
-from dao.syllabus import SyllabusDAO
 from embedding import embeddingClass
 from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
@@ -19,12 +18,12 @@ question = "what is the prerequisite for CIIC-4010?"
 emb = embeddingClass()
 emtText = emb.embed(question)
 
-# Ensure the dimensions match
-if len(emtText) < 500:
-    # Append zeros to the required dimensions
-    emtText = np.pad(emtText, (0, 500 - len(emtText)), "constant")
-elif len(emtText) > 500:
-    raise ValueError(f"Expected embedding dimensions {500}, but got {len(emtText)}")
+vector = np.array(emtText)
+if len(vector) < 500:
+    padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+    emtText = padded_vector
+elif len(vector) > 500:
+    raise ValueError(f"Expected embedding dimensions 500, but got {len(vector)}")
 
 
 # Get all fragments
