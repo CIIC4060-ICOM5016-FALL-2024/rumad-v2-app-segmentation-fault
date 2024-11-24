@@ -8,7 +8,7 @@ st.title("Simple chat")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-if st.session_state.get('Login'):
+if st.session_state.get("login"):
     with st.container():
         # Display chat messages from history on app rerun
         for message in st.session_state.messages:
@@ -24,4 +24,4 @@ if st.session_state.get('Login'):
         st.session_state.messages.append({"role": "user", "content": prompt})
 
 else:
-    st.write("You need to login first to access this page.")
+    st.error("You need to login first to access this page.")

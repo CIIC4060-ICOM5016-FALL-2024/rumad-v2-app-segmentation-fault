@@ -1,4 +1,3 @@
-from turtle import color
 import streamlit as st
 import requests
 
@@ -64,6 +63,10 @@ def main():
                                 st.error("Invalid username or password.")
                         else:
                             st.error("Please enter both username and password!")
+                    
+                    if logout_button:
+                        st.session_state['login'] = False
+                        st.success("You have been logged out successfully!")
 
             # Optional: UI for "Create new account" 
             elif auth_mode == "Create new account":

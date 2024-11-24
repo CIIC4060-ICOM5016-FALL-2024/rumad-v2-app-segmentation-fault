@@ -72,7 +72,7 @@ top_three_classes_taught_per_semester_container = st.container()
 top_three_classes_taught_per_room_container = st.container()
 key = 0 # key for download syllabus button to avoid caching issues
 
-if st.session_state.get('Login'):
+if st.session_state.get("login"):
 
     with top_three_rooms_per_capacity_container:
         st.subheader("Top 3 rooms with the most capacity")

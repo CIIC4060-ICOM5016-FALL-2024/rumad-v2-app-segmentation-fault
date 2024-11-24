@@ -294,4 +294,4 @@ if st.session_state.get("login"):
         st.plotly_chart(fig)
 
 else:
-    st.error("You need to login to view this page.")
+    st.error("You need to login first to access this page.")
