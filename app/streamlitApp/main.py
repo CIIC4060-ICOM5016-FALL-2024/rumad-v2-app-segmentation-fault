@@ -82,7 +82,6 @@ def main():
                             "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/signup",
                             json={"username": new_username, "password": new_password},
                         )
-                        print(register_response.status_code)
                         if register_response.status_code == 201:
                             st.success("Account created successfully! Please log in.")
                         else:
