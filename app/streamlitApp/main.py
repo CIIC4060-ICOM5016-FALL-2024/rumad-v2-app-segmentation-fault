@@ -10,6 +10,8 @@ st.set_page_config(
 # Title
 st.title("Aunthetication Page")
 
+st.session_state['login'] = False
+
 # Main function
 def main():
     try:
@@ -58,6 +60,7 @@ def main():
                             
                             if login_response.status_code == 200:
                                 st.success(f"Welcome back, {username}!")
+                                st.session_state['login'] = True
                             else:
                                 st.error("Invalid username or password.")
                         else:

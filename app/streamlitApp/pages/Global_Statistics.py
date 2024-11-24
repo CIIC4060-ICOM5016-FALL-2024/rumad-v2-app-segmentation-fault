@@ -72,221 +72,226 @@ top_three_classes_offered_least_container = st.container()
 total_sections_per_year_container = st.container()
 key = 0 # key for download syllabus button to avoid caching issues
 
-with top_five_meetings_with_most_sections_container:
-    st.subheader("Top 5 meetings with the most sections.")
-    st.divider()
-    # try:
-    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/meeting")
-    # if response.status_code == 200:
-    data = response.json()
-    df = pd.json_normalize(data)
-    df["normalized_section_count"] = (df["section_count"] - df["section_count"].min()) / (df["section_count"].max() - df["section_count"].min())
-    df["colors"] = generate_green_shades("#327136", df["normalized_section_count"])
+if st.session_state.get("login"):
 
-    fig = px.bar(
-        df, 
-        x="mid", 
-        y="section_count", 
-        labels={"section_count": "Number of sections", "mid": "Meeting ID"},
+    with top_five_meetings_with_most_sections_container:
+        st.subheader("Top 5 meetings with the most sections.")
+        st.divider()
+        # try:
+        response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/meeting")
+        # if response.status_code == 200:
+        data = response.json()
+        df = pd.json_normalize(data)
+        df["normalized_section_count"] = (df["section_count"] - df["section_count"].min()) / (df["section_count"].max() - df["section_count"].min())
+        df["colors"] = generate_green_shades("#327136", df["normalized_section_count"])
+
+        fig = px.bar(
+            df, 
+            x="mid", 
+            y="section_count", 
+            labels={"section_count": "Number of sections", "mid": "Meeting ID"},
+            )
+        fig.update_traces(marker_color="#327136")
+        
+        fig.update_layout(
+            xaxis=dict(
+                type="category",
+                # categoryorder="total ascending",
+                showline=True,  # Show boundary line for x-axis
+                linewidth=2,  # Line width
+                linecolor="black",  # Line color
+                showgrid=True,  # Enable gridlines
+                gridcolor="lightgray",  # Gridline color
+                gridwidth=0.5,  # Gridline width
+            ),
+            yaxis=dict(
+                showline=True,  # Show boundary line for y-axis
+                linewidth=2,  # Line width
+                linecolor="black",  # Line color
+            ),
+            plot_bgcolor="white",  # Set background color to white
         )
-    fig.update_traces(marker_color="#327136")
-    
-    fig.update_layout(
-        xaxis=dict(
-            type="category",
-            # categoryorder="total ascending",
-            showline=True,  # Show boundary line for x-axis
-            linewidth=2,  # Line width
-            linecolor="black",  # Line color
-            showgrid=True,  # Enable gridlines
-            gridcolor="lightgray",  # Gridline color
-            gridwidth=0.5,  # Gridline width
-        ),
-        yaxis=dict(
-            showline=True,  # Show boundary line for y-axis
-            linewidth=2,  # Line width
-            linecolor="black",  # Line color
-        ),
-        plot_bgcolor="white",  # Set background color to white
-    )
-    st.plotly_chart(fig)
-    #     else:
-    #         st.error("Failed to fetch data from the API.")
-    # except:
-    #     st.error("Failed to fetch data from the API.")
+        st.plotly_chart(fig)
+        #     else:
+        #         st.error("Failed to fetch data from the API.")
+        # except:
+        #     st.error("Failed to fetch data from the API.")
 
 
-    
+        
 
-with top_three_classes_as_prerequisite_container:
-    st.subheader("Top 3 classes with the most prerequisites")
-    st.divider()
+    with top_three_classes_as_prerequisite_container:
+        st.subheader("Top 3 classes with the most prerequisites")
+        st.divider()
 
-    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/prerequisite")
-    if response.status_code == 200:
-            data = response.json()
-            for i, class_info in enumerate(data):
-                st.markdown(f"""
-                    <h3>Class {i + 1}</h3>
-                    <table class="custom-table">
-                        <tr>
-                            <th>Field</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td>Code</td>
-                            <td>{class_info["cname"]}{class_info["ccode"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Description</td>
-                            <td>{class_info["cdesc"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Class ID</td>
-                            <td>{class_info["cid"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Credits</td>
-                            <td>{class_info["cred"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Term</td>
-                            <td>{class_info["term"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Years</td>
-                            <td>{class_info["years"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Prerequisite count</td>
-                            <td>{class_info["prerequisite_classes"]}</td>
-                        </tr>
-                    </table>
-                    <hr>
-                """, unsafe_allow_html=True)
-                try:
-                    syllabus_url = class_info["csyllabus"]
-                    if syllabus_url == 'None':
-                        st.write("No syllabus available for this class.")
-                    else:
-                        file_response = requests.get(syllabus_url)
-                        if file_response.status_code == 200:
-                            # Prepare file content for download
-                            file_bytes = io.BytesIO(file_response.content)
-                            st.download_button(
-                                label="Download Syllabus",
-                                data=file_bytes,
-                                file_name=f"{class_info['ccode']}_syllabus.pdf",
-                                mime="application/pdf",
-                                key=f"download_syllabus_{class_info['cid'], key}"
-                            )
-                            key += 1
+        response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/prerequisite")
+        if response.status_code == 200:
+                data = response.json()
+                for i, class_info in enumerate(data):
+                    st.markdown(f"""
+                        <h3>Class {i + 1}</h3>
+                        <table class="custom-table">
+                            <tr>
+                                <th>Field</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <td>Code</td>
+                                <td>{class_info["cname"]}{class_info["ccode"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td>{class_info["cdesc"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Class ID</td>
+                                <td>{class_info["cid"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Credits</td>
+                                <td>{class_info["cred"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Term</td>
+                                <td>{class_info["term"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Years</td>
+                                <td>{class_info["years"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Prerequisite count</td>
+                                <td>{class_info["prerequisite_classes"]}</td>
+                            </tr>
+                        </table>
+                        <hr>
+                    """, unsafe_allow_html=True)
+                    try:
+                        syllabus_url = class_info["csyllabus"]
+                        if syllabus_url == 'None':
+                            st.write("No syllabus available for this class.")
                         else:
-                            st.write("Error: Could not fetch the syllabus file.")
-                except Exception as e:
-                    st.write("Error downloading syllabus:", e)
+                            file_response = requests.get(syllabus_url)
+                            if file_response.status_code == 200:
+                                # Prepare file content for download
+                                file_bytes = io.BytesIO(file_response.content)
+                                st.download_button(
+                                    label="Download Syllabus",
+                                    data=file_bytes,
+                                    file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_syllabus_{class_info['cid'], key}"
+                                )
+                                key += 1
+                            else:
+                                st.write("Error: Could not fetch the syllabus file.")
+                    except Exception as e:
+                        st.write("Error downloading syllabus:", e)
 
-    
-with top_three_classes_offered_least_container:
-    st.subheader("Top 3 classes offered the least")
-    st.divider()
-    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/least/classes")
-    if response.status_code == 200:
-            data = response.json()
-            for i, class_info in enumerate(data):
-                st.markdown(f"""
-                    <h3>Class {i + 1}</h3>
-                    <table class="custom-table">
-                        <tr>
-                            <th>Field</th>
-                            <th>Value</th>
-                        </tr>
-                        <tr>
-                            <td>Code</td>
-                            <td>{class_info["cname"]}{class_info["ccode"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Description</td>
-                            <td>{class_info["cdesc"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Class ID</td>
-                            <td>{class_info["cid"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Credits</td>
-                            <td>{class_info["cred"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Term</td>
-                            <td>{class_info["term"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Years</td>
-                            <td>{class_info["years"]}</td>
-                        </tr>
-                        <tr>
-                            <td>Offered count</td>
-                            <td>{class_info["class_count"]}</td>
-                        </tr>
-                    </table>
-                    <hr>
-                """, unsafe_allow_html=True)
-                try:
-                    syllabus_url = class_info["csyllabus"]
-                    if syllabus_url == 'None':
-                        st.write("No syllabus available for this class.")
-                    else:
-                        file_response = requests.get(syllabus_url)
-                        if file_response.status_code == 200:
-                            # Prepare file content for download
-                            file_bytes = io.BytesIO(file_response.content)
-                            st.download_button(
-                                label="Download Syllabus",
-                                data=file_bytes,
-                                file_name=f"{class_info['ccode']}_syllabus.pdf",
-                                mime="application/pdf",
-                                key=f"download_syllabus_{class_info['cid'], key}"
-                            )
-                            key += 1
+        
+    with top_three_classes_offered_least_container:
+        st.subheader("Top 3 classes offered the least")
+        st.divider()
+        response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/least/classes")
+        if response.status_code == 200:
+                data = response.json()
+                for i, class_info in enumerate(data):
+                    st.markdown(f"""
+                        <h3>Class {i + 1}</h3>
+                        <table class="custom-table">
+                            <tr>
+                                <th>Field</th>
+                                <th>Value</th>
+                            </tr>
+                            <tr>
+                                <td>Code</td>
+                                <td>{class_info["cname"]}{class_info["ccode"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Description</td>
+                                <td>{class_info["cdesc"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Class ID</td>
+                                <td>{class_info["cid"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Credits</td>
+                                <td>{class_info["cred"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Term</td>
+                                <td>{class_info["term"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Years</td>
+                                <td>{class_info["years"]}</td>
+                            </tr>
+                            <tr>
+                                <td>Offered count</td>
+                                <td>{class_info["class_count"]}</td>
+                            </tr>
+                        </table>
+                        <hr>
+                    """, unsafe_allow_html=True)
+                    try:
+                        syllabus_url = class_info["csyllabus"]
+                        if syllabus_url == 'None':
+                            st.write("No syllabus available for this class.")
                         else:
-                            st.write("Error: Could not fetch the syllabus file.")
-                except Exception as e:
-                    st.write("Error downloading syllabus:", e)
-    
-with total_sections_per_year_container:
-    st.subheader("Total sections per year")
-    st.divider()
-    response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year")
-    data = response.json()
-    df = pd.json_normalize(data)
-    df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min()) 
-    df["colors"] = generate_green_shades("#327136", df["normalized_sections"])
+                            file_response = requests.get(syllabus_url)
+                            if file_response.status_code == 200:
+                                # Prepare file content for download
+                                file_bytes = io.BytesIO(file_response.content)
+                                st.download_button(
+                                    label="Download Syllabus",
+                                    data=file_bytes,
+                                    file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                    mime="application/pdf",
+                                    key=f"download_syllabus_{class_info['cid'], key}"
+                                )
+                                key += 1
+                            else:
+                                st.write("Error: Could not fetch the syllabus file.")
+                    except Exception as e:
+                        st.write("Error downloading syllabus:", e)
+        
+    with total_sections_per_year_container:
+        st.subheader("Total sections per year")
+        st.divider()
+        response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year")
+        data = response.json()
+        df = pd.json_normalize(data)
+        df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min()) 
+        df["colors"] = generate_green_shades("#327136", df["normalized_sections"])
 
-    fig = px.bar(
-        df, 
-        x="years", 
-        y="sections", 
-        color="years",
-        color_discrete_sequence=df["colors"],
-        labels={"sections": "Number of sections", "years": "Year"},
+        fig = px.bar(
+            df, 
+            x="years", 
+            y="sections", 
+            color="years",
+            color_discrete_sequence=df["colors"],
+            labels={"sections": "Number of sections", "years": "Year"},
+            )
+        fig.update_layout(
+            xaxis=dict(
+                showline=True,  # Show boundary line for x-axis
+                linewidth=2,  # Line width
+                linecolor="black",  # Line color
+                showgrid=True,  # Enable gridlines
+                gridcolor="lightgray",  # Gridline color
+                gridwidth=0.5,  # Gridline width
+            ),
+            yaxis=dict(
+                categoryorder="total ascending",
+                showline=True,  # Show boundary line for y-axis
+                linewidth=2,  # Line width
+                linecolor="black",  # Line color
+            ),
+            plot_bgcolor="white",  # Set background color to white
         )
-    fig.update_layout(
-        xaxis=dict(
-            showline=True,  # Show boundary line for x-axis
-            linewidth=2,  # Line width
-            linecolor="black",  # Line color
-            showgrid=True,  # Enable gridlines
-            gridcolor="lightgray",  # Gridline color
-            gridwidth=0.5,  # Gridline width
-        ),
-        yaxis=dict(
-            categoryorder="total ascending",
-            showline=True,  # Show boundary line for y-axis
-            linewidth=2,  # Line width
-            linecolor="black",  # Line color
-        ),
-        plot_bgcolor="white",  # Set background color to white
-    )
-    fig.add_trace(px.line(df, x="years", y="sections").data[0])
-    st.plotly_chart(fig)
+        fig.add_trace(px.line(df, x="years", y="sections").data[0])
+        st.plotly_chart(fig)
+
+else:
+    st.error("You need to login to view this page.")
