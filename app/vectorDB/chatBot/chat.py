@@ -17,19 +17,13 @@ question = "what is the prerequisite for CIIC-4010?"
 # Embedding of the first question
 emb = embeddingClass()
 emtText = emb.embed(question)
-# print(f"Dimensions of embedded vector: {len(emtText)}")
 
-# Ensure the dimensions match the expected dimensions in the database
-expected_dimensions = 500  # Update this to match your database schema
-current_dimensions = len(emtText)
-
-if current_dimensions < expected_dimensions:
-    # Append zeros to the vector to match the required dimensions
-    emtText = np.pad(emtText, (0, expected_dimensions - current_dimensions), "constant")
-elif current_dimensions > expected_dimensions:
-    raise ValueError(
-        f"Expected embedding dimensions {expected_dimensions}, but got {current_dimensions}"
-    )
+# Ensure the dimensions match
+if len(emtText) < 500:
+    # Append zeros to the required dimensions
+    emtText = np.pad(emtText, (0, 500 - len(emtText)), "constant")
+elif len(emtText) > 500:
+    raise ValueError(f"Expected embedding dimensions {500}, but got {len(emtText)}")
 
 
 # Get all fragments
@@ -38,14 +32,7 @@ fragments = dao.getAllFragments(str(emtText.tolist()))
 context = []
 
 for f in fragments:
-    print(f)
     context.append(str(f[3]))
-
-# Ensure context is populated before accessing its elements
-if context:
-    print(context[0])
-else:
-    print("Context is empty")
 
 documents = "\n".join(c for c in context)
 
@@ -62,7 +49,6 @@ promt = PromptTemplate(
     input_variables=["question", "documents"],
 )
 
-print(promt)
 print(promt.format(question=question, documents=documents))
 
 # Initialize the LLM with llama 3.1 model
@@ -75,6 +61,15 @@ llm = ChatOllama(
 # Create a chain combining the promt template and LLM
 chain = promt | llm | StrOutputParser()
 
-answer = chain.invoke({"question": question, "documents": documents})
-print(answer)
+try:
+    response = chain.invoke({"question": question, "documents": documents})
+    if response is None:
+        raise ValueError("The response from the model was None.")
+    print(response)
+except TypeError as e:
+    print(f"Error: {e}")
+    print("The response from the model was None.")
+except ValueError as e:
+    print(f"Error: {e}")
+
 print("done")
