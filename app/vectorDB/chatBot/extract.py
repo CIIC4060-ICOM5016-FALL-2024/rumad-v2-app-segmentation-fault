@@ -65,7 +65,7 @@ def text_formatter(raw_text, base_name):
             flags=re.DOTALL,
         )
         # Remove innecesary and duplicate information
-        wrapped_text = re.sub(r"12\.  a.*", "", wrapped_text, flags=re.DOTALL)
+        wrapped_text = re.sub(r"12\.a.*", "", wrapped_text, flags=re.DOTALL)
 
     # Remove unnecessary spaces
     wrapped_text = wrapped_text.replace("  ", " ")
