@@ -4,7 +4,6 @@ import plotly.express as px
 import requests
 from matplotlib import colors as mcolors
 import io
-import json
 
 # inyect CSS to style the page
 st.markdown(

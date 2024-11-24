@@ -1,3 +1,4 @@
+from turtle import color
 import streamlit as st
 import requests
 
@@ -19,9 +20,6 @@ def main():
         if response.status_code == 200:
             st.success("Connected to the API successfully!")
 
-            # Authentication UI
-            st.title("🔒 Authentication")
-
             # Tabs for different login methods
             auth_mode = st.radio(
                 "Choose an option:",
@@ -38,21 +36,22 @@ def main():
                 with st.form("login_form"):
                     username = st.text_input("Enter your unique username", placeholder="Username")
                     password = st.text_input("Enter your password", type="password", placeholder="Password")
-                    show_password = st.checkbox("Show password")
+                        
+                    col_login, col_logout = st.columns([1, 6])
+                    with col_login:
+                        # Login button
+                        login_button = st.form_submit_button("🔓 Login")
                     
-                    # Display the password dynamically if checkbox is selected
-                    if show_password:
-                        st.text(f"Password: {password}")
-
-                    # Login button
-                    login_button = st.form_submit_button("🔓 Login")
+                    with col_logout:
+                        # logout button
+                        logout_button = st.form_submit_button("Logout")
 
                     # Handle login logic
                     if login_button:
                         if username and password:
                             # Call the API for authentication 
                             login_response = requests.post(
-                                "https://rumad-db-5dd7ab118ab8.herokuapp.com/login",
+                                "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/login",
                                 json={"username": username, "password": password},
                             )
                             
@@ -74,7 +73,7 @@ def main():
                     if register_button:
                         # Call the API to create a new account
                         register_response = requests.post(
-                            "https://rumad-db-5dd7ab118ab8.herokuapp.com/register",
+                            "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/signup",
                             json={"username": new_username, "password": new_password},
                         )
                         
