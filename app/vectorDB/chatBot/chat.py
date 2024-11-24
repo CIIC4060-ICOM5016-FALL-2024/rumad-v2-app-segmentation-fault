@@ -6,6 +6,7 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
+from dao.syllabus import SyllabusDAO
 from embedding import embeddingClass
 from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate

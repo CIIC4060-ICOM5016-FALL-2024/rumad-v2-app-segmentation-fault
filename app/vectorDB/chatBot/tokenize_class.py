@@ -1,29 +1,33 @@
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_text_splitters import SentenceTransformersTokenTextSplitter
-
+from langchain.text_splitter import SentenceTransformersTokenTextSplitter, RecursiveCharacterTextSplitter
+from nltk.tokenize import sent_tokenize
 class Tokenize:
     def __init__(self):
-        self.separators = [" ", "\n", "\t", "\r", "\f", "\v", "\n\n", ". ", ""]
+        self.separators = [" "]
 
     def tokenize_text(self, text):
-
-        # List to store the cleaned tokens (without stop words and lemmatized)
+        
         all_chunks = []
+        
+        # Split the text in sentences
+        sentences = sent_tokenize(text)
 
-        # Split the text (Chunks of 1000 characters)
-        splitter = RecursiveCharacterTextSplitter(
-            separators=self.separators, chunk_size=600, chunk_overlap=0
-        )
-        character_split_texts = splitter.split_text(text)
+        # Split the sentences as desired TODO
+        for sentence in sentences:
+            
+            splitter = RecursiveCharacterTextSplitter(
+                separators=self.separators,
+                chunk_size=500,  
+                chunk_overlap=250
+            )
+            sentence_chunks = splitter.split_text(sentence)
 
-        # Split the text into tokens (256 tokens per chunk)
-        token_split = SentenceTransformersTokenTextSplitter(
-            chunk_overlap=0, tokens_per_chunk=1
-        )
-
-        character_split_texts = splitter.split_text(text)
-        for chunk in character_split_texts:
-            token_chunks = token_split.split_text(chunk)
-            all_chunks.append(token_chunks)
-
-        return all_chunks
+            tokensSplitter = SentenceTransformersTokenTextSplitter(
+                chunk_overlap=50, 
+                tokens_per_chunk=256
+                )
+            
+            for chunk in sentence_chunks:
+                tokensChunks = tokensSplitter.split_text(chunk)
+                all_chunks.extend(tokensChunks)
+        
+        return all_chunks # TODO Now is returning the raw sentences, modify.

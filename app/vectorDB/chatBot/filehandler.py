@@ -26,6 +26,7 @@ extract_pdf.extract_directory(input_directory, output_directory)
 # Initialize the DAOs and folder path
 syllabusDao = SyllabusDAO()
 tokenize = Tokenize()
+
 emb = embeddingClass()
 class_Dao = ClassDAO()
 folder_path = "./extracted_syllabuses"
@@ -41,6 +42,7 @@ def normalizer(vector):
 folder = os.listdir(folder_path)
 count = 0
 for f in folder:
+        
     count += 1
     print("File: " "%s/%s" % (count, len(folder)))
     print(f"\033[93mWorking with: {f}\033[0m")
@@ -49,17 +51,19 @@ for f in folder:
     with open(file_path, "r") as file:
         text = file.read()
         text = tokenize.tokenize_text(text)
-
+        [print (c + "\n") for c in text]
+        
+        
         for actual_chunk in text:
             embText = normalizer(emb.embed(actual_chunk[0])).tolist()
             # Insert syllabus into the database
-            cid = class_Dao.getClassByCname_Ccode(f.split("-")[0], f.split("-")[1])[0]
-            syllabusDao.insertSyllabus(cid, embText, actual_chunk)
+            #cid = class_Dao.getClassByCname_Ccode(f.split("-")[0], f.split("-")[1])[0]
+            #syllabusDao.insertSyllabus(cid, embText, actual_chunk)
             del embText
-            del cid
             del actual_chunk
+            #del cid
             gc.collect()
-
+            
     print(f"\033[34m{f} chunks insertion:\033[92m done \n\033[0m")
 
 folder.clear()
