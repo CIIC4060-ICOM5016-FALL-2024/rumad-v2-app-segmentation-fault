@@ -51,7 +51,7 @@ class SyllabusDAO:
     def getAllFragments(self, embedding_text):
         with self.conn.cursor() as cursor:
             query = """
-            SELECT chunkid, courseid, chunk, embedding_text <-> %s as distance
+            SELECT chunkid, courseid, chunk, embedding_text <=> %s as distance
             FROM syllabus 
             ORDER BY distance 
             LIMIT 30;
