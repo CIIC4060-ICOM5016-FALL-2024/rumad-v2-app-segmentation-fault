@@ -32,7 +32,7 @@ fragments = dao.getAllFragments(str(emtText.tolist()))
 context = []
 
 for f in fragments:
-    context.append(str(f[3]))
+    context.append(str(f[2]))
 
 documents = "\n".join(c for c in context)
 
