@@ -15,14 +15,15 @@ from langchain_core.output_parsers import StrOutputParser
 # List of sentences to encode
 class_dao = ClassDAO()
 cid_in_Q = False
-question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
-
+# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+# question = "What are the textbooks used in the Machine Learning course?"
+question = "What are the textbooks used in the Machine Learning course?"
 # Analize the question
 q_fragments = question.split(" ")
 for i in range(len(q_fragments) - 1):
     if q_fragments[i] == "CIIC" or q_fragments[i] == "INSO":
         cname = q_fragments[i]
-        ccode = q_fragments[i+1]
+        ccode = q_fragments[i + 1]
         expected_course_id = class_dao.getClassByCname_Ccode(cname, ccode)
         cid_in_Q = True
     else:
@@ -32,16 +33,20 @@ for i in range(len(q_fragments) - 1):
 emb = embeddingClass()
 emtText = emb.embed(question)
 
+
 # Ensure the dimensions match
 def normalizer(vector):
     vector = np.array(vector)
     padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
     return padded_vector
 
+
 # Get all fragments
 dao = SyllabusDAO()
 if cid_in_Q:
-    fragments = dao.getAllFragments(str(normalizer(emtText).tolist()), expected_course_id[0])
+    fragments = dao.getAllFragments(
+        str(normalizer(emtText).tolist()), expected_course_id[0]
+    )
 else:
     fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
 
