@@ -1,38 +1,21 @@
-from langchain.text_splitter import (
-    SentenceTransformersTokenTextSplitter,
-    RecursiveCharacterTextSplitter,
-)
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters import SentenceTransformersTokenTextSplitter
 from nltk.tokenize import sent_tokenize
-import nltk
-
-nltk.download("punkt_tab")
-
 
 class Tokenize:
-    def __init__(self):
-        self.separators = [" "]
 
-    def tokenize_text(self, text):
-
+    def tokenize_text(self, text, chunk_size, overlap_size):
+        
         all_chunks = []
 
         # Split the text in sentences
         sentences = sent_tokenize(text)
-
-        # Split the sentences as desired TODO
-        for sentence in sentences:
-
-            splitter = RecursiveCharacterTextSplitter(
-                separators=self.separators, chunk_size=500, chunk_overlap=250
-            )
-            sentence_chunks = splitter.split_text(sentence)
-
-            tokensSplitter = SentenceTransformersTokenTextSplitter(
-                chunk_overlap=50, tokens_per_chunk=256
-            )
-
-            for chunk in sentence_chunks:
-                tokensChunks = tokensSplitter.split_text(chunk)
-                all_chunks.extend(tokensChunks)
-
-        return all_chunks  # TODO Now is returning the raw sentences, modify.
+        '''
+        for i in range(0, len(sentences), chunk_size - overlap_size):
+            chunk = sentences[i:i + chunk_size]
+            all_chunks.append(" ".join(chunk))
+        '''
+        
+        return sentences
+    
+      

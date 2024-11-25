@@ -6,29 +6,52 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
+from dao.course import ClassDAO
 from embedding import embeddingClass
 from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
 # List of sentences to encode
-question = "what is the prerequisite for CIIC-4010?"
+class_dao = ClassDAO()
+cid_in_Q = False
+# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+# question = "What are the textbooks used in the Machine Learning course?"
+question = "What are the prerequisites for the course (CIIC4020)?"
+# question = "What are the prerequisites for the course CIIC 4020?"
+
+# Analize the question
+q_fragments = question.split(" ")
+for i in range(len(q_fragments) - 1):
+    if q_fragments[i] == "CIIC" or q_fragments[i] == "INSO":
+        cname = q_fragments[i]
+        ccode = q_fragments[i + 1]
+        expected_course_id = class_dao.getClassByCname_Ccode(cname, ccode)
+        cid_in_Q = True
+    else:
+        pass
 
 # Embedding of the first question
 emb = embeddingClass()
 emtText = emb.embed(question)
 
-vector = np.array(emtText)
-if len(vector) < 500:
+
+# Ensure the dimensions match
+def normalizer(vector):
+    vector = np.array(vector)
     padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
-    emtText = padded_vector
-elif len(vector) > 500:
-    raise ValueError(f"Expected embedding dimensions 500, but got {len(vector)}")
+    return padded_vector
 
 
 # Get all fragments
 dao = SyllabusDAO()
-fragments = dao.getAllFragments(str(emtText.tolist()))
+if cid_in_Q:
+    fragments = dao.getAllFragments(
+        str(normalizer(emtText).tolist()), expected_course_id[0]
+    )
+else:
+    fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
+
 context = []
 
 for f in fragments:

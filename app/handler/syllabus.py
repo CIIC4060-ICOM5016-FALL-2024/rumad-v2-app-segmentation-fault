@@ -1,9 +1,5 @@
-import re
 from flask import jsonify
 from dao.syllabus import SyllabusDAO
-import pandas as pd
-from handler.data_validation import rem_courses_with_invalid_timeframe
-
 
 class SyllabusHandler:
     def mapToDict(self, tuple):
