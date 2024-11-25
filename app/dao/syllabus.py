@@ -48,13 +48,26 @@ class SyllabusDAO:
         result = cursor.fetchone()
         return result
 
-    def getAllFragments(self, embedding_text):
+    def getAllFragments(self, embedding_text, courseid):
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT chunkid, courseid, chunk, embedding_text <=> %s as distance
+            FROM syllabus 
+            where courseid = %s
+            ORDER BY distance 
+            LIMIT 10;
+            """
+            cursor.execute(query, (embedding_text,courseid))
+            result = cursor.fetchall()
+        return result
+    
+    def getAllFragments2(self, embedding_text):
         with self.conn.cursor() as cursor:
             query = """
             SELECT chunkid, courseid, chunk, embedding_text <=> %s as distance
             FROM syllabus 
             ORDER BY distance 
-            LIMIT 30;
+            LIMIT 10;
             """
             cursor.execute(query, (embedding_text,))
             result = cursor.fetchall()
