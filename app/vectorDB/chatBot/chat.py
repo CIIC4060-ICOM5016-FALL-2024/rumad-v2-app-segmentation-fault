@@ -17,7 +17,9 @@ class_dao = ClassDAO()
 cid_in_Q = False
 # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
 # question = "What are the textbooks used in the Machine Learning course?"
-question = "What are the textbooks used in the Machine Learning course?"
+question = "What are the prerequisites for the course (CIIC4020)?"
+# question = "What are the prerequisites for the course CIIC 4020?"
+
 # Analize the question
 q_fragments = question.split(" ")
 for i in range(len(q_fragments) - 1):
