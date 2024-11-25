@@ -6,6 +6,7 @@ from handler.meeting import MeetingHandler
 from handler.requisite import RequisiteHandler
 from handler.course import ClassHandler
 from handler.room import RoomHandler
+from handler.registration import RegistrationHandler
 
 app = Flask(__name__)
 CORS(app)
@@ -165,6 +166,24 @@ def leastClass():
 @app.route("/segmentation_fault/section/year", methods=["POST"])
 def sectionYear():
     return SectionHandler().getSectionPerYear()
+
+
+# USER ROUTES
+# User login
+@app.route("/segmentation_fault/login", methods=["POST"])
+def login():
+    data = request.get_json()  # Recibe el cuerpo JSON
+    username = data.get("username")
+    password = data.get("password")
+    return RegistrationHandler().logInUser(username, password)
+
+# User sign up
+@app.route("/segmentation_fault/signup", methods=["POST"])
+def signup():
+    data = request.get_json()  # Recibe el cuerpo JSON
+    username = data.get("username")
+    password = data.get("password")
+    return RegistrationHandler().signUpUser(username, password)
 
 
 if __name__ == "__main__":
