@@ -1,13 +1,10 @@
 from flask import jsonify
-import sys
-import os
 from sentence_transformers import SentenceTransformer
 from langchain.prompts import PromptTemplate
 from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
 from dao.syllabus import SyllabusDAO
 import numpy as np
-import json
 
 # Ensure the dimensions match
 def normalizer(vector):
