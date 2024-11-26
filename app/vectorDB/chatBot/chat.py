@@ -1,6 +1,7 @@
 import sys
 import os
 import numpy as np
+import re
 
 # add the parent directory to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -14,22 +15,36 @@ from langchain_core.output_parsers import StrOutputParser
 
 # List of sentences to encode
 class_dao = ClassDAO()
-cid_in_Q = False
 # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
 # question = "What are the textbooks used in the Machine Learning course?"
-question = "What are the prerequisites for the course (CIIC4020)?"
-# question = "What are the prerequisites for the course CIIC 4020?"
+#question = "What are the prerequisites for the course (CIIC4020)?"
+#question = "What are the prerequisites for the course CIIC 4020?"
+question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
 
 # Analize the question
-q_fragments = question.split(" ")
-for i in range(len(q_fragments) - 1):
-    if q_fragments[i] == "CIIC" or q_fragments[i] == "INSO":
-        cname = q_fragments[i]
-        ccode = q_fragments[i + 1]
-        expected_course_id = class_dao.getClassByCname_Ccode(cname, ccode)
-        cid_in_Q = True
-    else:
-        pass
+expected_cnames = ["CIIC", "INSO"]
+
+pattern = rf"({'|'.join(expected_cnames)})[\s]*(\d+)"
+matches = re.findall(pattern, question, flags=re.IGNORECASE)
+expected_course_ids = None
+expected_course_id = None
+result = []
+for match in matches:
+    result.append({"cname": match[0].upper(), "ccode": match[1]})
+
+# Manage multiple coursesids
+if result and len(result) > 1: 
+    expected_course_ids = []
+    for r in result:
+        expected_course_ids.append(class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0])
+    print(expected_course_ids)
+
+elif result: #TODO check if multiple coursesid
+    expected_course_id = class_dao.getClassByCname_Ccode(result[0]["cname"].upper(), result[0]["ccode"])[0]
+    #print(expected_course_id)
+
+
+
 
 # Embedding of the first question
 emb = embeddingClass()
@@ -45,9 +60,14 @@ def normalizer(vector):
 
 # Get all fragments
 dao = SyllabusDAO()
-if cid_in_Q:
+if expected_course_id:
     fragments = dao.getAllFragments(
-        str(normalizer(emtText).tolist()), expected_course_id[0]
+        str(normalizer(emtText).tolist()), expected_course_id
+    )
+# Manage multiple coursesids
+elif expected_course_ids:
+    fragments = dao.getAllFragments3(
+        str(normalizer(emtText).tolist()), expected_course_ids
     )
 else:
     fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
