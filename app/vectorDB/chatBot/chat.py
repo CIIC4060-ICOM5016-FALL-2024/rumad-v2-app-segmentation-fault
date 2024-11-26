@@ -13,6 +13,11 @@ from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
+# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+# question = "What are the textbooks used in the Machine Learning course?"
+#question = "What are the prerequisites for the course (CIIC4020)?"
+# question = "What are the prerequisites for the course CIIC 4020?"
+
 def chatbot(question):
     # List of sentences to encode
     class_dao = ClassDAO()
