@@ -73,7 +73,7 @@ def chatbot(question):
         input_variables=["question", "documents"],
     )
 
-    print(promt.format(question=question, documents=documents))
+    # print(promt.format(question=question, documents=documents))
 
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
@@ -88,7 +88,7 @@ def chatbot(question):
         response = chain.invoke({"question": question, "documents": documents})
         if response is None:
             raise ValueError("The response from the model was None.")
-        print(response)
+        # print(response)
     except TypeError as e:
         return json.dumps({"error": "TypeError occurred", "details": str(e)})
     except ValueError as e:
@@ -98,6 +98,8 @@ def chatbot(question):
     except Exception as e:
         return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-    print("done")
+    # print("done")
+    
+    response = {"answer": response}
 
     return json.dumps(response)

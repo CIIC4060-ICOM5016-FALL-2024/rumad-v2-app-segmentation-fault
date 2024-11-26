@@ -31,6 +31,7 @@ if st.session_state.get("login"):
         # Send the user's question to the chatbot function
         try:
             response_json = chatbot(prompt)  # This returns a JSON string
+            print(response_json)
             response_dict = json.loads(response_json)  # Convert JSON string to dictionary
             answer = response_dict.get("answer", "No answer provided.")  # Safely get the "answer"
         except json.JSONDecodeError as e:
