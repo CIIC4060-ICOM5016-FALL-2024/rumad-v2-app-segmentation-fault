@@ -17,8 +17,8 @@ from langchain_core.output_parsers import StrOutputParser
 class_dao = ClassDAO()
 # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
 # question = "What are the textbooks used in the Machine Learning course?"
-#question = "What are the prerequisites for the course (CIIC4020)?"
-#question = "What are the prerequisites for the course CIIC 4020?"
+# question = "What are the prerequisites for the course (CIIC4020)?"
+# question = "What are the prerequisites for the course CIIC 4020?"
 question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
 
 # Analize the question
@@ -33,17 +33,19 @@ for match in matches:
     result.append({"cname": match[0].upper(), "ccode": match[1]})
 
 # Manage multiple coursesids
-if result and len(result) > 1: 
+if result and len(result) > 1:
     expected_course_ids = []
     for r in result:
-        expected_course_ids.append(class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0])
+        expected_course_ids.append(
+            class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0]
+        )
     print(expected_course_ids)
 
-elif result: #TODO check if multiple coursesid
-    expected_course_id = class_dao.getClassByCname_Ccode(result[0]["cname"].upper(), result[0]["ccode"])[0]
-    #print(expected_course_id)
-
-
+elif result:  # TODO check if multiple coursesid
+    expected_course_id = class_dao.getClassByCname_Ccode(
+        result[0]["cname"].upper(), result[0]["ccode"]
+    )[0]
+    # print(expected_course_id)
 
 
 # Embedding of the first question
