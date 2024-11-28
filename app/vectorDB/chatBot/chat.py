@@ -14,7 +14,13 @@ from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-def chatbot(question):
+
+def chatbot(question, memory):
+    if memory:
+        memory = json.loads(memory)
+    else:
+        memory = []
+
     # List of sentences to encode
     class_dao = ClassDAO()
     # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
@@ -22,6 +28,11 @@ def chatbot(question):
     # question = "What are the prerequisites for the course (CIIC4020)?"
     # question = "What are the prerequisites for the course CIIC 4020?"
     # question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
+
+
+    # Manage the memory if it is present
+
+
     
     # Analize the question
     expected_cnames = ["CIIC", "INSO"]
@@ -60,6 +71,7 @@ def chatbot(question):
         padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
         return padded_vector
 
+    '''
 
     # Get all fragments
     dao = SyllabusDAO()
@@ -81,6 +93,7 @@ def chatbot(question):
         context.append(str(f[2]))
 
     documents = "\n".join(c for c in context)
+    '''
 
     # Define the promt template for the LLM
     promt = PromptTemplate(
@@ -94,12 +107,12 @@ def chatbot(question):
         - If you don't know the answer, just say that you don't know.
         - Provide up to five sentences in the response.
         - Ensure bullets are well-organized, with one topic per line.
-
+        Chat History: {memory}
         Documents: {documents}
         Question: {question}
         Answer:
         """,
-        input_variables=["question", "documents"],
+        input_variables=["question", "documents", "memory"],
     )
 
     # print(promt.format(question=question, documents=documents))
@@ -107,14 +120,14 @@ def chatbot(question):
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
         model="llama3.1",
-        temperature=3,
+        temperature=4,
     )
 
     # Create a chain combining the promt template and LLM
     chain = promt | llm | StrOutputParser()
 
     try:
-        response = chain.invoke({"question": question, "documents": documents})
+        response = chain.invoke({"question": question, "memory": memory})
         if response is None:
             raise ValueError("The response from the model was None.")
         # print(response)
@@ -131,4 +144,4 @@ def chatbot(question):
     
     response = {"answer": response}
 
-    return json.dumps(response)
+    return json.dumps(response), json.dumps(promt.format(question=question, memory=memory))

@@ -7,12 +7,13 @@ import time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
 
 from app.vectorDB.chatBot.chat import chatbot 
+from langchain.memory import ConversationBufferMemory
 
 st.title("Segmentation Fault Chat")
-
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
+
 
 if st.session_state.get("login"):
     with st.container():
@@ -39,8 +40,10 @@ if st.session_state.get("login"):
 
             # Send the user's question to the chatbot function
             try:
-                response_json = chatbot(prompt)  # This returns a JSON string
-                response_dict = json.loads(response_json)  # Convert JSON string to dictionary
+               
+                response_json = chatbot(prompt, json.dumps(st.session_state.messages))  # This returns a JSON string
+    
+                response_dict = json.loads(response_json[0])  # Convert JSON string to dictionary
                 answer = response_dict.get("answer", "No answer provided.")  # Safely get the "answer"
             except json.JSONDecodeError as e:
                 answer = f"JSON decode error: {e}"
