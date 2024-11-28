@@ -14,7 +14,8 @@ from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-def chatbot(question):
+
+def chatbot(question, memory):
     # List of sentences to encode
     class_dao = ClassDAO()
     # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
@@ -83,32 +84,32 @@ def chatbot(question):
 
     documents = "\n".join(c for c in context)
 
-# Define the promt template for the LLM
-promt = PromptTemplate(
-    template="""You are an assistant for question-answering tasks.
-    Use the following documents to answer the question. Follow these rules:
-    - Use a concise and formal style.
-    - Structure your response using bullet points for clarity.
-    - Reference the course syllabus or related materials whenever relevant.
-    - If you don't know the answer, just say that you don't know.
-    - Provide up to five sentences in the response.
+    # Define the promt template for the LLM
+    promt = PromptTemplate(
+        template="""You are an assistant for question-answering tasks.
+        Use the following documents to answer the question. Follow these rules:
+        - Use a concise and formal style.
+        - Structure your response using bullet points for clarity.
+        - Reference the course syllabus or related materials whenever relevant.
+        - If you don't know the answer, just say that you don't know.
+        - Provide up to five sentences in the response.
 
-        Documents: {documents}
-        Question: {question}
-        Answer:
-        """,
-        input_variables=["question", "documents"],
-    )
+            Documents: {documents}
+            Question: {question}
+            Answer:
+            """,
+            input_variables=["question", "documents"],
+        )
 
 
 
     # print(promt.format(question=question, documents=documents))
 
-# Initialize the LLM with llama 3.1 model
-llm = ChatOllama(
-    model="llama3.1",
-    temperature=4,
-)
+    # Initialize the LLM with llama 3.1 model
+    llm = ChatOllama(
+        model="llama3.1",
+        temperature=4,
+    )
 
 
     # Create a chain combining the promt template and LLM
