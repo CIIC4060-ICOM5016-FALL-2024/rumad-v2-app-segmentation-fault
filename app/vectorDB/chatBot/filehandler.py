@@ -58,11 +58,11 @@ for f in folder:
             # Insert syllabus into the database
             course_tags = f.split("-")
             cid = class_Dao.getClassByCname_Ccode(course_tags[0], course_tags[1])[0]
-            #chunk_with_tag = f"{course_tags[0]} {course_tags[1]}:\n{actual_chunk}"
+            chunk_with_tag = f"{"From" + course_tags[0]} {course_tags[1]} Syllabus:\n{actual_chunk}"
             syllabusDao.insertSyllabus(cid, embText, actual_chunk)
             del embText
             del actual_chunk
-            #del chunk_with_tag
+            del chunk_with_tag
             del cid
             gc.collect()
          
