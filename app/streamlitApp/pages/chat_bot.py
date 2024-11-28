@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".
 
 from app.vectorDB.chatBot.chat import chatbot 
 
-st.title("Simple chat")
+st.title("Segmentation Fault Chat")
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -21,7 +21,7 @@ if st.session_state.get("login"):
                 st.markdown(message["content"])
 
     # Accept user input
-    if prompt := st.chat_input("What is up?"):
+    if prompt := st.chat_input("Message"):
         # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
