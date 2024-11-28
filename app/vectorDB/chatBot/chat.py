@@ -90,7 +90,7 @@ promt = PromptTemplate(
     - Use a concise and formal style.
     - Structure the response with proper bullet points and line breaks.
     - Reference the course syllabus or related materials wherever relevant.
-    - When the answer is based on the syllabus or class materials, start the response with: "Based on the syllabus for this class:"
+    - Start the response with: "Based on the syllabus for this class:"
     - If you don't know the answer, just say that you don't know.
     - Provide up to five sentences in the response.
     - Ensure bullets are well-organized, with one topic per line.
