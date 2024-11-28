@@ -71,8 +71,6 @@ def chatbot(question, memory):
         padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
         return padded_vector
 
-    '''
-
     # Get all fragments
     dao = SyllabusDAO()
     if expected_course_id:
@@ -93,7 +91,6 @@ def chatbot(question, memory):
         context.append(str(f[2]))
 
     documents = "\n".join(c for c in context)
-    '''
 
     # Define the promt template for the LLM
     promt = PromptTemplate(
