@@ -1,14 +1,15 @@
 import sys
 import os
+import json
 import numpy as np
 import re
 
-# add the parent directory to the path
+# Add the parent directory to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
 from dao.course import ClassDAO
-from embedding import embeddingClass
+from vectorDB.chatBot.embedding import embeddingClass
 from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
@@ -49,16 +50,15 @@ elif result:  # TODO check if multiple coursesid
     # print(expected_course_id)
 
 
-# Embedding of the first question
-emb = embeddingClass()
-emtText = emb.embed(question)
+    # Embedding of the first question
+    emb = embeddingClass()
+    emtText = emb.embed(question)
 
-
-# Ensure the dimensions match
-def normalizer(vector):
-    vector = np.array(vector)
-    padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
-    return padded_vector
+    # Ensure the dimensions match
+    def normalizer(vector):
+        vector = np.array(vector)
+        padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+        return padded_vector
 
 
 # Get all fragments
@@ -75,12 +75,12 @@ elif expected_course_ids:
 else:
     fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
 
-context = []
+    context = []
 
-for f in fragments:
-    context.append(str(f[2]))
+    for f in fragments:
+        context.append(str(f[2]))
 
-documents = "\n".join(c for c in context)
+    documents = "\n".join(c for c in context)
 
 # Define the promt template for the LLM
 promt = PromptTemplate(
@@ -110,19 +110,23 @@ llm = ChatOllama(
     temperature=3,
 )
 
+    # Create a chain combining the prompt template and LLM
+    chain = promt | llm | StrOutputParser()
 
-# Create a chain combining the promt template and LLM
-chain = promt | llm | StrOutputParser()
+    try:
+        response = chain.invoke({"question": question, "documents": documents})
+        if response is None:
+            raise ValueError("The response from the model was None.")
+        print(response)
+    except TypeError as e:
+        return json.dumps({"error": "TypeError occurred", "details": str(e)})
+    except ValueError as e:
+        return json.dumps({"error": "ValueError occurred", "details": str(e)})
+    except ConnectionError as e:
+        return json.dumps({"error": "Connection error", "details": str(e)})
+    except Exception as e:
+        return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-try:
-    response = chain.invoke({"question": question, "documents": documents})
-    if response is None:
-        raise ValueError("The response from the model was None.")
-    print(response)
-except TypeError as e:
-    print(f"Error: {e}")
-    print("The response from the model was None.")
-except ValueError as e:
-    print(f"Error: {e}")
+    print("done")
 
-print("done")
+    return json.dumps(response)
