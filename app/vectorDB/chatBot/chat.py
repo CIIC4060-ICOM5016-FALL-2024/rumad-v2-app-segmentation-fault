@@ -104,7 +104,7 @@ def chatbot(question, memory):
         - If you don't know the answer, just say that you don't know.
         - Provide up to five sentences in the response.
         - Ensure bullets are well-organized, with one topic per line.
-        - If have chat History use it to improve the answer.
+        - If the question is about something about a past question use the Chat History.
 
         Chat History: {memory}
 
