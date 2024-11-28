@@ -49,66 +49,66 @@ def chatbot(question):
         )[0]
         # print(expected_course_id)
 
-# Embedding of the first question
-emb = embeddingClass()
-emtText = emb.embed(question)
+    # Embedding of the first question
+    emb = embeddingClass()
+    emtText = emb.embed(question)
 
 
-# Ensure the dimensions match
-def normalizer(vector):
-    vector = np.array(vector)
-    padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
-    return padded_vector
+    # Ensure the dimensions match
+    def normalizer(vector):
+        vector = np.array(vector)
+        padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+        return padded_vector
 
 
-# Get all fragments
-dao = SyllabusDAO()
-if expected_course_id:
-    fragments = dao.getAllFragments(
-        str(normalizer(emtText).tolist()), expected_course_id
+    # Get all fragments
+    dao = SyllabusDAO()
+    if expected_course_id:
+        fragments = dao.getAllFragments(
+            str(normalizer(emtText).tolist()), expected_course_id
+        )
+    # Manage multiple coursesids
+    elif expected_course_ids:
+        fragments = dao.getAllFragments3(
+            str(normalizer(emtText).tolist()), expected_course_ids
+        )
+    else:
+        fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
+
+    context = []
+
+    for f in fragments:
+        context.append(str(f[2]))
+
+    documents = "\n".join(c for c in context)
+
+    # Define the promt template for the LLM
+    promt = PromptTemplate(
+        template="""You are an assistant for question-answering tasks.
+        Use the following documents to answer the question. Follow these rules:
+        - Answer using the provided documents only.
+        - Use a concise and formal style.
+        - Structure the response with proper bullet points and line breaks.
+        - Reference the course syllabus
+        - Start the response with: "Based on the syllabus for this class:"
+        - If you don't know the answer, just say that you don't know.
+        - Provide up to five sentences in the response.
+        - Ensure bullets are well-organized, with one topic per line.
+
+        Documents: {documents}
+        Question: {question}
+        Answer:
+        """,
+        input_variables=["question", "documents"],
     )
-# Manage multiple coursesids
-elif expected_course_ids:
-    fragments = dao.getAllFragments3(
-        str(normalizer(emtText).tolist()), expected_course_ids
+
+    # print(promt.format(question=question, documents=documents))
+
+    # Initialize the LLM with llama 3.1 model
+    llm = ChatOllama(
+        model="llama3.1",
+        temperature=3,
     )
-else:
-    fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
-
-context = []
-
-for f in fragments:
-    context.append(str(f[2]))
-
-documents = "\n".join(c for c in context)
-
-# Define the promt template for the LLM
-promt = PromptTemplate(
-    template="""You are an assistant for question-answering tasks.
-    Use the following documents to answer the question. Follow these rules:
-    - Answer using the provided documents only.
-    - Use a concise and formal style.
-    - Structure the response with proper bullet points and line breaks.
-    - Reference the course syllabus
-    - Start the response with: "Based on the syllabus for this class:"
-    - If you don't know the answer, just say that you don't know.
-    - Provide up to five sentences in the response.
-    - Ensure bullets are well-organized, with one topic per line.
-
-    Documents: {documents}
-    Question: {question}
-    Answer:
-    """,
-    input_variables=["question", "documents"],
-)
-
-# print(promt.format(question=question, documents=documents))
-
-# Initialize the LLM with llama 3.1 model
-llm = ChatOllama(
-    model="llama3.1",
-    temperature=3,
-)
 
     # Create a chain combining the promt template and LLM
     chain = promt | llm | StrOutputParser()
@@ -127,7 +127,7 @@ llm = ChatOllama(
     except Exception as e:
         return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-    # print("done")
+    
     
     response = {"answer": response}
 
