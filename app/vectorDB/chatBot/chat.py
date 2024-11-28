@@ -89,7 +89,7 @@ promt = PromptTemplate(
     - Answer using the provided documents only.
     - Use a concise and formal style.
     - Structure the response with proper bullet points and line breaks.
-    - Reference the course syllabus or related materials wherever relevant.
+    - Reference the course syllabus
     - Start the response with: "Based on the syllabus for this class:"
     - If you don't know the answer, just say that you don't know.
     - Provide up to five sentences in the response.
