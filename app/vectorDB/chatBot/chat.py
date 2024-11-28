@@ -19,9 +19,10 @@ class_dao = ClassDAO()
 # question = "What are the requisites of the course CIIC 4151 (Design Project)?"
 # question = "How are grades divided in the INSO 5111 course?"
 # question = "What are the textbooks used in the Machine Learning course?"
-question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
 # question = "What are the prerequisites for the course (CIIC4020)?"
 # question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
+question = "What are the Instructional strategies for the course CIIC 3015?"
 
 # Analize the question
 expected_cnames = ["CIIC", "INSO"]
@@ -49,17 +50,16 @@ elif result:  # TODO check if multiple coursesid
     )[0]
     # print(expected_course_id)
 
-    # Embedding of the first question
-    emb = embeddingClass()
-    emtText = emb.embed(question)
+# Embedding of the first question
+emb = embeddingClass()
+emtText = emb.embed(question)
 
-    # Ensure the dimensions match
-    def normalizer(vector):
-        vector = np.array(vector)
-        padded_vector = np.pad(
-            vector, pad_width=(0, 500 - len(vector)), mode="constant"
-        )
-        return padded_vector
+
+# Ensure the dimensions match
+def normalizer(vector):
+    vector = np.array(vector)
+    padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+    return padded_vector
 
 
 # Get all fragments
@@ -76,12 +76,12 @@ elif expected_course_ids:
 else:
     fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
 
-    context = []
+context = []
 
-    for f in fragments:
-        context.append(str(f[2]))
+for f in fragments:
+    context.append(str(f[2]))
 
-    documents = "\n".join(c for c in context)
+documents = "\n".join(c for c in context)
 
 # Define the promt template for the LLM
 promt = PromptTemplate(
