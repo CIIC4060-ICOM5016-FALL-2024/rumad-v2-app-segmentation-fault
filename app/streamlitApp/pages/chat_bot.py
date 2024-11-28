@@ -9,7 +9,6 @@ from app.vectorDB.chatBot.chat import chatbot
 from langchain.memory import ConversationBufferMemory
 
 st.title("Segmentation Fault Chat")
-firstRun = True
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -32,13 +31,11 @@ if st.session_state.get("login"):
 
         # Send the user's question to the chatbot function
         try:
-            if firstRun:
-                response_json = chatbot(prompt,"")  # This returns a JSON string
-                firstRun = False
-            else:
-                response_json = chatbot(prompt, st.session_state.messages)
+           
+            response_json = chatbot(prompt, json.dumps(st.session_state.messages))  # This returns a JSON string
+    
             print(response_json)
-            response_dict = json.loads(response_json)  # Convert JSON string to dictionary
+            response_dict = json.loads(response_json[0])  # Convert JSON string to dictionary
             answer = response_dict.get("answer", "No answer provided.")  # Safely get the "answer"
         except json.JSONDecodeError as e:
             answer = f"JSON decode error: {e}"
@@ -48,6 +45,7 @@ if st.session_state.get("login"):
         # Display the chatbot's response in chat message container
         with st.chat_message("bot"):
             st.markdown(answer)
+
         # Add chatbot's response to chat history
         st.session_state.messages.append({"role": "bot", "content": answer})
 
