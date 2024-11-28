@@ -15,11 +15,12 @@ from langchain_core.output_parsers import StrOutputParser
 
 # List of sentences to encode
 class_dao = ClassDAO()
-# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+# question = "What are the requisites of the course CIIC 4151 (Design Project)?"
+# question = "How are grades divided in the INSO 5111 course?"
 # question = "What are the textbooks used in the Machine Learning course?"
+question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
 # question = "What are the prerequisites for the course (CIIC4020)?"
-# question = "What are the prerequisites for the course CIIC 4020?"
-question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
+# question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
 
 # Analize the question
 expected_cnames = ["CIIC", "INSO"]
@@ -85,11 +86,14 @@ documents = "\n".join(c for c in context)
 promt = PromptTemplate(
     template="""You are an assistant for question-answering tasks.
     Use the following documents to answer the question. Follow these rules:
+    - Answer using the provided documents only.
     - Use a concise and formal style.
-    - Structure your response using bullet points for clarity.
-    - Reference the course syllabus or related materials whenever relevant.
+    - Structure the response with proper bullet points and line breaks.
+    - Reference the course syllabus or related materials wherever relevant.
+    - When the answer is based on the syllabus or class materials, start the response with: "Based on the syllabus for this class:"
     - If you don't know the answer, just say that you don't know.
     - Provide up to five sentences in the response.
+    - Ensure bullets are well-organized, with one topic per line.
 
     Documents: {documents}
     Question: {question}
@@ -103,7 +107,7 @@ promt = PromptTemplate(
 # Initialize the LLM with llama 3.1 model
 llm = ChatOllama(
     model="llama3.1",
-    temperature=4,
+    temperature=3,
 )
 
 
