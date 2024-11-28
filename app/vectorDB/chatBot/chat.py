@@ -129,7 +129,7 @@ def chatbot(question, memory):
     chain = promt | llm | StrOutputParser()
 
     try:
-        response = chain.invoke({"question": question, "memory": memory})
+        response = chain.invoke({"question": question,"documents": documents, "memory": memory})
         if response is None:
             raise ValueError("The response from the model was None.")
         # print(response)
@@ -146,4 +146,4 @@ def chatbot(question, memory):
     
     response = {"answer": response}
 
-    return json.dumps(response), json.dumps(promt.format(question=question, memory=memory))
+    return json.dumps(response), json.dumps(promt.format(question=question,documents=documents, memory=memory))
