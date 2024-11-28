@@ -26,12 +26,12 @@ def text_formatter(raw_text, base_name):
     # Remove unnecessary leading/trailing whitespace
     normalized_text = normalized_text.strip()
     # Clean invisible and indivisible spaces (Malfunction in tokenize if leave)
-    normalized_text = re.sub(r'[\u200B-\u200D\uFEFF]', '', normalized_text)
-    normalized_text = re.sub(r'\u00A0', '', normalized_text)
+    normalized_text = re.sub(r"[\u200B-\u200D\uFEFF]", "", normalized_text)
+    normalized_text = re.sub(r"\u00A0", "", normalized_text)
     # Divides the sentences for headers.
     normalized_text = re.sub(r"(?<!\.) (\d{2}\.)\s", r". \1", normalized_text)
     normalized_text = re.sub(r"(?<!\.) (\d{1}\.)\n", r". \1", normalized_text)
-    #"Delete" space after header number (only if change the format)
+    # "Delete" space after header number (only if change the format)
     normalized_text = re.sub(r"(\d\.)\n", r"\1", normalized_text)
     # Convert text to lowercase
     normalized_text = normalized_text.lower()
@@ -65,7 +65,7 @@ def text_formatter(raw_text, base_name):
             flags=re.DOTALL,
         )
         # Remove innecesary and duplicate information
-        wrapped_text = re.sub(r"12\.  a.*", "", wrapped_text, flags=re.DOTALL)
+        wrapped_text = re.sub(r"12\.a.*", "", wrapped_text, flags=re.DOTALL)
 
     # Remove unnecessary spaces
     wrapped_text = wrapped_text.replace("  ", " ")
