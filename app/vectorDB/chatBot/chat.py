@@ -87,11 +87,13 @@ def chatbot(question):
     promt = PromptTemplate(
         template="""You are an assistant for question-answering tasks.
         Use the following documents to answer the question. Follow these rules:
+        - Answer using the provided documents only.
         - Use a concise and formal style.
-        - Structure your response using bullet points for clarity.
-        - Reference the course syllabus or related materials whenever relevant.
+        - Structure the response with proper bullet points and line breaks.
+        - Reference the course syllabus or related materials wherever relevant.
         - If you don't know the answer, just say that you don't know.
         - Provide up to five sentences in the response.
+        - Ensure bullets are well-organized, with one topic per line.
 
         Documents: {documents}
         Question: {question}
@@ -100,12 +102,13 @@ def chatbot(question):
         input_variables=["question", "documents"],
     )
 
+
     # print(promt.format(question=question, documents=documents))
 
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
         model="llama3.1",
-        temperature=4,
+        temperature=3,
     )
 
 
