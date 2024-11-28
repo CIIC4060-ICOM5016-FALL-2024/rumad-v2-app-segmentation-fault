@@ -36,6 +36,12 @@ def text_formatter(raw_text, base_name):
     # Convert text to lowercase
     normalized_text = normalized_text.lower()
 
+    # Process the '5.instructional strategies' section
+    normalized_text = process_instructional_strategies(normalized_text)
+
+    # Process the '9.evaluation strategies' section
+    normalized_text = process_evaluation_section(normalized_text)
+
     # Wrap text to the specified line length
     wrapped_text = textwrap.fill(normalized_text, width=80)
     # Remove "Page X of Y" lines
@@ -123,3 +129,97 @@ def pdf_text_extractor(pdf_path, output_folder):
 
     print(f"Syllabus \033[92m{base_name}\033[0m has been extracted.")
     return output_path
+
+
+def process_evaluation_section(text):
+    """
+    Remove alternatives marked with ☐ in the section after '9.evaluation strategies'
+    until '10.bibliography:' while keeping the ☒ alternatives.
+    """
+    start_marker = "9.evaluation strategies"
+    end_marker = "10."
+
+    # Find the section to process
+    start_index = text.find(start_marker)
+    end_index = text.find(end_marker)
+
+    if start_index == -1 or end_index == -1:
+        # If markers are not found, return the original text
+        return text
+
+    # Extract the relevant section
+    before_section = text[:start_index]
+    evaluation_section = text[start_index:end_index]
+    after_section = text[end_index:]
+
+    # Filter out the ☐ alternatives, keep ☒ alternatives
+    filtered_evaluation_section = ""
+    for line in evaluation_section.splitlines():
+        # Keep the line, but only retain ☒ alternatives
+        if "☐" in line:
+            # Remove parts marked with ☐ but keep the rest
+            line = " ".join(part for part in line.split("☐") if "☒" in part)
+        filtered_evaluation_section += line + "\n"
+
+    # Combine the sections back together
+    return before_section + filtered_evaluation_section + after_section
+
+
+def process_instructional_strategies(text):
+    """
+    Extract alternatives marked with 'X' from the '5.instructional strategies' section
+    and remove those without an 'X', while keeping the 'X' before retained alternatives.
+    """
+    start_marker = "5.instructional strategies:"
+    end_marker = "6."
+
+    # Find the section to process
+    start_index = text.find(start_marker)
+    end_index = text.find(end_marker)
+
+    if start_index == -1 or end_index == -1:
+        # If markers are not found, return the original text
+        return text
+
+    # Extract the relevant section
+    before_section = text[:start_index]
+    strategies_section = text[start_index:end_index]
+    after_section = text[end_index:]
+
+    # Define constant alternatives
+    constant_alternatives = [
+        "conference",
+        "discussion",
+        "computation",
+        "laboratory",
+        "seminar with formal presentation",
+        "seminar without formal presentation",
+        "workshop",
+        "art workshop",
+        "practice",
+        "trip",
+        "thesis",
+        "special problems",
+        "tutoring",
+        "research",
+        "other, please specify:",
+    ]
+
+    # Filter only alternatives marked with 'X'
+    filtered_lines = []
+    for line in strategies_section.splitlines():
+        if "x" in line.lower():  # Look for lines containing 'x'
+            for alt in constant_alternatives:
+                # Only keep the constant alternatives explicitly marked with 'x'
+                if f"x {alt}" in line.lower() or f"x{alt}" in line.lower():
+                    filtered_lines.append(
+                        f"x {alt}"
+                    )  # Maintain the 'X' before the alternative
+
+    # Combine the filtered alternatives into a single section
+    filtered_section = (
+        start_marker + "\n" + "\n".join(filtered_lines) + "\n" + end_marker
+    )
+
+    # Combine the sections back together
+    return before_section + filtered_section + after_section

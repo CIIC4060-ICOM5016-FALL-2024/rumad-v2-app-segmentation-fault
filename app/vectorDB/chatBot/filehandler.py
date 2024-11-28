@@ -43,7 +43,7 @@ folder = os.listdir(folder_path)
 count = 0
 
 for f in folder:
-        
+
     count += 1
     print("File: " "%s/%s" % (count, len(folder)))
     print(f"\033[93mWorking with: {f}\033[0m")
@@ -52,20 +52,20 @@ for f in folder:
     with open(file_path, "r") as file:
         text = file.read()
         text = tokenize.tokenize_text(text, 1, 0)
-    
+
         for actual_chunk in text:
             embText = normalizer(emb.embed(actual_chunk)).tolist()
             # Insert syllabus into the database
             course_tags = f.split("-")
             cid = class_Dao.getClassByCname_Ccode(course_tags[0], course_tags[1])[0]
-            #chunk_with_tag = f"{course_tags[0]} {course_tags[1]}:\n{actual_chunk}"
+            # chunk_with_tag = f"{course_tags[0]} {course_tags[1]}:\n{actual_chunk}"
             syllabusDao.insertSyllabus(cid, embText, actual_chunk)
             del embText
             del actual_chunk
-            #del chunk_with_tag
+            # del chunk_with_tag
             del cid
             gc.collect()
-         
+
     print(f"\033[34m{f} chunks insertion:\033[92m done \n\033[0m")
 
 
