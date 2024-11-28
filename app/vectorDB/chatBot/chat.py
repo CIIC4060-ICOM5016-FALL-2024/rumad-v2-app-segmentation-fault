@@ -1,10 +1,10 @@
 import sys
 import os
-import json
 import numpy as np
 import re
+import json
 
-# Add the parent directory to the path
+# add the parent directory to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
@@ -14,41 +14,40 @@ from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# List of sentences to encode
-class_dao = ClassDAO()
-# question = "What are the requisites of the course CIIC 4151 (Design Project)?"
-# question = "How are grades divided in the INSO 5111 course?"
-# question = "What are the textbooks used in the Machine Learning course?"
-# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
-# question = "What are the prerequisites for the course (CIIC4020)?"
-# question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
-question = "What are the Instructional strategies for the course CIIC 3015?"
+def chatbot(question):
+    # List of sentences to encode
+    class_dao = ClassDAO()
+    # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+    # question = "What are the textbooks used in the Machine Learning course?"
+    # question = "What are the prerequisites for the course (CIIC4020)?"
+    # question = "What are the prerequisites for the course CIIC 4020?"
+    # question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
+    
+    # Analize the question
+    expected_cnames = ["CIIC", "INSO"]
 
-# Analize the question
-expected_cnames = ["CIIC", "INSO"]
+    pattern = rf"({'|'.join(expected_cnames)})[\s]*(\d+)"
+    matches = re.findall(pattern, question, flags=re.IGNORECASE)
+    expected_course_ids = None
+    expected_course_id = None
+    result = []
+    for match in matches:
+        result.append({"cname": match[0].upper(), "ccode": match[1]})
 
-pattern = rf"({'|'.join(expected_cnames)})[\s]*(\d+)"
-matches = re.findall(pattern, question, flags=re.IGNORECASE)
-expected_course_ids = None
-expected_course_id = None
-result = []
-for match in matches:
-    result.append({"cname": match[0].upper(), "ccode": match[1]})
+    # Manage multiple coursesids
+    if result and len(result) > 1:
+        expected_course_ids = []
+        for r in result:
+            expected_course_ids.append(
+                class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0]
+            )
+        # print(expected_course_ids)
 
-# Manage multiple coursesids
-if result and len(result) > 1:
-    expected_course_ids = []
-    for r in result:
-        expected_course_ids.append(
-            class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0]
-        )
-    # print(expected_course_ids)
-
-elif result:  # TODO check if multiple coursesid
-    expected_course_id = class_dao.getClassByCname_Ccode(
-        result[0]["cname"].upper(), result[0]["ccode"]
-    )[0]
-    # print(expected_course_id)
+    elif result:  # TODO check if multiple coursesid
+        expected_course_id = class_dao.getClassByCname_Ccode(
+            result[0]["cname"].upper(), result[0]["ccode"]
+        )[0]
+        # print(expected_course_id)
 
 # Embedding of the first question
 emb = embeddingClass()
@@ -111,18 +110,25 @@ llm = ChatOllama(
     temperature=3,
 )
 
-# Create a chain combining the promt template and LLM
-chain = promt | llm | StrOutputParser()
+    # Create a chain combining the promt template and LLM
+    chain = promt | llm | StrOutputParser()
 
-try:
-    response = chain.invoke({"question": question, "documents": documents})
-    if response is None:
-        raise ValueError("The response from the model was None.")
-    print(response)
-except TypeError as e:
-    print(f"Error: {e}")
-    print("The response from the model was None.")
-except ValueError as e:
-    print(f"Error: {e}")
+    try:
+        response = chain.invoke({"question": question, "documents": documents})
+        if response is None:
+            raise ValueError("The response from the model was None.")
+        # print(response)
+    except TypeError as e:
+        return json.dumps({"error": "TypeError occurred", "details": str(e)})
+    except ValueError as e:
+        return json.dumps({"error": "ValueError occurred", "details": str(e)})
+    except ConnectionError as e:
+        return json.dumps({"error": "Connection error", "details": str(e)})
+    except Exception as e:
+        return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-print("done")
+    # print("done")
+    
+    response = {"answer": response}
+
+    return json.dumps(response)
