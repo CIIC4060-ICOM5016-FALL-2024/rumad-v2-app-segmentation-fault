@@ -14,6 +14,9 @@ st.title("Segmentation Fault Chat")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+def maintain_message_history():
+    while len(st.session_state.messages) > 6:  # 3 interactions = 6 messages (3 user + 3 bot)
+        st.session_state.messages.pop(0)
 
 if st.session_state.get("login"):
     with st.container():
@@ -22,13 +25,17 @@ if st.session_state.get("login"):
             with st.chat_message(message["role"]):
                 st.markdown(message["content"])
 
+
     # Accept user input
     if prompt := st.chat_input("Message"):
+
+
         # Display user message in chat message container
         with st.chat_message("user"):
             st.markdown(prompt)
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
+        maintain_message_history()
 
         # Display loading animation in chat message container
         with st.chat_message("bot"):
@@ -55,6 +62,7 @@ if st.session_state.get("login"):
 
         # Add chatbot's response to chat history
         st.session_state.messages.append({"role": "bot", "content": answer})
+        maintain_message_history()
 
 else:
     st.error("You need to login first to access this page.")
