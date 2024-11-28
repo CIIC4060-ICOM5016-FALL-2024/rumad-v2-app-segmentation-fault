@@ -49,7 +49,6 @@ elif result:  # TODO check if multiple coursesid
     )[0]
     # print(expected_course_id)
 
-
     # Embedding of the first question
     emb = embeddingClass()
     emtText = emb.embed(question)
@@ -57,7 +56,9 @@ elif result:  # TODO check if multiple coursesid
     # Ensure the dimensions match
     def normalizer(vector):
         vector = np.array(vector)
-        padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+        padded_vector = np.pad(
+            vector, pad_width=(0, 500 - len(vector)), mode="constant"
+        )
         return padded_vector
 
 
@@ -110,23 +111,18 @@ llm = ChatOllama(
     temperature=3,
 )
 
-    # Create a chain combining the prompt template and LLM
-    chain = promt | llm | StrOutputParser()
+# Create a chain combining the promt template and LLM
+chain = promt | llm | StrOutputParser()
 
-    try:
-        response = chain.invoke({"question": question, "documents": documents})
-        if response is None:
-            raise ValueError("The response from the model was None.")
-        print(response)
-    except TypeError as e:
-        return json.dumps({"error": "TypeError occurred", "details": str(e)})
-    except ValueError as e:
-        return json.dumps({"error": "ValueError occurred", "details": str(e)})
-    except ConnectionError as e:
-        return json.dumps({"error": "Connection error", "details": str(e)})
-    except Exception as e:
-        return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
+try:
+    response = chain.invoke({"question": question, "documents": documents})
+    if response is None:
+        raise ValueError("The response from the model was None.")
+    print(response)
+except TypeError as e:
+    print(f"Error: {e}")
+    print("The response from the model was None.")
+except ValueError as e:
+    print(f"Error: {e}")
 
-    print("done")
-
-    return json.dumps(response)
+print("done")
