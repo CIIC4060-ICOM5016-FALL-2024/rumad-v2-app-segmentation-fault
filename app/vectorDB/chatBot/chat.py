@@ -39,7 +39,7 @@ if result and len(result) > 1:
         expected_course_ids.append(
             class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0]
         )
-    print(expected_course_ids)
+    # print(expected_course_ids)
 
 elif result:  # TODO check if multiple coursesid
     expected_course_id = class_dao.getClassByCname_Ccode(
@@ -84,9 +84,13 @@ documents = "\n".join(c for c in context)
 # Define the promt template for the LLM
 promt = PromptTemplate(
     template="""You are an assistant for question-answering tasks.
-    Use the following documents to answer the question.
-    If you don't know the answer, just say that you don't know.
-    Use five sentences maximum and keep the answer concise:
+    Use the following documents to answer the question. Follow these rules:
+    - Use a concise and formal style.
+    - Structure your response using bullet points for clarity.
+    - Reference the course syllabus or related materials whenever relevant.
+    - If you don't know the answer, just say that you don't know.
+    - Provide up to five sentences in the response.
+
     Documents: {documents}
     Question: {question}
     Answer:
@@ -94,12 +98,12 @@ promt = PromptTemplate(
     input_variables=["question", "documents"],
 )
 
-print(promt.format(question=question, documents=documents))
+# print(promt.format(question=question, documents=documents))
 
 # Initialize the LLM with llama 3.1 model
 llm = ChatOllama(
     model="llama3.1",
-    temperature=0,
+    temperature=4,
 )
 
 
