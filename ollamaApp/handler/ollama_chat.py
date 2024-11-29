@@ -70,7 +70,7 @@ class OllamaChatHandler:
 
         llm = ChatOllama(
             model="llama3.1",
-            temperature=0,
+            temperature=1,
         )
 
         chain = promt | llm | StrOutputParser()
