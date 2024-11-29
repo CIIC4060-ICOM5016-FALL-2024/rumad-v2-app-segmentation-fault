@@ -55,7 +55,7 @@ class SyllabusDAO:
             FROM syllabus 
             where courseid = %s
             ORDER BY distance 
-            LIMIT 10;
+            LIMIT 6;
             """
             cursor.execute(query, (embedding_text,courseid))
             result = cursor.fetchall()
@@ -70,5 +70,18 @@ class SyllabusDAO:
             LIMIT 10;
             """
             cursor.execute(query, (embedding_text,))
+            result = cursor.fetchall()
+        return result
+    
+    def getAllFragments3(self, embedding_text, courseids):
+        with self.conn.cursor() as cursor:
+            query = """
+            SELECT chunkid, courseid, chunk, embedding_text <=> %s as distance
+            FROM syllabus 
+            where courseid = ANY(%s)
+            ORDER BY distance 
+            LIMIT 15;
+            """
+            cursor.execute(query, (embedding_text,courseids))
             result = cursor.fetchall()
         return result

@@ -1,9 +1,10 @@
 import sys
 import os
-import json
 import numpy as np
+import re
+import json
 
-# Add the parent directory to the path
+# add the parent directory to the path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from dao.syllabus import SyllabusDAO
@@ -13,30 +14,56 @@ from langchain_ollama import ChatOllama
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-# question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
-# question = "What are the textbooks used in the Machine Learning course?"
-#question = "What are the prerequisites for the course (CIIC4020)?"
-# question = "What are the prerequisites for the course CIIC 4020?"
 
-def chatbot(question):
+def chatbot(question, memory):
+    if memory:
+        memory = json.loads(memory)
+    else:
+        memory = []
+
     # List of sentences to encode
     class_dao = ClassDAO()
-    cid_in_Q = False
+    # question = "Tell me at least 3 topics that are taught in the introduction to database (CIIC4060) course?"
+    # question = "What are the textbooks used in the Machine Learning course?"
+    # question = "What are the prerequisites for the course (CIIC4020)?"
+    # question = "What are the prerequisites for the course CIIC 4020?"
+    # question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
 
-    # Analyze the question
-    q_fragments = question.split(" ")
-    for i in range(len(q_fragments) - 1):
-        if q_fragments[i] == "CIIC" or q_fragments[i] == "INSO":
-            cname = q_fragments[i]
-            ccode = q_fragments[i + 1]
-            expected_course_id = class_dao.getClassByCname_Ccode(cname, ccode)
-            cid_in_Q = True
-        else:
-            pass
+
+    # Manage the memory if it is present
+
+
+    
+    # Analize the question
+    expected_cnames = ["CIIC", "INSO"]
+
+    pattern = rf"({'|'.join(expected_cnames)})[\s]*(\d+)"
+    matches = re.findall(pattern, question, flags=re.IGNORECASE)
+    expected_course_ids = None
+    expected_course_id = None
+    result = []
+    for match in matches:
+        result.append({"cname": match[0].upper(), "ccode": match[1]})
+
+    # Manage multiple coursesids
+    if result and len(result) > 1:
+        expected_course_ids = []
+        for r in result:
+            expected_course_ids.append(
+                class_dao.getClassByCname_Ccode(r["cname"].upper(), r["ccode"])[0]
+            )
+        # print(expected_course_ids)
+
+    elif result:  # TODO check if multiple coursesid
+        expected_course_id = class_dao.getClassByCname_Ccode(
+            result[0]["cname"].upper(), result[0]["ccode"]
+        )[0]
+        # print(expected_course_id)
 
     # Embedding of the first question
     emb = embeddingClass()
     emtText = emb.embed(question)
+
 
     # Ensure the dimensions match
     def normalizer(vector):
@@ -46,9 +73,14 @@ def chatbot(question):
 
     # Get all fragments
     dao = SyllabusDAO()
-    if cid_in_Q:
+    if expected_course_id:
         fragments = dao.getAllFragments(
-            str(normalizer(emtText).tolist()), expected_course_id[0]
+            str(normalizer(emtText).tolist()), expected_course_id
+        )
+    # Manage multiple coursesids
+    elif expected_course_ids:
+        fragments = dao.getAllFragments3(
+            str(normalizer(emtText).tolist()), expected_course_ids
         )
     else:
         fragments = dao.getAllFragments2(str(normalizer(emtText).tolist()))
@@ -60,35 +92,51 @@ def chatbot(question):
 
     documents = "\n".join(c for c in context)
 
-    # Define the prompt template for the LLM
+    # Define the promt template for the LLM
     promt = PromptTemplate(
         template="""You are an assistant for question-answering tasks.
-        Use the following documents to answer the question.
-        If you don't know the answer, just say that you don't know.
-        Use five sentences maximum and keep the answer concise:
+        Use the following documents to answer the question. Follow these rules:
+        - Answer using the provided documents only.
+        - Use a concise and formal style.
+        - Structure the response with proper bullet points and line breaks.
+        - Reference the course syllabus
+        - Start the response with: "Based on the syllabus for this class:"
+        - If you don't know the answer, just say that you don't know.
+        - Provide up to five sentences in the response.
+        - Ensure bullets are well-organized, with one topic per line.
+        - If the question is from something in the past, try to use the Chat History.
+        - Don't use the Chat History as a question, only as additional information.
+        - Don't use the Chat History as a document.
+        - Don't reference the use of the Chat History only use it.
+        - Don't change the format of the answer for something present in the Chat History.
+
+        Chat History: {memory}
+
         Documents: {documents}
+
         Question: {question}
+        
         Answer:
         """,
-        input_variables=["question", "documents"],
+        input_variables=["question", "documents", "memory"],
     )
 
-    print(promt.format(question=question, documents=documents))
+    # print(promt.format(question=question, documents=documents))
 
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
         model="llama3.1",
-        temperature=0,
+        temperature=4,
     )
 
-    # Create a chain combining the prompt template and LLM
+    # Create a chain combining the promt template and LLM
     chain = promt | llm | StrOutputParser()
 
     try:
-        response = chain.invoke({"question": question, "documents": documents})
+        response = chain.invoke({"question": question,"documents": documents, "memory": memory})
         if response is None:
             raise ValueError("The response from the model was None.")
-        print(response)
+        # print(response)
     except TypeError as e:
         return json.dumps({"error": "TypeError occurred", "details": str(e)})
     except ValueError as e:
@@ -98,6 +146,8 @@ def chatbot(question):
     except Exception as e:
         return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-    print("done")
+    
+    
+    response = {"answer": response}
 
-    return json.dumps(response)
+    return json.dumps(response), json.dumps(promt.format(question=question,documents=documents, memory=memory))

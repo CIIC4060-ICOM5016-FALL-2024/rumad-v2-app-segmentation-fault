@@ -7,7 +7,7 @@ class Tokenize:
     def tokenize_text(self, text, chunk_size, overlap_size):
         
         all_chunks = []
-        
+
         # Split the text in sentences
         sentences = sent_tokenize(text)
         '''
