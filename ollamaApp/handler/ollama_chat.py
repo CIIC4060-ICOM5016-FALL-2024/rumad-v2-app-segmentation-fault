@@ -45,10 +45,21 @@ class OllamaChatHandler:
 
         promt = PromptTemplate(
             template="""You are an assistant for question-answering tasks.
-            Use the following documents to answer the question.
-            If you don't know the answer, just say that you don't know.
-            Use five sentences maximum and keep the answer concise:
-            Documents: {context}
+            Use the following documents to answer the question. Follow these rules:
+            - Answer using the provided documents only.
+            - Use a concise and formal style.
+            - Structure the response with proper bullet points and line breaks.
+            - Reference the course syllabus
+            - Start the response with: "Based on the syllabus for this class:"
+            - If you don't know the answer, just say that you don't know.
+            - Provide up to five sentences in the response.
+            - Ensure bullets are well-organized, with one topic per line.
+            - If the question is from something in the past, try to use the Context.
+            - Don't use the Context as a question, only as additional information.
+            - Don't reference the use of the Context only use it.
+            - Don't change the format of the answer for something present in the Context.
+
+            Context: {context}
             Question: {question}
             Answer:
             """,
