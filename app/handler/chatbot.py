@@ -5,7 +5,7 @@ from flask import jsonify
 from dao.syllabus import SyllabusDAO
 from dao.course import ClassDAO
 
-url = "https://f3b6-24-55-160-197.ngrok-free.app/segmentation_fault/"
+url = "https://d7e6-24-55-160-197.ngrok-free.app/segmentation_fault/"
 
 
 class ChatbotHandler:
