@@ -85,11 +85,17 @@ if st.session_state.get("login"):
         st.subheader("Top 3 rooms with the most capacity")
         st.divider()
         building = "Stefani"
-        buildings = ["Stefani", "Software", "Monzon"]
-        for i, col in enumerate(st.columns(3)):
-            with col:
-                if st.button(buildings[i], key=f"capacity_button_{buildings[i]}"):
-                    building = buildings[i]
+        buildings = []
+        try:
+            response = requests.get(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room")
+            df = pd.json_normalize(response.json())
+            buildings = (df["building"].unique()).tolist()
+        
+        except Exception as e:
+            st.write(f"Error: Could not connect to the API. {e}")
+
+        building = st.selectbox("Select a building", buildings, key="building_capacity")
+
         try:
             response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/capacity")
             if response.status_code == 200:
@@ -137,11 +143,16 @@ if st.session_state.get("login"):
         st.subheader("Top 3 sections with the most student-to-capacity ratio.")
         st.divider()
         building = "Stefani"
-        buildings = ["Stefani", "Software", "Monzon"]
-        for i, col in enumerate(st.columns(3)):
-            with col:
-                if st.button(buildings[i], key=f"ratio_button_{buildings[i]}"):
-                    building = buildings[i]
+        buildings = []
+        try:
+            response = requests.get(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room")
+            df = pd.json_normalize(response.json())
+            buildings = (df["building"].unique()).tolist()
+        
+        except Exception as e:
+            st.write(f"Error: Could not connect to the API. {e}")
+
+        building = st.selectbox("Select a building", buildings, key="building_ratio")
 
         try:
             response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/ratio")
@@ -204,6 +215,11 @@ if st.session_state.get("login"):
             response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/classes/{year}/{semester}")
             if response.status_code == 200:
                 data = response.json()
+                df = pd.json_normalize(data)
+
+                df["colors"] = generate_green_shades("#327136", df["ratio"])
+
+                
                 for i, class_info in enumerate(data):
                     st.markdown(f"""
                         <h3>Class {i + 1}</h3>
