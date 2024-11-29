@@ -166,6 +166,67 @@ if st.session_state.get("login"):
                     plot_bgcolor="white",  # Set background color to white
                 )
                 st.plotly_chart(fig)
+                
+                for i, class_info in enumerate(data):
+                        st.markdown(f"""
+                            <h3>Class {i + 1}</h3>
+                            <table class="custom-table">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>Code</td>
+                                    <td>{class_info["cname"]}{class_info["ccode"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td>{class_info["cdesc"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Class ID</td>
+                                    <td>{class_info["cid"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Credits</td>
+                                    <td>{class_info["cred"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Term</td>
+                                    <td>{class_info["term"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Years</td>
+                                    <td>{class_info["years"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Prerequisite count</td>
+                                    <td>{class_info["prerequisite_classes"]}</td>
+                                </tr>
+                            </table>
+                            <hr>
+                        """, unsafe_allow_html=True)
+                        try:
+                            syllabus_url = class_info["csyllabus"]
+                            if syllabus_url == 'None':
+                                st.write("No syllabus available for this class.")
+                            else:
+                                file_response = requests.get(syllabus_url)
+                                if file_response.status_code == 200:
+                                    # Prepare file content for download
+                                    file_bytes = io.BytesIO(file_response.content)
+                                    st.download_button(
+                                        label="Download Syllabus",
+                                        data=file_bytes,
+                                        file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                        mime="application/pdf",
+                                        key=f"download_syllabus_{class_info['cid'], key}"
+                                    )
+                                    key += 1
+                                else:
+                                    st.write("Error: Could not fetch the syllabus file.")
+                        except Exception as e:
+                            st.write("Error downloading syllabus:", e)
 
         
     with top_three_classes_offered_least_container:
