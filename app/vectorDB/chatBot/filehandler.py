@@ -42,7 +42,7 @@ def process_file(f):
     file_path = os.path.join(folder_path, f)
     with open(file_path, "r") as file:
         text = file.read()
-        text = tokenize.tokenize_text(text, 1, 0)
+        text = tokenize.tokenize_text(text, f)
 
         for actual_chunk in text:
             embText = normalizer(emb.embed(actual_chunk)).tolist()
