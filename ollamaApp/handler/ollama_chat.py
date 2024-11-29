@@ -59,6 +59,7 @@ class OllamaChatHandler:
             - Don't reference the use of the Context only use it.
             - Don't change the format of the answer for something present in the Context.
             - When asking for course descriptions, look for the documents in the Context and use the '2. Course Description' section.
+            - When asking for the text books of a course differentiate between the bibliography and the Text Books, add one section for only text books and other section for the bibliography.
 
             Context: {context}
             Question: {question}

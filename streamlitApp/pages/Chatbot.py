@@ -30,7 +30,7 @@ if st.session_state.login:
     # Accept user input
     if prompt := st.chat_input("Message"):
         # Display user message
-        with st.chat_message("user", avatar="./logos/university-of-puerto-rico-uprm-computer-science-and-engineering-college-png-favpng-M1JKJfqtXR77WLiF8x1j8U3cy.jpg"):
+        with st.chat_message("user", avatar="./logos/seal-rum-uprm-1280x1280px.png"):
             st.markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt, "avatar": "./logos/seal-rum-uprm-1280x1280px.png"})
 
