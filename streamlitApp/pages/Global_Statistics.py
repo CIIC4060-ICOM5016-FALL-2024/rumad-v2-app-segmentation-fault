@@ -134,66 +134,37 @@ if st.session_state.get("login"):
         response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/prerequisite")
         if response.status_code == 200:
                 data = response.json()
-                for i, class_info in enumerate(data):
-                    st.markdown(f"""
-                        <h3>Class {i + 1}</h3>
-                        <table class="custom-table">
-                            <tr>
-                                <th>Field</th>
-                                <th>Value</th>
-                            </tr>
-                            <tr>
-                                <td>Code</td>
-                                <td>{class_info["cname"]}{class_info["ccode"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Description</td>
-                                <td>{class_info["cdesc"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Class ID</td>
-                                <td>{class_info["cid"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Credits</td>
-                                <td>{class_info["cred"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Term</td>
-                                <td>{class_info["term"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Years</td>
-                                <td>{class_info["years"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Prerequisite count</td>
-                                <td>{class_info["prerequisite_classes"]}</td>
-                            </tr>
-                        </table>
-                        <hr>
-                    """, unsafe_allow_html=True)
-                    try:
-                        syllabus_url = class_info["csyllabus"]
-                        if syllabus_url == 'None':
-                            st.write("No syllabus available for this class.")
-                        else:
-                            file_response = requests.get(syllabus_url)
-                            if file_response.status_code == 200:
-                                # Prepare file content for download
-                                file_bytes = io.BytesIO(file_response.content)
-                                st.download_button(
-                                    label="Download Syllabus",
-                                    data=file_bytes,
-                                    file_name=f"{class_info['ccode']}_syllabus.pdf",
-                                    mime="application/pdf",
-                                    key=f"download_syllabus_{class_info['cid'], key}"
-                                )
-                                key += 1
-                            else:
-                                st.write("Error: Could not fetch the syllabus file.")
-                    except Exception as e:
-                        st.write("Error downloading syllabus:", e)
+                df = pd.json_normalize(data)
+                df["normalized_prerequisite_count"] = (df["prerequisite_classes"] - df["prerequisite_classes"].min()) / (df["prerequisite_classes"].max() - df["prerequisite_classes"].min())
+                df["colors"] = generate_green_shades("#327136", df["normalized_prerequisite_count"])
+
+                fig = px.bar(
+                    df, 
+                    x="cid", 
+                    y="prerequisite_classes", 
+                    labels={"prerequisite_classes": "Number of prerequisite", "cid": "Class ID"},
+                    )
+                fig.update_traces(marker_color="#327136")
+                
+                fig.update_layout(
+                    xaxis=dict(
+                        type="category",
+                        # categoryorder="total ascending",
+                        showline=True,  # Show boundary line for x-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                        showgrid=True,  # Enable gridlines
+                        gridcolor="lightgray",  # Gridline color
+                        gridwidth=0.5,  # Gridline width
+                    ),
+                    yaxis=dict(
+                        showline=True,  # Show boundary line for y-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                    ),
+                    plot_bgcolor="white",  # Set background color to white
+                )
+                st.plotly_chart(fig)
 
         
     with top_three_classes_offered_least_container:
