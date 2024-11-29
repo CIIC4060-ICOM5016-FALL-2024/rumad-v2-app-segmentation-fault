@@ -105,7 +105,6 @@ if st.session_state.get("login"):
                 df["normalized_capacity"] = (df["capacity"] - df["capacity"].min()) / (df["capacity"].max() - df["capacity"].min())
                 df["colors"] = generate_green_shades("#327136", df["normalized_capacity"])
 
-
                 fig_stacked = px.bar(
                     df,
                     x="capacity",
@@ -217,12 +216,46 @@ if st.session_state.get("login"):
                 data = response.json()
                 df = pd.json_normalize(data)
 
-                df["colors"] = generate_green_shades("#327136", df["ratio"])
+                df['normalized_class_count'] = (df['class_count'] - df['class_count'].min()) / (df['class_count'].max() - df['class_count'].min())
+                df["cname_ccode"] = df["cname"] + df["ccode"]
 
-                
+                if not df["normalized_class_count"].isna().any():
+                    df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
+                else:
+                    df["colors"] = generate_green_shades("#327136", df["class_count"])
+
+                fig_stacked = px.bar(
+                    df,
+                    x="class_count",
+                    y="cname_ccode",
+                    color="cname_ccode",
+                    color_discrete_sequence=df["colors"],  
+                    labels={"Capacity": "Room Capacity", "Building": "Building Name"},
+                    orientation="h",
+                )
+                fig_stacked.update_layout(
+                    xaxis=dict(
+                        showline=True,  # Show boundary line for x-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                        showgrid=True,  # Enable gridlines
+                        gridcolor="lightgray",  # Gridline color
+                        gridwidth=0.5,  # Gridline width
+                    ),
+                    yaxis=dict(
+                        type="category",
+                        categoryorder="total ascending",
+                        showline=True,  # Show boundary line for y-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                    ),
+                    plot_bgcolor="white",  # Set background color to white
+                )
+                st.plotly_chart(fig_stacked)
+
                 for i, class_info in enumerate(data):
                     st.markdown(f"""
-                        <h3>Class {i + 1}</h3>
+                        <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                         <table class="custom-table">
                             <tr>
                                 <th>Field</th>
@@ -304,9 +337,49 @@ if st.session_state.get("login"):
                 response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{selected_rid}/classes")
                 if response.status_code == 200:
                     data = response.json()
+                    df = pd.json_normalize(data)
+
+                    df['normalized_class_count'] = (df['class_count'] - df['class_count'].min()) / (df['class_count'].max() - df['class_count'].min())
+                    df["cname_ccode"] = df["cname"] + df["ccode"]
+
+                    if not df["normalized_class_count"].isna().any():
+                        df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
+                    else:
+                        df["colors"] = generate_green_shades("#327136", df["class_count"])
+
+                    fig_stacked = px.bar(
+                        df,
+                        x="class_count",
+                        y="cname_ccode",
+                        color="cname_ccode",
+                        color_discrete_sequence=df["colors"],
+                        labels={"Capacity": "Room Capacity", "Building": "Building Name"},
+                        orientation="h",
+                    )
+                    fig_stacked.update_layout(
+                        xaxis=dict(
+                            showline=True,  # Show boundary line for x-axis
+                            linewidth=2,  # Line width
+                            linecolor="black",  # Line color
+                            showgrid=True,  # Enable gridlines
+                            gridcolor="lightgray",  # Gridline color
+                            gridwidth=0.5,  # Gridline width
+                        ),
+                        yaxis=dict(
+                            type="category",
+                            categoryorder="total ascending",
+                            showline=True,  # Show boundary line for y-axis
+                            linewidth=2,  # Line width
+                            linecolor="black",  # Line color
+                        ),
+                        plot_bgcolor="white",  # Set background color to white
+                    )
+
+                    st.plotly_chart(fig_stacked)
+
                     for i, class_info in enumerate(data):
                         st.markdown(f"""
-                            <h3>Class {i + 1}</h3>
+                            <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                             <table class="custom-table">
                                 <tr>
                                     <th>Field</th>

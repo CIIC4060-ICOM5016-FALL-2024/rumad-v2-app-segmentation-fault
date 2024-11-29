@@ -32,7 +32,7 @@ if st.session_state.login:
         # Display user message
         with st.chat_message("user", avatar="./logos/university-of-puerto-rico-uprm-computer-science-and-engineering-college-png-favpng-M1JKJfqtXR77WLiF8x1j8U3cy.jpg"):
             st.markdown(prompt)
-        st.session_state.messages.append({"role": "user", "content": prompt, "avatar": "./logos/university-of-puerto-rico-uprm-computer-science-and-engineering-college-png-favpng-M1JKJfqtXR77WLiF8x1j8U3cy.jpg"})
+        st.session_state.messages.append({"role": "user", "content": prompt, "avatar": "./logos/seal-rum-uprm-1280x1280px.png"})
 
         # Loading spinner while waiting for a response
         with st.spinner("Processing..."):
