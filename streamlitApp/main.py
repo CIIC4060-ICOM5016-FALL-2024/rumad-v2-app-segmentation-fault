@@ -6,7 +6,9 @@ st.set_page_config(
     page_title="Authentication",
     layout="centered",
     initial_sidebar_state="collapsed",
-)
+    page_icon="./logos/university-of-puerto-rico-uprm-computer-science-and-engineering-college-png-favpng-M1JKJfqtXR77WLiF8x1j8U3cy.jpg"
+)   
+
 
 # Custom CSS for styling
 st.markdown(

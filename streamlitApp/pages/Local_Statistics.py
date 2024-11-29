@@ -5,6 +5,13 @@ import requests
 from matplotlib import colors as mcolors
 import io
 
+st.set_page_config(
+    page_title="Local Stats",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+    page_icon="./logos/university-of-puerto-rico-uprm-computer-science-and-engineering-college-png-favpng-M1JKJfqtXR77WLiF8x1j8U3cy.jpg"
+) 
+
 # inyect CSS to style the page
 st.markdown(
     """
