@@ -53,8 +53,8 @@ st.markdown(
 )
 
 
-
-st.session_state['login'] = False
+if "login" not in st.session_state:
+    st.session_state['login'] = False
 
 # Main function
 def main():
