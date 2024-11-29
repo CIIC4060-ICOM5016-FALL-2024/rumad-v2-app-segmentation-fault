@@ -12,12 +12,10 @@ from handler.chatbot import ChatbotHandler
 app = Flask(__name__)
 CORS(app)
 
-
 # ROOT ROUTE
 @app.route("/")
 def hello_world():
     return "This is the RestAPI of Segmentation Fault team."
-
 
 # SECTION ROUTES
 @app.route("/segmentation_fault/section", methods=["GET", "POST"])

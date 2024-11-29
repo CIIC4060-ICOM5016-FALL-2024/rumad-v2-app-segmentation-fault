@@ -493,7 +493,7 @@ class ClassHandler:
 
         if temp:
             for row in temp:
-                result.append(self.mapToDict(row))
+                result.append(self.CountClassmapToDict(row))
             return jsonify(result)
         else:
             return jsonify(Error="Not Found"), 404
