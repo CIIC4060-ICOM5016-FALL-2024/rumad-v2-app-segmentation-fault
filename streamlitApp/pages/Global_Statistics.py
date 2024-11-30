@@ -236,7 +236,9 @@ if st.session_state.get("login"):
         if response.status_code == 200:
                 data = response.json()
                 df = pd.json_normalize(data)
-                df["normalized_class_count"] = (df["class_count"] - df["class_count"].min()) / (df["class_count"].max() - df["class_count"].min())
+
+                epsilon = 1e-10  # A small value to prevent division by zero
+                df["normalized_class_count"] = (df["class_count"] - df["class_count"].min()) / (df["class_count"].max() - df["class_count"].min() + epsilon)
                 
                 if not df["normalized_class_count"].isna().any():
                     df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
@@ -339,7 +341,9 @@ if st.session_state.get("login"):
         response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year")
         data = response.json()
         df = pd.json_normalize(data)
-        df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min()) 
+
+        epsilon = 1e-10 
+        df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min() + epsilon) 
         df["colors"] = generate_green_shades("#327136", df["normalized_sections"])
 
         fig = px.bar(

@@ -64,7 +64,7 @@ st.markdown(
 
 def generate_green_shades(base_color, values):
     base_rgb = mcolors.hex2color(base_color)
-    lighter_rgb = [(c + 1) / 2 for c in base_rgb]  # A lighter version of the base green
+    lighter_rgb = [(c + 1) / 2 for c in base_rgb]  
     colors = [
         mcolors.to_hex([(1 - value) * light + value * dark for light, dark in zip(lighter_rgb, base_rgb)])
         for value in values
@@ -102,9 +102,15 @@ if st.session_state.get("login"):
                 data = response.json()
                 df = pd.json_normalize(data)
 
-                df["normalized_capacity"] = (df["capacity"] - df["capacity"].min()) / (df["capacity"].max() - df["capacity"].min())
-                df["colors"] = generate_green_shades("#327136", df["normalized_capacity"])
+                epsilon = 1e-10  # A small value to prevent division by zero
+                df["normalized_capacity"] = (df["capacity"] - df["capacity"].min()) / (df["capacity"].max() - df["capacity"].min() + epsilon)
 
+                if not df["normalized_capacity"].isna().any():
+                    df["colors"] = generate_green_shades("#327136", df["normalized_capacity"])
+                else:
+                    df["colors"] = generate_green_shades("#327136", df["capacity"])
+
+            
                 fig_stacked = px.bar(
                     df,
                     x="capacity",
@@ -113,7 +119,7 @@ if st.session_state.get("login"):
                     color_discrete_sequence=df["colors"],  
                     labels={"Capacity": "Room Capacity", "Building": "Building Name"},
                     orientation="h",
-                )
+                    )
                 fig_stacked.update_layout(
                     xaxis=dict(
                         showline=True,  # Show boundary line for x-axis
@@ -161,7 +167,6 @@ if st.session_state.get("login"):
 
                 df["colors"] = generate_green_shades("#327136", df["ratio"])
 
-
                 fig_stacked = px.bar(
                     df,
                     x="ratio",
@@ -193,7 +198,7 @@ if st.session_state.get("login"):
             else:
                 st.write("Error: " + response.status_code)
         except:
-            st.write("Error: Could not connect to the API.")
+            st.write("This building has no section.")
 
     with top_three_classes_taught_per_semester_container:
         st.subheader("Top 3 most taught classes per semester.")
