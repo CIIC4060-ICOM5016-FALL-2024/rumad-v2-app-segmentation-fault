@@ -3,10 +3,11 @@ import requests
 
 # Set up Streamlit page configuration
 st.set_page_config(
-    page_title="Authentication",
+    page_title="Login/Signup Page",
     layout="centered",
     initial_sidebar_state="collapsed",
-)
+    page_icon="./logos/seal-rum-uprm-1280x1280px.png"
+) 
 
 # Custom CSS for styling
 st.markdown(

@@ -9,11 +9,11 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".
 from app.vectorDB.chatBot.chat import chatbot 
 
 st.set_page_config(
-    page_title="Chatbot",
+    page_title="Chatbot Page",
     layout="centered",
     initial_sidebar_state="collapsed",
     page_icon="./logos/seal-rum-uprm-1280x1280px.png"
-)
+) 
 
 st.title("Segmentation Fault Chat")
 
