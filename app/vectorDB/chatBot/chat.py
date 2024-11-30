@@ -37,7 +37,7 @@ def chatbot(question, memory):
     # Analize the question
     expected_cnames = ["CIIC", "INSO"]
 
-    pattern = rf"({'|'.join(expected_cnames)})[\s]*(\d+)"
+    pattern = rf"({'|'.join(expected_cnames)})[\s-]?(\d+)"
     matches = re.findall(pattern, question, flags=re.IGNORECASE)
     expected_course_ids = None
     expected_course_id = None

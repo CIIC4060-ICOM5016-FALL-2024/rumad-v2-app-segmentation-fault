@@ -199,7 +199,7 @@ if st.session_state.get("login"):
                 data = response.json()
                 for i, class_info in enumerate(data):
                     st.markdown(f"""
-                        <h3>Class {i + 1}</h3>
+                        <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                         <table class="custom-table">
                             <tr>
                                 <th>Field</th>
@@ -283,7 +283,7 @@ if st.session_state.get("login"):
                     data = response.json()
                     for i, class_info in enumerate(data):
                         st.markdown(f"""
-                            <h3>Class {i + 1}</h3>
+                            <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                             <table class="custom-table">
                                 <tr>
                                     <th>Field</th>
@@ -351,5 +351,4 @@ if st.session_state.get("login"):
 else:
     st.error("You need to login first to access this page.")
         
-#327136
 

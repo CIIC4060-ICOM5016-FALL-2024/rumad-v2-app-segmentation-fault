@@ -21,9 +21,6 @@ st.title("Segmentation Fault Chat")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-def maintain_message_history():
-    while len(st.session_state.messages) > 6:  # 3 interactions = 6 messages (3 user + 3 bot)
-        st.session_state.messages.pop(0)
 
 if st.session_state.get("login"):
     with st.container():

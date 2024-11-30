@@ -1,9 +1,17 @@
+from numpy import NaN
 import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
 from matplotlib import colors as mcolors
 import io
+
+st.set_page_config(
+    page_title="Global Stats",
+    layout="centered",
+    initial_sidebar_state="collapsed",
+    page_icon="./logos/seal-rum-uprm-1280x1280px.png"
+) 
 
 # inyect CSS to style the page
 st.markdown(
@@ -66,6 +74,11 @@ def generate_green_shades(base_color, values):
 
 st.title("Global Stats")
 
+st.markdown("""
+This page offers a comprehensive global view of academic metrics through visually engaging and interactive charts. Analyze data such as the meetings with the highest number of sections, classes with the most prerequisites, the least offered classes, and annual trends in total sections.
+""")
+
+
 top_five_meetings_with_most_sections_container = st.container()
 top_three_classes_as_prerequisite_container = st.container()
 top_three_classes_offered_least_container = st.container()
@@ -127,66 +140,98 @@ if st.session_state.get("login"):
         response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/most/prerequisite")
         if response.status_code == 200:
                 data = response.json()
+                df = pd.json_normalize(data)
+                df["normalized_prerequisite_count"] = (df["prerequisite_classes"] - df["prerequisite_classes"].min()) / (df["prerequisite_classes"].max() - df["prerequisite_classes"].min())
+                df["colors"] = generate_green_shades("#327136", df["normalized_prerequisite_count"])
+
+                fig = px.bar(
+                    df, 
+                    x="cid", 
+                    y="prerequisite_classes", 
+                    labels={"prerequisite_classes": "Number of prerequisite", "cid": "Class ID"},
+                    )
+                fig.update_traces(marker_color="#327136")
+                
+                fig.update_layout(
+                    xaxis=dict(
+                        type="category",
+                        # categoryorder="total ascending",
+                        showline=True,  # Show boundary line for x-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                        showgrid=True,  # Enable gridlines
+                        gridcolor="lightgray",  # Gridline color
+                        gridwidth=0.5,  # Gridline width
+                    ),
+                    yaxis=dict(
+                        showline=True,  # Show boundary line for y-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                    ),
+                    plot_bgcolor="white",  # Set background color to white
+                )
+                st.plotly_chart(fig)
+                
                 for i, class_info in enumerate(data):
-                    st.markdown(f"""
-                        <h3>Class {i + 1}</h3>
-                        <table class="custom-table">
-                            <tr>
-                                <th>Field</th>
-                                <th>Value</th>
-                            </tr>
-                            <tr>
-                                <td>Code</td>
-                                <td>{class_info["cname"]}{class_info["ccode"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Description</td>
-                                <td>{class_info["cdesc"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Class ID</td>
-                                <td>{class_info["cid"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Credits</td>
-                                <td>{class_info["cred"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Term</td>
-                                <td>{class_info["term"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Years</td>
-                                <td>{class_info["years"]}</td>
-                            </tr>
-                            <tr>
-                                <td>Prerequisite count</td>
-                                <td>{class_info["prerequisite_classes"]}</td>
-                            </tr>
-                        </table>
-                        <hr>
-                    """, unsafe_allow_html=True)
-                    try:
-                        syllabus_url = class_info["csyllabus"]
-                        if syllabus_url == 'None':
-                            st.write("No syllabus available for this class.")
-                        else:
-                            file_response = requests.get(syllabus_url)
-                            if file_response.status_code == 200:
-                                # Prepare file content for download
-                                file_bytes = io.BytesIO(file_response.content)
-                                st.download_button(
-                                    label="Download Syllabus",
-                                    data=file_bytes,
-                                    file_name=f"{class_info['ccode']}_syllabus.pdf",
-                                    mime="application/pdf",
-                                    key=f"download_syllabus_{class_info['cid'], key}"
-                                )
-                                key += 1
+                        st.markdown(f"""
+                            <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
+                            <table class="custom-table">
+                                <tr>
+                                    <th>Field</th>
+                                    <th>Value</th>
+                                </tr>
+                                <tr>
+                                    <td>Code</td>
+                                    <td>{class_info["cname"]}{class_info["ccode"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Description</td>
+                                    <td>{class_info["cdesc"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Class ID</td>
+                                    <td>{class_info["cid"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Credits</td>
+                                    <td>{class_info["cred"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Term</td>
+                                    <td>{class_info["term"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Years</td>
+                                    <td>{class_info["years"]}</td>
+                                </tr>
+                                <tr>
+                                    <td>Prerequisite count</td>
+                                    <td>{class_info["prerequisite_classes"]}</td>
+                                </tr>
+                            </table>
+                            <hr>
+                        """, unsafe_allow_html=True)
+                        try:
+                            syllabus_url = class_info["csyllabus"]
+                            if syllabus_url == 'None':
+                                st.write("No syllabus available for this class.")
                             else:
-                                st.write("Error: Could not fetch the syllabus file.")
-                    except Exception as e:
-                        st.write("Error downloading syllabus:", e)
+                                file_response = requests.get(syllabus_url)
+                                if file_response.status_code == 200:
+                                    # Prepare file content for download
+                                    file_bytes = io.BytesIO(file_response.content)
+                                    st.download_button(
+                                        label="Download Syllabus",
+                                        data=file_bytes,
+                                        file_name=f"{class_info['ccode']}_syllabus.pdf",
+                                        mime="application/pdf",
+                                        key=f"download_syllabus_{class_info['cid'], key}"
+                                    )
+                                    key += 1
+                                else:
+                                    st.write("Error: Could not fetch the syllabus file.")
+                        except Exception as e:
+                            st.write("Error downloading syllabus:", e)
 
         
     with top_three_classes_offered_least_container:
@@ -195,9 +240,48 @@ if st.session_state.get("login"):
         response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/least/classes")
         if response.status_code == 200:
                 data = response.json()
+                df = pd.json_normalize(data)
+
+                epsilon = 1e-10  # A small value to prevent division by zero
+                df["normalized_class_count"] = (df["class_count"] - df["class_count"].min()) / (df["class_count"].max() - df["class_count"].min() + epsilon)
+                
+                if not df["normalized_class_count"].isna().any():
+                    df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
+                else:
+                    df["colors"] = generate_green_shades("#327136", df["class_count"])
+
+                fig = px.bar(
+                    df, 
+                    x="cid", 
+                    y="class_count", 
+                    color_discrete_sequence=df["colors"],
+                    labels={"class_count": "Offered classes", "cid": "Class ID"},
+                    )
+                fig.update_traces(marker_color="#327136")
+                
+                fig.update_layout(
+                    xaxis=dict(
+                        type="category",
+                        # categoryorder="total ascending",
+                        showline=True,  # Show boundary line for x-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                        showgrid=True,  # Enable gridlines
+                        gridcolor="lightgray",  # Gridline color
+                        gridwidth=0.5,  # Gridline width
+                    ),
+                    yaxis=dict(
+                        showline=True,  # Show boundary line for y-axis
+                        linewidth=2,  # Line width
+                        linecolor="black",  # Line color
+                    ),
+                    plot_bgcolor="white",  # Set background color to white
+                )
+                st.plotly_chart(fig)
+                
                 for i, class_info in enumerate(data):
                     st.markdown(f"""
-                        <h3>Class {i + 1}</h3>
+                        <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                         <table class="custom-table">
                             <tr>
                                 <th>Field</th>
@@ -262,7 +346,9 @@ if st.session_state.get("login"):
         response = requests.post("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/section/year")
         data = response.json()
         df = pd.json_normalize(data)
-        df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min()) 
+
+        epsilon = 1e-10 
+        df["normalized_sections"] = (df["sections"] - df["sections"].min()) / (df["sections"].max() - df["sections"].min() + epsilon) 
         df["colors"] = generate_green_shades("#327136", df["normalized_sections"])
 
         fig = px.bar(
