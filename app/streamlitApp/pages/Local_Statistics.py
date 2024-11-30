@@ -9,8 +9,8 @@ st.set_page_config(
     page_title="Local Stats",
     layout="centered",
     initial_sidebar_state="collapsed",
-    page_icon="./logos/seal-rum-uprm-1280x1280px.png"
-) 
+    page_icon="./logos/seal-rum-uprm-1280x1280px.png",
+)
 
 # inyect CSS to style the page
 st.markdown(
@@ -62,27 +62,45 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+
 def generate_green_shades(base_color, values):
     base_rgb = mcolors.hex2color(base_color)
-    lighter_rgb = [(c + 1) / 2 for c in base_rgb]  
+    lighter_rgb = [(c + 1) / 2 for c in base_rgb]
     colors = [
-        mcolors.to_hex([(1 - value) * light + value * dark for light, dark in zip(lighter_rgb, base_rgb)])
+        mcolors.to_hex(
+            [
+                (1 - value) * light + value * dark
+                for light, dark in zip(lighter_rgb, base_rgb)
+            ]
+        )
         for value in values
     ]
     return colors
 
+
 st.title("Local Stats")
 
-st.markdown("""
-This page offers an intuitive platform for exploring local data insights. Dropdown menus dynamically update with the latest data, ensuring a seamless and accurate experience. Analyze key statistics through interactive charts, including the top rooms by capacity, the highest student-to-capacity ratios, and the most-taught classes by semester and room. 
-""")
+st.markdown(
+    """
+    Welcome to this page, designed to provide an intuitive platform for exploring local data insights. 
+    The dropdown menus are dynamically updated with the latest information, ensuring a seamless and 
+    accurate user experience. Dive into key statistics with interactive charts, such as the top rooms 
+    by capacity, the highest student-to-capacity ratios, and the most-taught classes by semester and room.
+    """
+)
 
+st.markdown(
+    """
+    **Note:** The data displayed on this page is retrieved from the API. If no data is shown, 
+    it indicates that the records are not currently available in the database.
+    """
+)
 
 top_three_rooms_per_capacity_container = st.container()
 top_three_rooms_per_ration_container = st.container()
 top_three_classes_taught_per_semester_container = st.container()
 top_three_classes_taught_per_room_container = st.container()
-key = 0 # key for download syllabus button to avoid caching issues
+key = 0  # key for download syllabus button to avoid caching issues
 
 if st.session_state.get("login"):
 
@@ -92,39 +110,46 @@ if st.session_state.get("login"):
         building = "Stefani"
         buildings = []
         try:
-            response = requests.get(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room")
+            response = requests.get(
+                f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room"
+            )
             df = pd.json_normalize(response.json())
             buildings = (df["building"].unique()).tolist()
-        
+
         except Exception as e:
             st.write(f"Error: Could not connect to the API. {e}")
 
         building = st.selectbox("Select a building", buildings, key="building_capacity")
 
         try:
-            response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/capacity")
+            response = requests.post(
+                f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/capacity"
+            )
             if response.status_code == 200:
                 data = response.json()
                 df = pd.json_normalize(data)
 
                 epsilon = 1e-10  # A small value to prevent division by zero
-                df["normalized_capacity"] = (df["capacity"] - df["capacity"].min()) / (df["capacity"].max() - df["capacity"].min() + epsilon)
+                df["normalized_capacity"] = (df["capacity"] - df["capacity"].min()) / (
+                    df["capacity"].max() - df["capacity"].min() + epsilon
+                )
 
                 if not df["normalized_capacity"].isna().any():
-                    df["colors"] = generate_green_shades("#327136", df["normalized_capacity"])
+                    df["colors"] = generate_green_shades(
+                        "#327136", df["normalized_capacity"]
+                    )
                 else:
                     df["colors"] = generate_green_shades("#327136", df["capacity"])
 
-            
                 fig_stacked = px.bar(
                     df,
                     x="capacity",
                     y="room_number",
                     color="room_number",
-                    color_discrete_sequence=df["colors"],  
+                    color_discrete_sequence=df["colors"],
                     labels={"Capacity": "Room Capacity", "Building": "Building Name"},
                     orientation="h",
-                    )
+                )
                 fig_stacked.update_layout(
                     xaxis=dict(
                         showline=True,  # Show boundary line for x-axis
@@ -155,17 +180,21 @@ if st.session_state.get("login"):
         building = "Stefani"
         buildings = []
         try:
-            response = requests.get(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room")
+            response = requests.get(
+                f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room"
+            )
             df = pd.json_normalize(response.json())
             buildings = (df["building"].unique()).tolist()
-        
+
         except Exception as e:
             st.write(f"Error: Could not connect to the API. {e}")
 
         building = st.selectbox("Select a building", buildings, key="building_ratio")
 
         try:
-            response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/ratio")
+            response = requests.post(
+                f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{building}/ratio"
+            )
             if response.status_code == 200:
                 data = response.json()
                 df = pd.json_normalize(data)
@@ -177,7 +206,7 @@ if st.session_state.get("login"):
                     x="ratio",
                     y="room_number",
                     color="room_number",
-                    color_discrete_sequence=df["colors"],  
+                    color_discrete_sequence=df["colors"],
                     labels={"Capacity": "Room Capacity", "Building": "Building Name"},
                     orientation="h",
                 )
@@ -221,16 +250,22 @@ if st.session_state.get("login"):
             semester = st.selectbox("Select a semester", semesters, key="semester")
 
         try:
-            response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/classes/{year}/{semester}")
+            response = requests.post(
+                f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/classes/{year}/{semester}"
+            )
             if response.status_code == 200:
                 data = response.json()
                 df = pd.json_normalize(data)
 
-                df['normalized_class_count'] = (df['class_count'] - df['class_count'].min()) / (df['class_count'].max() - df['class_count'].min())
+                df["normalized_class_count"] = (
+                    df["class_count"] - df["class_count"].min()
+                ) / (df["class_count"].max() - df["class_count"].min())
                 df["cname_ccode"] = df["cname"] + df["ccode"]
 
                 if not df["normalized_class_count"].isna().any():
-                    df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
+                    df["colors"] = generate_green_shades(
+                        "#327136", df["normalized_class_count"]
+                    )
                 else:
                     df["colors"] = generate_green_shades("#327136", df["class_count"])
 
@@ -239,7 +274,7 @@ if st.session_state.get("login"):
                     x="class_count",
                     y="cname_ccode",
                     color="cname_ccode",
-                    color_discrete_sequence=df["colors"],  
+                    color_discrete_sequence=df["colors"],
                     labels={"Capacity": "Room Capacity", "Building": "Building Name"},
                     orientation="h",
                 )
@@ -264,7 +299,8 @@ if st.session_state.get("login"):
                 st.plotly_chart(fig_stacked)
 
                 for i, class_info in enumerate(data):
-                    st.markdown(f"""
+                    st.markdown(
+                        f"""
                         <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                         <table class="custom-table">
                             <tr>
@@ -297,10 +333,12 @@ if st.session_state.get("login"):
                             </tr>
                         </table>
                         <hr>
-                    """, unsafe_allow_html=True)
+                    """,
+                        unsafe_allow_html=True,
+                    )
                     try:
                         syllabus_url = class_info["csyllabus"]
-                        if syllabus_url == 'None':
+                        if syllabus_url == "None":
                             st.write("No syllabus available for this class.")
                         else:
                             file_response = requests.get(syllabus_url)
@@ -312,7 +350,7 @@ if st.session_state.get("login"):
                                     data=file_bytes,
                                     file_name=f"{class_info['ccode']}_syllabus.pdf",
                                     mime="application/pdf",
-                                    key=f"download_syllabus_{class_info['cid'], key}"
+                                    key=f"download_syllabus_{class_info['cid'], key}",
                                 )
                                 key += 1
                             else:
@@ -331,7 +369,9 @@ if st.session_state.get("login"):
         rids = []
         try:
             # Fetch room IDs
-            response = requests.get("https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room")
+            response = requests.get(
+                "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room"
+            )
             df = pd.json_normalize(response.json())
             rids = df["rid"].tolist()
         except Exception as e:
@@ -340,22 +380,30 @@ if st.session_state.get("login"):
 
         # Display room selection
         selected_rid = st.selectbox("Select a room", rids)
-        
+
         if selected_rid:  # Ensure a room is selected
             try:
                 # Fetch classes for the selected room
-                response = requests.post(f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{selected_rid}/classes")
+                response = requests.post(
+                    f"https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/room/{selected_rid}/classes"
+                )
                 if response.status_code == 200:
                     data = response.json()
                     df = pd.json_normalize(data)
 
-                    df['normalized_class_count'] = (df['class_count'] - df['class_count'].min()) / (df['class_count'].max() - df['class_count'].min())
+                    df["normalized_class_count"] = (
+                        df["class_count"] - df["class_count"].min()
+                    ) / (df["class_count"].max() - df["class_count"].min())
                     df["cname_ccode"] = df["cname"] + df["ccode"]
 
                     if not df["normalized_class_count"].isna().any():
-                        df["colors"] = generate_green_shades("#327136", df["normalized_class_count"])
+                        df["colors"] = generate_green_shades(
+                            "#327136", df["normalized_class_count"]
+                        )
                     else:
-                        df["colors"] = generate_green_shades("#327136", df["class_count"])
+                        df["colors"] = generate_green_shades(
+                            "#327136", df["class_count"]
+                        )
 
                     fig_stacked = px.bar(
                         df,
@@ -363,7 +411,10 @@ if st.session_state.get("login"):
                         y="cname_ccode",
                         color="cname_ccode",
                         color_discrete_sequence=df["colors"],
-                        labels={"Capacity": "Room Capacity", "Building": "Building Name"},
+                        labels={
+                            "Capacity": "Room Capacity",
+                            "Building": "Building Name",
+                        },
                         orientation="h",
                     )
                     fig_stacked.update_layout(
@@ -388,7 +439,8 @@ if st.session_state.get("login"):
                     st.plotly_chart(fig_stacked)
 
                     for i, class_info in enumerate(data):
-                        st.markdown(f"""
+                        st.markdown(
+                            f"""
                             <h3>Class {i + 1}: {class_info["cdesc"]}</h3>
                             <table class="custom-table">
                                 <tr>
@@ -425,11 +477,13 @@ if st.session_state.get("login"):
                                 </tr>
                             </table>
                             <hr>
-                        """, unsafe_allow_html=True)
-                        
+                        """,
+                            unsafe_allow_html=True,
+                        )
+
                         try:
                             syllabus_url = class_info["csyllabus"]
-                            if syllabus_url == 'None':
+                            if syllabus_url == "None":
                                 st.write("No syllabus available for this class.")
                             else:
                                 file_response = requests.get(syllabus_url)
@@ -441,11 +495,13 @@ if st.session_state.get("login"):
                                         data=file_bytes,
                                         file_name=f"{class_info['ccode']}_syllabus.pdf",
                                         mime="application/pdf",
-                                        key=f"download_syllabus_{class_info['cid'], key}"
+                                        key=f"download_syllabus_{class_info['cid'], key}",
                                     )
                                     key += 1
                                 else:
-                                    st.write("Error: Could not fetch the syllabus file.")
+                                    st.write(
+                                        "Error: Could not fetch the syllabus file."
+                                    )
                         except Exception as e:
                             st.write("Error downloading syllabus:", e)
                 else:
@@ -456,5 +512,3 @@ if st.session_state.get("login"):
 
 else:
     st.error("You need to login first to access this page.")
-        
-
