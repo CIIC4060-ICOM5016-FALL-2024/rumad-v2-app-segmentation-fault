@@ -74,6 +74,11 @@ def generate_green_shades(base_color, values):
 
 st.title("Global Stats")
 
+st.markdown("""
+This page offers a comprehensive global view of academic metrics through visually engaging and interactive charts. Analyze data such as the meetings with the highest number of sections, classes with the most prerequisites, the least offered classes, and annual trends in total sections.
+""")
+
+
 top_five_meetings_with_most_sections_container = st.container()
 top_three_classes_as_prerequisite_container = st.container()
 top_three_classes_offered_least_container = st.container()
