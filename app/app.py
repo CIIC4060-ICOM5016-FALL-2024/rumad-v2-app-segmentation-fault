@@ -186,11 +186,5 @@ def signup():
     password = data.get("password")
     return RegistrationHandler().signUpUser(username, password)
 
-
-# CHATBOT ROUTES
-@app.route("/segmentation_fault/chatbot", methods=["POST"])
-def chatbot():
-    return ChatbotHandler().getResponse(request.json)
-
 if __name__ == "__main__":
     app.run(debug=True, port=8080)
