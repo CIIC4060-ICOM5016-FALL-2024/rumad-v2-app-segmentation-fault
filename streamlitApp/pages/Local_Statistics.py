@@ -73,6 +73,11 @@ def generate_green_shades(base_color, values):
 
 st.title("Local Stats")
 
+st.markdown("""
+This page offers an intuitive platform for exploring local data insights. Dropdown menus dynamically update with the latest data, ensuring a seamless and accurate experience. Analyze key statistics through interactive charts, including the top rooms by capacity, the highest student-to-capacity ratios, and the most-taught classes by semester and room. 
+""")
+
+
 top_three_rooms_per_capacity_container = st.container()
 top_three_rooms_per_ration_container = st.container()
 top_three_classes_taught_per_semester_container = st.container()
