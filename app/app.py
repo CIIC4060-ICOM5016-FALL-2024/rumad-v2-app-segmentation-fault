@@ -7,7 +7,6 @@ from handler.requisite import RequisiteHandler
 from handler.course import ClassHandler
 from handler.room import RoomHandler
 from handler.registration import RegistrationHandler
-from handler.chatbot import ChatbotHandler
 
 app = Flask(__name__)
 CORS(app)
