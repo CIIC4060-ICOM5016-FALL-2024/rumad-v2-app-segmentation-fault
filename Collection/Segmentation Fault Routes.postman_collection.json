@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "e27bc8d2-40e0-41f8-aabd-eb9defdfaf09",
+		"_postman_id": "dd7fa706-96bc-415f-a6b1-bc646c3561ad",
 		"name": "Segmentation Fault Routes",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "39273206",
-		"_collection_link": "https://segmentation-fault-6960.postman.co/workspace/Segmentation-Fault-Workspace~adb5ef9d-a0db-41ce-8772-e1d065b1e63d/collection/39273206-e27bc8d2-40e0-41f8-aabd-eb9defdfaf09?action=share&source=collection_link&creator=39273206"
+		"_collection_link": "https://segmentation-fault-6960.postman.co/workspace/Segmentation-Fault-Workspace~adb5ef9d-a0db-41ce-8772-e1d065b1e63d/collection/39273206-dd7fa706-96bc-415f-a6b1-bc646c3561ad?action=share&source=collection_link&creator=39273206"
 	},
 	"item": [
 		{
@@ -894,6 +894,71 @@
 								"segmentation_fault",
 								"least",
 								"classes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "segmentation_fault/login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"lennon\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/login",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "segmentation_fault/signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"lennon\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-db-5dd7ab118ab8.herokuapp.com/segmentation_fault/signup",
+							"protocol": "https",
+							"host": [
+								"rumad-db-5dd7ab118ab8",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"segmentation_fault",
+								"signup"
 							]
 						}
 					},
