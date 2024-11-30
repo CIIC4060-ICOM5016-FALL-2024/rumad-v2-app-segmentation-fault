@@ -29,11 +29,8 @@ def chatbot(question, memory):
     # question = "What are the prerequisites for the course CIIC 4020?"
     # question = "What are the most important diferences between CIIC 4060 and CIIC 4020?"
 
-
     # Manage the memory if it is present
 
-
-    
     # Analize the question
     expected_cnames = ["CIIC", "INSO"]
 
@@ -64,11 +61,12 @@ def chatbot(question, memory):
     emb = embeddingClass()
     emtText = emb.embed(question)
 
-
     # Ensure the dimensions match
     def normalizer(vector):
         vector = np.array(vector)
-        padded_vector = np.pad(vector, pad_width=(0, 500 - len(vector)), mode="constant")
+        padded_vector = np.pad(
+            vector, pad_width=(0, 500 - len(vector)), mode="constant"
+        )
         return padded_vector
 
     # Get all fragments
@@ -126,14 +124,16 @@ def chatbot(question, memory):
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
         model="llama3.1",
-        temperature=4,
+        temperature=2,
     )
 
     # Create a chain combining the promt template and LLM
     chain = promt | llm | StrOutputParser()
 
     try:
-        response = chain.invoke({"question": question,"documents": documents, "memory": memory})
+        response = chain.invoke(
+            {"question": question, "documents": documents, "memory": memory}
+        )
         if response is None:
             raise ValueError("The response from the model was None.")
         # print(response)
@@ -146,8 +146,8 @@ def chatbot(question, memory):
     except Exception as e:
         return json.dumps({"error": "An unexpected error occurred", "details": str(e)})
 
-    
-    
     response = {"answer": response}
 
-    return json.dumps(response), json.dumps(promt.format(question=question,documents=documents, memory=memory))
+    return json.dumps(response), json.dumps(
+        promt.format(question=question, documents=documents, memory=memory)
+    )
