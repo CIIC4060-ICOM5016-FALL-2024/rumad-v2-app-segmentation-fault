@@ -4,16 +4,18 @@ import sys
 import os
 import time
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+)
 
-from app.vectorDB.chatBot.chat import chatbot 
+from app.vectorDB.chatBot.chat import chatbot
 
 st.set_page_config(
-    page_title="Chatbot Page",
+    page_title="Segmentation Fault Chat",
     layout="centered",
     initial_sidebar_state="collapsed",
-    page_icon="./logos/seal-rum-uprm-1280x1280px.png"
-) 
+    page_icon="./logos/seal-rum-uprm-1280x1280px.png",
+)
 
 st.title("Segmentation Fault Chat")
 
@@ -29,16 +31,20 @@ if st.session_state.get("login"):
             with st.chat_message(message["role"], avatar=message.get("avatar")):
                 st.markdown(message["content"])
 
-
     # Accept user input
     if prompt := st.chat_input("Message"):
-
 
         # Display user message in chat message container
         with st.chat_message("user", avatar="./logos/seal-rum-uprm-1280x1280px.png"):
             st.markdown(prompt)
         # Add user message to chat history
-        st.session_state.messages.append({"role": "user", "content": prompt, "avatar": "./logos/seal-rum-uprm-1280x1280px.png"})
+        st.session_state.messages.append(
+            {
+                "role": "user",
+                "content": prompt,
+                "avatar": "./logos/seal-rum-uprm-1280x1280px.png",
+            }
+        )
 
         # maintain_message_history()
         with st.spinner("Processing..."):
@@ -58,8 +64,9 @@ if st.session_state.get("login"):
         with st.chat_message("bot", avatar="./logos/Tarzan_7896.png"):
             st.markdown(answer)
 
-        st.session_state.messages.append({"role": "bot", "content": answer, "avatar": "./logos/Tarzan_7896.png"})
-
+        st.session_state.messages.append(
+            {"role": "bot", "content": answer, "avatar": "./logos/Tarzan_7896.png"}
+        )
 
         # Display loading animation in chat message container
         # with st.chat_message("bot"):
@@ -71,9 +78,9 @@ if st.session_state.get("login"):
 
         #     # Send the user's question to the chatbot function
         #     try:
-               
+
         #         response_json = chatbot(prompt, json.dumps(st.session_state.messages))  # This returns a JSON string
-    
+
         #         response_dict = json.loads(response_json[0])  # Convert JSON string to dictionary
         #         answer = response_dict.get("answer", "No answer provided.")  # Safely get the "answer"
         #     except json.JSONDecodeError as e:
