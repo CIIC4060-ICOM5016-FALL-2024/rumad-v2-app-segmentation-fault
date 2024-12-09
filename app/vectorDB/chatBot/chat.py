@@ -124,7 +124,7 @@ def chatbot(question, memory):
     # Initialize the LLM with llama 3.1 model
     llm = ChatOllama(
         model="llama3.1",
-        temperature=2,
+        temperature=0,
     )
 
     # Create a chain combining the promt template and LLM
